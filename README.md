@@ -47,6 +47,8 @@ failed or infrastructure attempts.
   <img src="docs/assets/dashboard.png" alt="RoboHermes LIBERO evaluation console showing architecture, Pass@10 coverage, suite totals, and task evidence" width="100%">
 </p>
 
+<p align="center"><a href="https://nssmd.github.io/RoboHermes-LIBERO/"><strong>Open the live evaluation dashboard</strong></a></p>
+
 ## Architecture
 
 ```mermaid
