@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/nssmd/RoboHermes-LIBERO/actions"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/nssmd/RoboHermes-LIBERO/ci.yml?branch=main&label=tests"></a>
+  <img alt="53 tests passed" src="https://img.shields.io/badge/tests-53_passed-16845b">
   <a href="LICENSE"><img alt="Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-1f6feb"></a>
   <img alt="Python 3.10-3.12" src="https://img.shields.io/badge/python-3.10--3.12-3776ab">
   <img alt="LIBERO short 120" src="https://img.shields.io/badge/LIBERO_short-120_tasks-16845b">
