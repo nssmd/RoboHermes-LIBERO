@@ -1,0 +1,259 @@
+{
+  "schema": "robohermes.libero_publication.v1",
+  "as_of": "2026-08-18",
+  "headline": {
+    "label": "Adaptive task-level Pass@10",
+    "solved_tasks": 95,
+    "total_tasks": 120,
+    "rate": 0.7916666666666666,
+    "scope": "adaptive_cross_release_development_coverage"
+  },
+  "experiments": {
+    "adaptive_sequential": {
+      "label": "Sequential adaptive campaign",
+      "status": "final",
+      "task_catalog": "LIBERO short 120",
+      "ordered_rounds": 10,
+      "pass_curve": [32, 45, 52, 66, 71, 76, 81, 82, 82, 83],
+      "round_tokens": [
+        398729258,
+        291211783,
+        297230433,
+        241475742,
+        208388568,
+        182192140,
+        197953112,
+        155627547,
+        186815966,
+        182783746
+      ],
+      "round_wall_s": [
+        6633.812055,
+        5697.410389,
+        3431.781724,
+        6602.482955,
+        2852.368973,
+        2487.100601,
+        3128.964055,
+        2702.936522,
+        3716.667788,
+        2668.8929
+      ],
+      "total_tokens": 2342408295,
+      "active_round_wall_s": 39922.417962,
+      "final_solved_tasks": 83,
+      "total_tasks": 120,
+      "claim_scope": "ordered_adaptive_campaign_with_evolving_releases",
+      "claim_boundary": "This measured ten-round sequence ends at 83/120. The later 95/120 headline adds separately retained residual releases and is not this curve's endpoint."
+    },
+    "strict_standard130": {
+      "label": "Strict Standard-130 task-level Pass@10",
+      "status": "final",
+      "solved_tasks": 67,
+      "total_tasks": 130,
+      "rate": 0.5153846153846153,
+      "pass_curve": [23, 35, 43, 49, 56, 60, 61, 63, 64, 67],
+      "valid_task_seed_verdicts": 846,
+      "task_success_verdicts": 67,
+      "task_failure_verdicts": 779,
+      "total_tokens": 2882111476,
+      "total_vlm_calls": 43076,
+      "campaign_wall_s": 72473.925221,
+      "by_suite": {
+        "libero_spatial": {"solved": 9, "tasks": 10},
+        "libero_object": {"solved": 10, "tasks": 10},
+        "libero_goal": {"solved": 7, "tasks": 10},
+        "libero_10": {"solved": 0, "tasks": 10},
+        "libero_90": {"solved": 41, "tasks": 90}
+      },
+      "success_source": "final simulator verdict only",
+      "checker_visible_to_agent": false,
+      "action_success_latch": false,
+      "claim_scope": "strict_agent_only_standard130_pass_at_10"
+    },
+    "matched_code": {
+      "label": "Matched Code-on versus Code-off",
+      "status": "final",
+      "model": "responses/gpt-5.6-sol",
+      "reasoning_effort": "medium",
+      "seeds": [21, 22, 23, 24, 25],
+      "success": {
+        "code_on": {"success": 174, "episodes": 600},
+        "code_off": {"success": 129, "episodes": 600},
+        "task_pass_at_5": {
+          "code_on": {"solved": 71, "tasks": 120},
+          "code_off": {"solved": 58, "tasks": 120}
+        },
+        "paired_delta_pp": 7.5,
+        "paired_delta_ci95_pp": [3.666666666666665, 11.499999999999998],
+        "mcnemar_p": 0.0000806219814539768,
+        "task_cluster_sign_flip_p": 0.0003366519617564734,
+        "paired_table": {
+          "both_success": 88,
+          "code_on_only": 86,
+          "code_off_only": 41,
+          "both_failure": 385
+        }
+      },
+      "efficiency": {
+        "matched_tasks": 118,
+        "median_total_tokens": {
+          "code_on": 2577694.0,
+          "code_off": 3653234.5,
+          "reduction": 0.29440773648666685
+        },
+        "total_tokens": {
+          "code_on": 366342412.0,
+          "code_off": 459725399.0,
+          "reduction": 0.20312775235635827
+        },
+        "median_vlm_calls": {
+          "code_on": 29.5,
+          "code_off": 40.5,
+          "reduction": 0.2716049382716049
+        },
+        "median_wall_s": {
+          "code_on": 701.2995000000001,
+          "code_off": 845.034,
+          "reduction": 0.17009315601502417
+        }
+      },
+      "treatment": "Code-on exposes the solidified visual_pick_place compound; Code-off uses the same base tools without that compound.",
+      "claim_scope": "matched_five_seed_success_and_separate_seed21_efficiency_panels"
+    },
+    "act": {
+      "label": "ACT corrective transport matched case",
+      "status": "simulator_confirmed_matched_case",
+      "task": "libero_spatial_swap/0",
+      "seed": 3,
+      "simulator_successes": 1,
+      "trials": 1,
+      "act_steps": 304,
+      "held_out": false,
+      "ground_truth_in_policy_input": false,
+      "claim_scope": "matched_success_case_not_generalization",
+      "claim_boundary": "One native simulator success demonstrates the data-to-policy-to-hybrid-execution loop. It does not establish held-out ACT performance."
+    }
+  },
+  "comparisons": [
+    {
+      "id": "roboharness-memory",
+      "system": "RoboHarness (memory-augmented VLA)",
+      "date": "2026-03-25",
+      "evaluation": "LIBERO-RoboHarness and selected LIBERO-PRO tasks over pi0, pi0.5, and SmolVLA backbones",
+      "reported_result": "57.2% LIBERO-PRO Pos average; 55.2% Task average; 89.1 pp reported long-horizon gain",
+      "policy_dependency": "Frozen VLA checkpoints plus Dual-Memory RAG and MCP visual/prompt interventions",
+      "visible_success_checker": "Not specified as an agent-facing tool in the paper",
+      "real_robot": "No formal real-robot evaluation reported",
+      "reproducibility": "Method source and modified LIBERO tasks are public; no one-command frozen result bundle",
+      "directly_comparable": false,
+      "why_not_direct": "Custom OOD suites, VLA backbones, and approximately 200 rollouts per task differ from RoboHermes LIBERO-short task-level Pass@k."
+    },
+    {
+      "id": "roboharness-orchestration",
+      "system": "RoboHarness (heterogeneous policy orchestration)",
+      "date": "2026-07-20",
+      "evaluation": "LIBERO, LIBERO-Plus, LIBERO-LoHo, 500 custom simulations, and 135 real-robot trials",
+      "reported_result": "98.7% original LIBERO; 93.2% LIBERO-Plus average; 95.2% LIBERO-LoHo success",
+      "policy_dependency": "pi0.5, RL-post-trained OpenVLA-OFT, and a predefined-object TAMP planner",
+      "visible_success_checker": "Not specified as an agent-facing tool in the paper",
+      "real_robot": "135 trials with TAMP, a drawer VLA fine-tuned on 50 demonstrations per direction, and ArUco pose estimation",
+      "reproducibility": "Public repository contains the paper page, figures, and videos; method code is not present as of 2026-08-18",
+      "directly_comparable": false,
+      "why_not_direct": "It composes trained specialist policies and TAMP, while RoboHermes strict results use RGB-D code skills without policy checkpoints."
+    },
+    {
+      "id": "openeta-codex",
+      "system": "OpenETA for Codex",
+      "date": "2026-08-03",
+      "evaluation": "130 LIBERO tasks, ordered seeds 0-4, task-level Pass@5",
+      "reported_result": "GPT-5.6 Sol: 92/130 Pass@1 and 117/130 Pass@5",
+      "policy_dependency": "No VLA or task-specific policy; observe, mark_point, and move_to geometry/control tools",
+      "visible_success_checker": "Yes: check_task is agent-callable and terminal success is latched",
+      "real_robot": "Interface-level integration and qualitative development recordings; no audited task success rate",
+      "reproducibility": "Open-source branch with versioned tool contracts and evaluation launcher",
+      "directly_comparable": false,
+      "why_not_direct": "OpenETA uses 512x512 multi-view/orthographic feedback, a 5000-step horizon, up to 5400 seconds, and an agent-visible native checker; RoboHermes forbids checker and success-latch visibility."
+    },
+    {
+      "id": "vla-evaluation-harness",
+      "system": "AllenAI vla-evaluation-harness",
+      "date": "2026-08-15",
+      "evaluation": "Unified infrastructure across 18 robot benchmarks and multiple policy servers",
+      "reported_result": "Evaluation infrastructure, not an agent-method score; published reports reproduce several LIBERO policy results",
+      "policy_dependency": "Model server selected by the evaluator",
+      "visible_success_checker": "Benchmark-owned evaluation",
+      "real_robot": "No real-robot method claim",
+      "reproducibility": "Pinned Docker images, sharded episodes, merged per-episode records, and public reproduction reports",
+      "directly_comparable": false,
+      "why_not_direct": "It is a benchmark execution layer rather than a self-evolving embodied agent."
+    },
+    {
+      "id": "enpire",
+      "system": "ENPIRE",
+      "date": "2026-06-18",
+      "evaluation": "Physical autoresearch on dexterous tasks plus matched 40-episode RoboCasa simulation panels",
+      "reported_result": "Up to 99% pass@8 with in-context retries on showcased real-world tasks",
+      "policy_dependency": "Coding-agent policy improvement through heuristics, behavior cloning, and offline/online RL",
+      "visible_success_checker": "Task-specific automatic verification is a core environment API",
+      "real_robot": "Eight bimanual YAM stations with automatic reset and verification",
+      "reproducibility": "Paper and project page are public; the official method repository is not listed",
+      "directly_comparable": false,
+      "why_not_direct": "ENPIRE optimizes learned policies on task-specific physical environments; RoboHermes evaluates online skill composition in LIBERO."
+    }
+  ],
+  "positioning": {
+    "gaps": [
+      "No audited real-robot task-rate experiment in the public RoboHermes release.",
+      "No matched LIBERO-Plus or other standardized perturbation panel against current RoboHarness baselines.",
+      "No heterogeneous trained-policy routing or learned handoff bridge comparable to the July RoboHarness system.",
+      "The 95/120 headline is cross-release adaptive coverage, not a one-command single-release simulator reproduction.",
+      "The compact public bundle does not yet publish every failed rollout or all 95 canonical success videos."
+    ],
+    "advantages": [
+      "Inspectable code skills and simulator-gated online evolution are released rather than represented only by a project page.",
+      "The strict track uses no VLA/policy checkpoint and keeps native task truth outside Planner, Engineer, Reviewer, skills, and prompts.",
+      "Matched five-seed evidence isolates the effect of a solidified code-backed compound and reports paired uncertainty.",
+      "Token, VLM-call, and wall-time efficiency are measured on a matched panel rather than inferred from success alone.",
+      "Every short-task claim uses final native simulator verdicts and separates infrastructure records from task outcomes."
+    ]
+  },
+  "sources": [
+    {
+      "title": "RoboHarness: A Memory-Augmented Policy Harness for Vision-Language-Action Model Robustness via In-Context Adaptation",
+      "url": "https://arxiv.org/abs/2603.24060"
+    },
+    {
+      "title": "RoboHarness: Memory-Driven Orchestration of Heterogeneous Robot Policies for Long-Horizon Planning",
+      "url": "https://arxiv.org/abs/2607.18060"
+    },
+    {
+      "title": "ETA: A New Agentic Paradigm for Embodied Tasks",
+      "url": "https://arxiv.org/abs/2608.03924"
+    },
+    {
+      "title": "ENPIRE: Agentic Robot Policy Self-Improvement in the Real World",
+      "url": "https://arxiv.org/abs/2606.19980"
+    },
+    {
+      "title": "vla-evaluation-harness",
+      "url": "https://github.com/allenai/vla-evaluation-harness"
+    },
+    {
+      "title": "RoboHarness memory implementation",
+      "url": "https://github.com/LZY-1021/RoboHarness"
+    },
+    {
+      "title": "RoboHarness orchestration project page repository",
+      "url": "https://github.com/markli1hoshipu/RoboHarness"
+    },
+    {
+      "title": "OpenETA",
+      "url": "https://github.com/OpenMOSS/OpenETA"
+    },
+    {
+      "title": "ENPIRE project page",
+      "url": "https://research.nvidia.com/labs/gear/enpire/"
+    }
+  ]
+}

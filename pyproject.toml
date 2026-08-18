@@ -67,6 +67,7 @@ packages = ["src/robohermes_libero", "src/robohermes"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "evidence/adaptive-pass10-v1" = "robohermes_libero/evidence/adaptive-pass10-v1"
+"evidence/publication-v1" = "robohermes_libero/evidence/publication-v1"
 
 [tool.hatch.build.targets.sdist]
 include = [
