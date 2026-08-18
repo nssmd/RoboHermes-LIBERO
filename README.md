@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img alt="53 tests passed" src="https://img.shields.io/badge/tests-53_passed-16845b">
+  <img alt="59 tests passed" src="https://img.shields.io/badge/tests-59_passed-16845b">
   <a href="LICENSE"><img alt="Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-1f6feb"></a>
   <img alt="Python 3.10-3.12" src="https://img.shields.io/badge/python-3.10--3.12-3776ab">
   <img alt="LIBERO short 120" src="https://img.shields.io/badge/LIBERO_short-120_tasks-16845b">
@@ -18,20 +18,22 @@ Reviewer diagnoses the visible trace. Candidate skill changes run in an
 isolated overlay and are promoted only after a native simulator-success
 harness verdict.
 
-## Result
+## Evidence Tracks
 
 | Metric | Result | Scope |
 |---|---:|---|
 | **Adaptive task-level Pass@10** | **95/120 (79.2%)** | Cross-release adaptive development coverage |
-| Spatial | 9/10 | Native final simulator success |
-| Object | 10/10 | Native final simulator success |
-| Goal | 9/10 | Native final simulator success |
-| LIBERO-90 | 67/90 | Native final simulator success |
+| Sequential adaptive campaign | 32/120 -> 83/120 | Ten evolving-release rounds; 2.342B tokens, 11.09 active hours |
+| Strict Standard-130 Pass@10 | 67/130 (51.5%) | No Agent-visible checker, latch, hidden pose, or policy checkpoint |
+| Matched Code-on/off | 174/600 vs 129/600 | Five seeds; +7.5 pp; McNemar `p=8.06e-5` |
+| Matched median tokens | 2.58M vs 3.65M | Separate 118-task Code-on/off efficiency panel |
+| ACT corrective transport | 1/1 native success | One matched seed-3 case; not held-out generalization |
 
-This headline is cumulative coverage across evolving releases. It is **not** a
-frozen-policy result, a single-release result, or conventional fixed-method
-Pass@10. The repository keeps those tracks separate instead of presenting one
-as another.
+The adaptive breakdown is Spatial `9/10`, Object `10/10`, Goal `9/10`, and
+LIBERO-90 `67/90`. This headline is cumulative coverage across evolving
+releases. It is **not** a frozen-policy result, a single-release result, or
+conventional fixed-method Pass@10. Strict, adaptive, matched-ablation, and ACT
+results stay separate in the data and UI.
 
 ```bash
 ./robohermes results replay \
@@ -44,10 +46,31 @@ catalog. Its token/time totals cover those success evidence rows only, not all
 failed or infrastructure attempts.
 
 <p align="center">
-  <img src="docs/assets/dashboard.png" alt="RoboHermes LIBERO evaluation console showing architecture, Pass@10 coverage, suite totals, and task evidence" width="100%">
+  <img src="docs/assets/dashboard.png" alt="RoboHermes project page with a LIBERO rollout hero, evidence labels, and native simulator results" width="100%">
 </p>
 
-<p align="center"><a href="https://nssmd.github.io/RoboHermes-LIBERO/"><strong>Open the live evaluation dashboard</strong></a></p>
+<p align="center"><a href="https://nssmd.github.io/RoboHermes-LIBERO/"><strong>Open the live project page and rollout evidence</strong></a></p>
+
+## Videos And Publication Data
+
+The project page includes six decoded native-success videos: four exact
+Standard-130 episodes, one sequential-adaptive episode, and the ACT matched
+case. Every video opens with its task, seed, evidence scope, and ordered tool
+name/outcome chain. The four-panel hero contains only LIBERO short successes.
+
+Publication values are machine-readable in
+[`evidence/publication-v1/experiments.json`](evidence/publication-v1/experiments.json).
+The dashboard renders this file without maintaining a second statistics path.
+
+- [Experiment inventory and RoboHarness/OpenETA comparison](docs/EXPERIMENTS_AND_COMPARISON.md)
+- [Chinese media draft](PRESS_KIT_ZH.md)
+- [Chinese and English X copy, captions, and alt text](SOCIAL_COPY.md)
+
+The comparison is protocol-aware rather than a shared leaderboard. OpenETA's
+reported `117/130 Pass@5`, for example, uses 512x512 multi-view feedback, a
+5000-step horizon, up to 5400 seconds, and an Agent-callable native task
+checker with a terminal success latch. RoboHermes strict prohibits checker and
+latch visibility.
 
 ## Architecture
 

@@ -182,6 +182,7 @@ def collect_findings(root: Path) -> list[str]:
             findings.append("competitive report is missing the protocol boundary")
 
     if not findings:
+        sys.path.insert(0, str(root))
         sys.path.insert(0, str(root / "src"))
         try:
             from robohermes_libero.evidence import replay_bundle
