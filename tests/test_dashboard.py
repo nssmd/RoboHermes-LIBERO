@@ -73,12 +73,40 @@ def test_static_preview_is_self_contained_and_has_no_private_paths(tmp_path: Pat
     output = build_static_preview(tmp_path / "site")
 
     expected = {"index.html", "styles.css", "app.js", "data.json"}
-    assert {path.name for path in output.iterdir()} == expected
+    names = {path.name for path in output.iterdir()}
+    assert expected <= names
+    assert "media" in names
     data = json.loads((output / "data.json").read_text(encoding="utf-8"))
     assert data["result"]["rate"] == 95 / 120
-    combined = "\n".join(path.read_text(encoding="utf-8") for path in output.iterdir())
+    combined = "\n".join(
+        (output / name).read_text(encoding="utf-8")
+        for name in ("index.html", "styles.css", "app.js", "data.json")
+    )
     assert "/mnt" + "/workspace" not in combined
     assert "/data" + "/yijia" not in combined
     assert "Adaptive task-level Pass@10" in combined
     assert 'id="architecture"' in combined
     assert "Host-only adjudicator" in combined
+
+
+def test_static_preview_packages_verified_publication_media(tmp_path: Path) -> None:
+    output = build_static_preview(tmp_path / "site")
+    media = build_dashboard_payload()["publication"]["media"]
+
+    assert media["hero"] == "media/hero-libero-short.mp4"
+    assert len(media["videos"]) == 6
+    assert len({video["task"] for video in media["videos"]}) == 6
+    assert {video["verdict"] for video in media["videos"]} == {"simulator_success"}
+    assert all(video["tool_chain"] for video in media["videos"])
+
+    references = [media["hero"]]
+    for video in media["videos"]:
+        references.extend((video["video"], video["poster"]))
+    for reference in references:
+        path = output / reference
+        assert path.is_file(), reference
+        assert path.stat().st_size > 1_000, reference
+
+    payload_text = (output / "data.json").read_text(encoding="utf-8")
+    assert "/mnt" + "/workspace" not in payload_text
+    assert "/data" + "/yijia" not in payload_text

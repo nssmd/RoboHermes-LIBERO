@@ -115,8 +115,12 @@ def build_static_preview(output: Path, result_path: Path | None = None) -> Path:
     destination = Path(output).resolve()
     destination.mkdir(parents=True, exist_ok=True)
     static = Path(str(importlib.resources.files("robohermes_libero").joinpath("static")))
-    for name in ("index.html", "styles.css", "app.js"):
-        shutil.copy2(static / name, destination / name)
+    for source in sorted(static.iterdir(), key=lambda path: path.name):
+        target = destination / source.name
+        if source.is_dir():
+            shutil.copytree(source, target, dirs_exist_ok=True)
+        else:
+            shutil.copy2(source, target)
     (destination / "data.json").write_text(
         json.dumps(build_dashboard_payload(result_path), indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
