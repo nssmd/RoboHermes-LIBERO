@@ -1,0 +1,174 @@
+#!/usr/bin/env python3
+"""Fail-closed checks for the public repository contents."""
+
+from __future__ import annotations
+
+import argparse
+import os
+import re
+import sys
+from pathlib import Path
+
+IGNORED_DIRS = {
+    ".deps",
+    ".git",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".runtime",
+    ".venv",
+    ".venv-pyroki",
+    "__pycache__",
+    "build",
+    "dist",
+    "runs",
+    "site-preview",
+}
+TEXT_SUFFIXES = {
+    "",
+    ".cff",
+    ".css",
+    ".html",
+    ".js",
+    ".json",
+    ".jsonl",
+    ".md",
+    ".py",
+    ".sh",
+    ".toml",
+    ".yaml",
+    ".yml",
+}
+
+
+def _files(root: Path):
+    for path in root.rglob("*"):
+        if any(part in IGNORED_DIRS or part.endswith(".egg-info") for part in path.parts):
+            continue
+        if path.is_file():
+            if path.name == "robohermes.yaml":
+                continue
+            yield path
+
+
+def _local_markdown_links(text: str) -> list[str]:
+    links = []
+    for target in re.findall(r"\[[^]]+\]\(([^)]+)\)", text):
+        target = target.split("#", 1)[0]
+        if target and "://" not in target and not target.startswith("mailto:"):
+            links.append(target)
+    return links
+
+
+def collect_findings(root: Path) -> list[str]:
+    root = Path(root).resolve()
+    findings: list[str] = []
+    required = (
+        "README.md",
+        "REPRODUCING.md",
+        "LICENSE",
+        "pyproject.toml",
+        "setup.sh",
+        "robohermes",
+        "configs/default.yaml",
+        "evidence/adaptive-pass10-v1/manifest.json",
+        "evidence/adaptive-pass10-v1/episodes.jsonl",
+    )
+    for relative in required:
+        if not (root / relative).is_file():
+            findings.append(f"missing required file: {relative}")
+    for relative in ("setup.sh", "robohermes", "scripts/bootstrap.py"):
+        path = root / relative
+        if path.is_file() and not os.access(path, os.X_OK):
+            findings.append(f"entrypoint is not executable: {relative}")
+
+    forbidden = (
+        "/mnt" + "/workspace",
+        "/data" + "/yijia",
+        "copilot" + "-proxy-local",
+        "ANTHROPIC" + "_AUTH_TOKEN",
+        "gho_" + "********************************",
+    )
+    secret_patterns = (
+        re.compile(r"sk-[A-Za-z0-9_-]{20,}"),
+        re.compile(r"gh[opurs]_[A-Za-z0-9]{20,}"),
+        re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
+    )
+    for path in _files(root):
+        if path.suffix in {".pyc", ".pyo"}:
+            findings.append(f"compiled artifact included: {path.relative_to(root)}")
+            continue
+        if path.suffix.lower() not in TEXT_SUFFIXES:
+            continue
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        relative = path.relative_to(root)
+        if relative != Path("scripts/release_check.py"):
+            for needle in forbidden:
+                if needle in text:
+                    findings.append(f"private default {needle!r}: {relative}")
+            for pattern in secret_patterns:
+                if pattern.search(text):
+                    findings.append(f"possible secret ({pattern.pattern}): {relative}")
+        if path.suffix.lower() == ".md":
+            for target in _local_markdown_links(text):
+                if not (path.parent / target).resolve().exists():
+                    findings.append(f"broken local link {target!r}: {relative}")
+
+    excluded_names = {"pro_long", "opd"}
+    for path in root.rglob("*"):
+        if path.is_dir() and path.name.lower() in excluded_names:
+            findings.append(f"excluded scope directory included: {path.relative_to(root)}")
+
+    pyproject_path = root / "pyproject.toml"
+    license_path = root / "LICENSE"
+    pyproject = (
+        pyproject_path.read_text(encoding="utf-8") if pyproject_path.is_file() else ""
+    )
+    license_text = (
+        license_path.read_text(encoding="utf-8") if license_path.is_file() else ""
+    )
+    if 'license = "Apache-2.0"' not in pyproject:
+        findings.append("pyproject license is not Apache-2.0")
+    if "Apache License" not in license_text or "Version 2.0" not in license_text:
+        findings.append("LICENSE is not Apache-2.0 text")
+
+    if not findings:
+        sys.path.insert(0, str(root / "src"))
+        try:
+            from robohermes_libero.evidence import replay_bundle
+
+            result = replay_bundle(root / "evidence/adaptive-pass10-v1/manifest.json")
+            if (result.solved_tasks, result.total_tasks) != (95, 120):
+                findings.append(
+                    f"reported evidence replay mismatch: {result.solved_tasks}/{result.total_tasks}"
+                )
+        except Exception as exc:  # noqa: BLE001
+            findings.append(f"evidence replay failed: {type(exc).__name__}: {exc}")
+    if not findings:
+        workspace = os.environ.pop("ROBOHERMES_WORKSPACE", None)
+        try:
+            from scripts.check_libero_gt_leak import collect_findings as collect_gt_findings
+
+            findings.extend(f"GT isolation: {finding}" for finding in collect_gt_findings())
+        except Exception as exc:  # noqa: BLE001
+            findings.append(f"GT isolation audit failed: {type(exc).__name__}: {exc}")
+        finally:
+            if workspace is not None:
+                os.environ["ROBOHERMES_WORKSPACE"] = workspace
+    return sorted(set(findings))
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
+    args = parser.parse_args()
+    findings = collect_findings(args.root)
+    if findings:
+        for finding in findings:
+            print(f"FAIL {finding}")
+        return 1
+    print("PASS public release checks")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

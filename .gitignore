@@ -1,0 +1,13 @@
+.env
+.venv/
+.deps/
+.pytest_cache/
+.ruff_cache/
+__pycache__/
+*.py[cod]
+build/
+dist/
+*.egg-info/
+runs/
+site-preview/
+robohermes.yaml
