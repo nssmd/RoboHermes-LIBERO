@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import sys
@@ -72,6 +73,10 @@ def collect_findings(root: Path) -> list[str]:
         "configs/default.yaml",
         "evidence/adaptive-pass10-v1/manifest.json",
         "evidence/adaptive-pass10-v1/episodes.jsonl",
+        "evidence/publication-v1/experiments.json",
+        "docs/EXPERIMENTS_AND_COMPARISON.md",
+        "PRESS_KIT_ZH.md",
+        "SOCIAL_COPY.md",
     )
     for relative in required:
         if not (root / relative).is_file():
@@ -130,6 +135,51 @@ def collect_findings(root: Path) -> list[str]:
         findings.append("pyproject license is not Apache-2.0")
     if "Apache License" not in license_text or "Version 2.0" not in license_text:
         findings.append("LICENSE is not Apache-2.0 text")
+
+    publication_path = root / "evidence/publication-v1/experiments.json"
+    if publication_path.is_file():
+        try:
+            publication = json.loads(publication_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            findings.append(f"publication evidence is invalid: {type(exc).__name__}: {exc}")
+        else:
+            if publication.get("schema") != "robohermes.libero_publication.v1":
+                findings.append("publication evidence schema mismatch")
+            headline = publication.get("headline") or {}
+            if (headline.get("solved_tasks"), headline.get("total_tasks")) != (95, 120):
+                findings.append("publication headline does not match 95/120")
+            media = publication.get("media") or {}
+            videos = media.get("videos") or []
+            if len(videos) != 6 or len({row.get("task") for row in videos}) != 6:
+                findings.append("publication media must contain six unique task videos")
+            references = [media.get("hero")]
+            for row in videos:
+                references.extend((row.get("video"), row.get("poster")))
+                if row.get("verdict") != "simulator_success":
+                    findings.append(f"publication video lacks simulator success: {row.get('id')}")
+                if not row.get("tool_chain"):
+                    findings.append(f"publication video lacks tool chain: {row.get('id')}")
+            for reference in references:
+                if not isinstance(reference, str) or not reference:
+                    findings.append("publication media contains an empty reference")
+                elif not (root / "src/robohermes_libero/static" / reference).is_file():
+                    findings.append(f"publication media is missing: {reference}")
+
+    report_path = root / "docs/EXPERIMENTS_AND_COMPARISON.md"
+    if report_path.is_file():
+        report = report_path.read_text(encoding="utf-8")
+        source_urls = (
+            "https://arxiv.org/abs/2603.24060",
+            "https://arxiv.org/abs/2607.18060",
+            "https://arxiv.org/abs/2608.03924",
+            "https://arxiv.org/abs/2606.19980",
+            "https://github.com/allenai/vla-evaluation-harness",
+        )
+        for url in source_urls:
+            if url not in report:
+                findings.append(f"competitive report is missing source: {url}")
+        if "These protocols are not a shared leaderboard." not in report:
+            findings.append("competitive report is missing the protocol boundary")
 
     if not findings:
         sys.path.insert(0, str(root / "src"))
