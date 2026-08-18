@@ -110,3 +110,21 @@ def test_static_preview_packages_verified_publication_media(tmp_path: Path) -> N
     payload_text = (output / "data.json").read_text(encoding="utf-8")
     assert "/mnt" + "/workspace" not in payload_text
     assert "/data" + "/yijia" not in payload_text
+
+
+def test_project_page_orders_evidence_sections_and_exposes_video_trace_dialog() -> None:
+    static = Path(__file__).resolve().parents[1] / "src/robohermes_libero/static"
+    html = (static / "index.html").read_text(encoding="utf-8")
+
+    sections = ["architecture", "simulations", "experiments", "comparison", "tasks", "reproduce"]
+    offsets = [html.index(f'id="{section}"') for section in sections]
+    assert offsets == sorted(offsets)
+
+    assert 'class="article-outline"' in html
+    assert 'id="video-dialog"' in html
+    assert 'id="video-tool-chain"' in html
+    assert 'id="video-grid"' in html
+    assert 'id="comparison-body"' in html
+    assert "Adaptive development coverage" in html
+    assert "Strict Standard-130" in html
+    assert "Protocols differ; this is not a shared leaderboard." in html

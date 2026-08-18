@@ -2,127 +2,320 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=1280">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light">
-    <title>RoboHermes | LIBERO Evaluation Console</title>
+    <meta name="description" content="RoboHermes: inspectable robot skills, GPT composition, and simulator-gated self-evolution on LIBERO.">
+    <title>RoboHermes | Skill-First Robot Self-Evolution</title>
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <header class="appbar">
+    <header class="topbar">
       <a class="brand" href="#overview" aria-label="RoboHermes overview">
         <span class="brand-mark">RH</span>
         <span>RoboHermes</span>
       </a>
-      <nav aria-label="Dashboard sections">
-        <a href="#overview">Overview</a>
+      <nav aria-label="Project sections">
         <a href="#architecture">Architecture</a>
-        <a href="#coverage">Coverage</a>
+        <a href="#simulations">Rollouts</a>
+        <a href="#experiments">Evidence</a>
+        <a href="#comparison">Context</a>
         <a href="#tasks">Tasks</a>
         <a href="#reproduce">Reproduce</a>
       </nav>
-      <div class="runtime-state"><span></span> Evidence replay</div>
+      <div class="evidence-state"><span></span> Native simulator verdicts</div>
     </header>
 
-    <main>
-      <section id="overview" class="overview band">
-        <div class="overview-copy">
-          <div class="eyebrow">LIBERO SHORT / 120 TASKS</div>
-          <h1>Adaptive task-level Pass@10</h1>
-          <p id="claim-boundary"></p>
+    <section id="overview" class="hero" aria-labelledby="hero-title">
+      <video class="hero-video" autoplay loop muted playsinline preload="auto" src="media/hero-libero-short.mp4"></video>
+      <div class="hero-shade" aria-hidden="true"></div>
+      <div class="hero-content">
+        <p class="hero-kicker">SKILL-FIRST EMBODIED AGENT / LIBERO</p>
+        <h1 id="hero-title">RoboHermes</h1>
+        <p class="hero-deck">Inspectable code skills, GPT-driven composition, and simulator-gated self-evolution from visible RGB-D evidence.</p>
+        <div class="hero-links" aria-label="Project resources">
+          <a href="https://github.com/nssmd/RoboHermes-LIBERO">GitHub</a>
+          <a href="#experiments">Experimental evidence</a>
+          <a href="#reproduce">Run the release</a>
         </div>
-        <div class="score-lockup" aria-label="Headline result">
-          <strong id="headline-score">--</strong>
-          <span id="headline-rate">--</span>
+        <div class="hero-results" aria-label="Headline results">
+          <span><strong id="hero-adaptive">95/120</strong>Adaptive development coverage</span>
+          <span><strong>67/130</strong>Strict Standard-130 Pass@10</span>
+          <span><strong>+7.5 pp</strong>Matched Code-on episode gain</span>
         </div>
-      </section>
+      </div>
+      <a class="scroll-cue" href="#architecture">Architecture first <span aria-hidden="true">↓</span></a>
+    </section>
 
-      <section class="metrics band" aria-label="Evaluation summary">
-        <article><span>Solved tasks</span><strong id="metric-solved">--</strong></article>
-        <article><span>Ordered rounds</span><strong id="metric-rounds">--</strong></article>
-        <article><span>Native success rows</span><strong id="metric-success">--</strong></article>
-        <article><span>Result scope</span><strong>Cross-release</strong></article>
-      </section>
-
-      <section id="architecture" class="architecture band">
-        <div class="section-heading">
-          <div><span class="section-index">01</span><h2>Execution architecture</h2></div>
-          <p>Visible agent context remains separate from final simulator adjudication.</p>
+    <main class="article-layout">
+      <aside class="article-outline" aria-label="Article outline">
+        <strong>Contents</strong>
+        <nav>
+          <a href="#architecture">01 Architecture</a>
+          <a href="#simulations">02 Simulator rollouts</a>
+          <a href="#experiments">03 Experimental evidence</a>
+          <a href="#comparison">04 Competitive context</a>
+          <a href="#tasks">05 Task evidence</a>
+          <a href="#reproduce">06 Reproduce</a>
+        </nav>
+        <div class="outline-note">
+          <span>Result boundary</span>
+          <p>Adaptive, strict, matched-ablation, and ACT results remain separate.</p>
         </div>
-        <div class="architecture-canvas">
-          <div class="context-label">AGENT-VISIBLE CONTEXT</div>
-          <div class="agent-flow" aria-label="Planner Engineer Reviewer flow">
-            <article><span>ROLE 1</span><strong>Planner</strong><small>instruction + skill catalog</small></article>
-            <b aria-hidden="true">→</b>
-            <article><span>ROLE 2</span><strong>Engineer</strong><small>RGB-D + registered tools</small></article>
-            <b aria-hidden="true">→</b>
-            <article><span>ROLE 3</span><strong>Reviewer</strong><small>visible trace + proposal</small></article>
+      </aside>
+
+      <article class="article-shell">
+        <header class="project-intro">
+          <p class="section-label">PROJECT RELEASE / 18 AUG 2026</p>
+          <h2>A physical agent that turns verified experience into inspectable code.</h2>
+          <p>RoboHermes separates visible reasoning from execution authority. A Planner proposes a task strategy, an Engineer composes camera-grounded tools, and a Reviewer diagnoses the visible trace. Candidate code enters an isolated overlay and is retained only after a native simulator-success harness verdict.</p>
+          <div class="intro-facts">
+            <span><strong>35</strong>base tools</span>
+            <span><strong>120</strong>short tasks</span>
+            <span><strong>10</strong>ordered seeds</span>
+            <span><strong>0</strong>Agent-visible task checkers</span>
           </div>
-          <div class="execution-flow">
-            <div><span>SENSING</span><strong>Head RGB-D</strong></div>
-            <div><span>SKILLS</span><strong>Base + compound code</strong></div>
-            <div><span>CONTROL</span><strong>IK + joint trajectories</strong></div>
-            <div class="adaptive-node"><span>ADAPTATION</span><strong>Harness-gated overlay</strong></div>
-          </div>
-          <div class="host-boundary">
-            <span>HOST BOUNDARY / POST-EPISODE</span>
-            <strong>Host-only adjudicator</strong>
-            <small>Final predicate writes the immutable task verdict after the tool loop.</small>
-          </div>
-        </div>
-      </section>
+        </header>
 
-      <section id="coverage" class="analysis band">
-        <div class="section-heading">
-          <div><span class="section-index">02</span><h2>Coverage progression</h2></div>
-          <p>Unique tasks solved by ordered seed index.</p>
-        </div>
-        <div class="analysis-grid">
-          <figure>
-            <figcaption>Task-level Pass@k</figcaption>
-            <div id="curve-chart" class="chart" aria-label="Pass at k line chart"></div>
-          </figure>
-          <figure>
-            <figcaption>Suite coverage</figcaption>
-            <div id="suite-chart" class="suite-chart" aria-label="Coverage by suite"></div>
-          </figure>
-        </div>
-        <p id="usage-scope" class="scope-note"></p>
-      </section>
+        <section id="architecture" class="article-section architecture-section">
+          <div class="section-heading">
+            <div><span>01</span><h2>Execution architecture</h2></div>
+            <p>Agent-visible evidence and simulator truth occupy different trust domains.</p>
+          </div>
 
-      <section id="tasks" class="task-section band">
-        <div class="section-heading task-heading">
-          <div><span class="section-index">03</span><h2>Task evidence</h2></div>
-          <div class="table-tools">
-            <div class="segments" role="group" aria-label="Filter tasks">
-              <button type="button" data-filter="all" aria-pressed="true">All</button>
-              <button type="button" data-filter="solved" aria-pressed="false">Solved</button>
-              <button type="button" data-filter="open" aria-pressed="false">Open</button>
+          <div class="architecture-canvas">
+            <div class="boundary-title">AGENT-VISIBLE CONTEXT</div>
+            <div class="role-flow" aria-label="Planner Engineer Reviewer architecture">
+              <article>
+                <span>ROLE 1</span>
+                <strong>Planner</strong>
+                <p>Instruction, visible memory, and skill catalog</p>
+              </article>
+              <b aria-hidden="true">→</b>
+              <article class="role-primary">
+                <span>ROLE 2</span>
+                <strong>Engineer</strong>
+                <p>RGB-D observations and registered tools</p>
+              </article>
+              <b aria-hidden="true">→</b>
+              <article class="role-review">
+                <span>ROLE 3</span>
+                <strong>Reviewer</strong>
+                <p>Visible trace, failure diagnosis, and proposal</p>
+              </article>
             </div>
-            <label><span class="sr-only">Search tasks</span><input id="task-search" type="search" placeholder="Search task ID"></label>
-          </div>
-        </div>
-        <div class="table-frame">
-          <table>
-            <thead><tr><th>Task</th><th>Suite</th><th>Verdict</th><th>Seed</th><th>Release</th><th>Tokens</th><th>Elapsed</th><th>Evidence</th></tr></thead>
-            <tbody id="task-body"></tbody>
-          </table>
-        </div>
-        <div id="table-count" class="table-count"></div>
-      </section>
 
-      <section id="reproduce" class="reproduce band">
-        <div class="section-heading">
-          <div><span class="section-index">04</span><h2>Reproduction entrypoints</h2></div>
-          <p>Replay the report or start a new adaptive campaign.</p>
-        </div>
-        <div id="command-list" class="command-list"></div>
-      </section>
+            <div class="execution-stack">
+              <div><span>01 / SENSE</span><strong>Head and wrist RGB-D</strong></div>
+              <div><span>02 / COMPOSE</span><strong>Base + compound code skills</strong></div>
+              <div><span>03 / ACT</span><strong>IK and joint trajectories</strong></div>
+              <div><span>04 / ADAPT</span><strong>Harness-gated overlay</strong></div>
+            </div>
+
+            <div class="host-boundary">
+              <span>POST-EPISODE HOST BOUNDARY</span>
+              <strong>Host-only adjudicator</strong>
+              <p>The predicate is called after the visible tool loop. It never enters prompts, plans, skills, or role context.</p>
+            </div>
+          </div>
+
+          <div class="architecture-principles">
+            <div><strong>Propose</strong><p>Every code change is retained with its visible rationale and source episode.</p></div>
+            <div><strong>Gate</strong><p>Syntax, import, forbidden-input, focused tests, and changed-path simulation run before promotion.</p></div>
+            <div><strong>Promote</strong><p>Only native simulator success can update the campaign overlay; failed proposals remain inspectable.</p></div>
+          </div>
+        </section>
+
+        <section id="simulations" class="article-section simulation-section">
+          <div class="section-heading">
+            <div><span>02</span><h2>Simulator rollouts</h2></div>
+            <p>One representative video per task, paired with its execution trace.</p>
+          </div>
+          <p class="section-lede">These six clips are qualitative evidence attached to named experiments. Four come from the strict Standard-130 campaign, one from the sequential adaptive campaign, and one from the ACT hybrid case. Each ends in a native simulator-success verdict.</p>
+          <div id="video-grid" class="video-grid" aria-label="Verified rollout videos"></div>
+          <div class="evidence-key">
+            <span><i class="key-success"></i> tool completed</span>
+            <span><i class="key-recovery"></i> recovery branch</span>
+            <span><i class="key-verdict"></i> native simulator verdict</span>
+          </div>
+        </section>
+
+        <section id="experiments" class="article-section experiments-section">
+          <div class="section-heading">
+            <div><span>03</span><h2>Experimental evidence</h2></div>
+            <p>Four result tracks, four different questions.</p>
+          </div>
+
+          <div class="result-ledger" aria-label="Result overview">
+            <div><span>Adaptive coverage</span><strong>95 / 120</strong><small>cross-release</small></div>
+            <div><span>Strict Standard-130</span><strong>67 / 130</strong><small>Pass@10</small></div>
+            <div><span>Matched Code-on</span><strong>174 / 600</strong><small>episodes</small></div>
+            <div><span>ACT</span><strong>1 / 1</strong><small>matched case</small></div>
+          </div>
+
+          <article class="evidence-track" aria-labelledby="adaptive-title">
+            <header>
+              <div><span class="track-label supported">SUPPORTED DEVELOPMENT RESULT</span><h3 id="adaptive-title">Adaptive development coverage</h3></div>
+              <strong class="track-score">95/120</strong>
+            </header>
+            <p>The measured ten-round sequence grows from 32 to 83 solved tasks while releases evolve between rounds. Later residual releases add 12 disjoint native successes, producing the locked 95-task cross-release headline.</p>
+            <div class="track-grid">
+              <figure>
+                <figcaption>Measured sequential campaign</figcaption>
+                <div id="adaptive-chart" class="chart" aria-label="Adaptive task coverage by round"></div>
+              </figure>
+              <div class="track-details">
+                <div><span>Sequential endpoint</span><strong>83 / 120</strong></div>
+                <div><span>Metered tokens</span><strong>2.342B</strong></div>
+                <div><span>Active round wall time</span><strong>11.09h</strong></div>
+                <p>Claim boundary: the 95/120 result is cumulative development coverage, not a fixed-policy or single-release Pass@10.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="evidence-track" aria-labelledby="strict-title">
+            <header>
+              <div><span class="track-label strict">STRICT AGENT-ONLY TRACK</span><h3 id="strict-title">Strict Standard-130</h3></div>
+              <strong class="track-score">67/130</strong>
+            </header>
+            <p>All 130 tasks receive up to ten ordered seeds. No task checker, action-success latch, hidden pose, or policy checkpoint is visible to the Agent; 846 scheduled residual task-seed attempts have final simulator verdicts.</p>
+            <div class="track-grid">
+              <figure>
+                <figcaption>Task-level Pass@k</figcaption>
+                <div id="strict-chart" class="chart" aria-label="Strict Standard-130 Pass at k"></div>
+              </figure>
+              <div class="track-details">
+                <div><span>Task failures</span><strong>779</strong></div>
+                <div><span>Total tokens</span><strong>2.882B</strong></div>
+                <div><span>VLM calls</span><strong>43,076</strong></div>
+                <p>LIBERO-10 remains 0/10. This result is materially below OpenETA's checker-enabled Pass@5 and is reported without normalization.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="evidence-track" aria-labelledby="code-title">
+            <header>
+              <div><span class="track-label supported">MATCHED FIVE-SEED ABLATION</span><h3 id="code-title">Solidified code changes outcomes and cost</h3></div>
+              <strong class="track-score">+7.5 pp</strong>
+            </header>
+            <p>Code-on exposes the solidified <code>visual_pick_place</code> compound. Code-off keeps the same model, base tools, release, tasks, seeds, and budget but removes that compound.</p>
+            <div class="code-grid">
+              <figure>
+                <figcaption>Episode success, 600 pairs per arm</figcaption>
+                <div id="code-chart" class="bar-chart" aria-label="Code on versus code off episode success"></div>
+              </figure>
+              <div class="significance-block">
+                <div><span>McNemar exact</span><strong>p = 8.06e-5</strong></div>
+                <div><span>Task-cluster 95% CI</span><strong>+3.7 to +11.5 pp</strong></div>
+                <div><span>Task-level Pass@5</span><strong>71/120 vs 58/120</strong></div>
+              </div>
+            </div>
+            <div id="efficiency-grid" class="efficiency-grid" aria-label="Matched efficiency metrics"></div>
+            <p class="scope-note">Efficiency uses a separate 118-task matched seed-21 panel. It is not inferred from the 1,200-episode significance experiment.</p>
+          </article>
+
+          <article class="evidence-track" aria-labelledby="act-title">
+            <header>
+              <div><span class="track-label case">MATCHED CASE</span><h3 id="act-title">ACT data flywheel closes one simulator loop</h3></div>
+              <strong class="track-score">1 success</strong>
+            </header>
+            <div class="act-flow" aria-label="ACT hybrid execution flow">
+              <div><span>01</span><strong>Code-backed grasp</strong><small>visual source acquisition</small></div>
+              <b aria-hidden="true">→</b>
+              <div><span>02</span><strong>ACT transport</strong><small>304 corrective steps</small></div>
+              <b aria-hidden="true">→</b>
+              <div><span>03</span><strong>Code-backed placement</strong><small>native final verdict</small></div>
+            </div>
+            <p class="scope-note">This is one matched seed-3 success on <code>libero_spatial_swap/0</code>. It is not held-out or generalization evidence.</p>
+          </article>
+        </section>
+
+        <section id="comparison" class="article-section comparison-section">
+          <div class="section-heading">
+            <div><span>04</span><h2>Competitive context</h2></div>
+            <p>Search window: 18 July to 18 August 2026, plus foundational references.</p>
+          </div>
+          <div class="comparison-warning">
+            <strong>Protocols differ; this is not a shared leaderboard.</strong>
+            <p>Policy checkpoints, views, success feedback, horizons, task catalogs, and retry semantics differ across systems. Reported scores stay attached to their source protocol.</p>
+          </div>
+          <div class="comparison-frame">
+            <table class="comparison-table">
+              <thead><tr><th>System</th><th>Evaluation</th><th>Reported result</th><th>Execution contract</th><th>Comparability</th></tr></thead>
+              <tbody id="comparison-body"></tbody>
+            </table>
+          </div>
+
+          <div class="positioning-grid">
+            <section>
+              <h3>Where RoboHermes is behind</h3>
+              <ol id="gap-list"></ol>
+            </section>
+            <section>
+              <h3>What current evidence supports</h3>
+              <ol id="advantage-list"></ol>
+            </section>
+          </div>
+          <p class="source-line">Source-backed report: <a href="https://github.com/nssmd/RoboHermes-LIBERO/blob/main/docs/EXPERIMENTS_AND_COMPARISON.md">experiments and comparison</a></p>
+        </section>
+
+        <section id="tasks" class="article-section task-section">
+          <div class="section-heading task-heading">
+            <div><span>05</span><h2>Task evidence</h2></div>
+            <div class="table-tools">
+              <div class="segments" role="group" aria-label="Filter tasks">
+                <button type="button" data-filter="all" aria-pressed="true">All</button>
+                <button type="button" data-filter="solved" aria-pressed="false">Solved</button>
+                <button type="button" data-filter="open" aria-pressed="false">Open</button>
+              </div>
+              <label><span class="sr-only">Search tasks</span><input id="task-search" type="search" placeholder="Search task ID"></label>
+            </div>
+          </div>
+          <p class="section-lede">The compact bundle retains one canonical native-success row for each solved task. Its token and time values cover success evidence rows only, not total campaign spend.</p>
+          <div class="table-frame">
+            <table>
+              <thead><tr><th>Task</th><th>Suite</th><th>Verdict</th><th>Seed</th><th>Release</th><th>Tokens</th><th>Elapsed</th><th>Evidence</th></tr></thead>
+              <tbody id="task-body"></tbody>
+            </table>
+          </div>
+          <div id="table-count" class="table-count"></div>
+        </section>
+
+        <section id="reproduce" class="article-section reproduce-section">
+          <div class="section-heading">
+            <div><span>06</span><h2>Reproduce the release</h2></div>
+            <p>Replay the evidence on CPU or start a new simulator campaign.</p>
+          </div>
+          <div id="command-list" class="command-list"></div>
+          <div class="release-links">
+            <a href="https://github.com/nssmd/RoboHermes-LIBERO/blob/main/REPRODUCING.md">Protocol</a>
+            <a href="https://github.com/nssmd/RoboHermes-LIBERO/blob/main/PRESS_KIT_ZH.md">Chinese media draft</a>
+            <a href="https://github.com/nssmd/RoboHermes-LIBERO/blob/main/SOCIAL_COPY.md">X launch copy</a>
+          </div>
+        </section>
+      </article>
     </main>
 
     <footer>
-      <span>RoboHermes public evaluation console</span>
-      <span>Final success source: simulator predicate, post-episode only</span>
+      <span>RoboHermes public LIBERO release</span>
+      <span>Final task authority: post-episode native simulator verdict</span>
     </footer>
+
+    <dialog id="video-dialog" class="video-dialog">
+      <button id="video-close" class="dialog-close" type="button" aria-label="Close video evidence" title="Close">×</button>
+      <div class="dialog-media">
+        <video id="dialog-video" controls loop playsinline preload="metadata"></video>
+        <div class="dialog-caption">
+          <span id="dialog-scope"></span>
+          <h2 id="dialog-title"></h2>
+          <p id="dialog-meta"></p>
+        </div>
+      </div>
+      <div class="dialog-trace">
+        <header><span>EXECUTION TRACE</span><strong id="dialog-verdict"></strong></header>
+        <ol id="video-tool-chain"></ol>
+      </div>
+    </dialog>
+
     <script src="app.js" defer></script>
   </body>
 </html>
