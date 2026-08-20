@@ -215,7 +215,15 @@ def test_project_page_orders_evidence_sections_and_exposes_video_trace_dialog() 
     static = Path(__file__).resolve().parents[1] / "src/robohermes_libero/static"
     html = (static / "index.html").read_text(encoding="utf-8")
 
-    sections = ["architecture", "simulations", "experiments", "comparison", "tasks", "reproduce"]
+    sections = [
+        "architecture",
+        "simulations",
+        "libero-plus",
+        "experiments",
+        "comparison",
+        "tasks",
+        "reproduce",
+    ]
     offsets = [html.index(f'id="{section}"') for section in sections]
     assert offsets == sorted(offsets)
 
@@ -227,3 +235,21 @@ def test_project_page_orders_evidence_sections_and_exposes_video_trace_dialog() 
     assert "Adaptive development coverage" in html
     assert "Strict Standard-130" in html
     assert "Protocols differ; this is not a shared leaderboard." in html
+
+
+def test_project_page_exposes_enpire_style_libero_plus_evidence_surface() -> None:
+    static = Path(__file__).resolve().parents[1] / "src/robohermes_libero/static"
+    html = (static / "index.html").read_text(encoding="utf-8")
+
+    for element_id in (
+        "hero-plus-score",
+        "plus-fixed-score",
+        "plus-adaptive-score",
+        "plus-uplift-score",
+        "plus-stage-grid",
+        "plus-video-grid",
+    ):
+        assert f'id="{element_id}"' in html
+    assert "media/figures/libero-plus-final.svg" in html
+    assert "840 stratified perturbation identities" in html
+    assert "Adaptive Pass@2" in html
