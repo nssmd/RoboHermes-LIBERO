@@ -846,6 +846,282 @@
     ],
     "unmetered_vlm_calls": 0
   },
+  "media": {
+    "videos": [
+      {
+        "difficulty_level": null,
+        "duration_s": 3.1,
+        "experiment": "libero_plus",
+        "height": 512,
+        "id": "plus-camera-black-bowl-plate",
+        "perturbation": "Camera Viewpoints",
+        "poster": "media/posters/plus-camera-black-bowl-plate.jpg",
+        "release": "libero-clean-20260819-r160-flat-package-pca",
+        "seed": 0,
+        "stage": "r160_wave",
+        "subtitle": "Adaptive Pass@2 \u00b7 Camera Viewpoints",
+        "task": "libero_spatial/614",
+        "title": "Camera viewpoint \u00b7 bowl to plate",
+        "tool_chain": [
+          {
+            "ok": true,
+            "tool": "look"
+          },
+          {
+            "ok": true,
+            "tool": "find_by_pointing"
+          },
+          {
+            "ok": true,
+            "tool": "visual_pick_place"
+          },
+          {
+            "ok": true,
+            "tool": "is_holding"
+          },
+          {
+            "ok": true,
+            "tool": "look"
+          },
+          {
+            "ok": true,
+            "tool": "done"
+          },
+          {
+            "ok": true,
+            "tool": "final_simulator_verdict"
+          }
+        ],
+        "trace_scope": "exact_episode",
+        "verdict": "simulator_success",
+        "video": "media/videos/plus-camera-black-bowl-plate.mp4",
+        "width": 512
+      },
+      {
+        "difficulty_level": 5,
+        "duration_s": 2.8,
+        "experiment": "libero_plus",
+        "height": 512,
+        "id": "plus-light-ketchup-basket",
+        "perturbation": "Light Conditions",
+        "poster": "media/posters/plus-light-ketchup-basket.jpg",
+        "release": "libero-clean-20260819-r164-cream-cheese-relational",
+        "seed": 0,
+        "stage": "r164_canonical_pass2",
+        "subtitle": "Adaptive Pass@2 \u00b7 Light Conditions",
+        "task": "libero_object/2402",
+        "title": "Low light \u00b7 ketchup to basket",
+        "tool_chain": [
+          {
+            "ok": true,
+            "tool": "look"
+          },
+          {
+            "ok": true,
+            "tool": "find_by_pointing"
+          },
+          {
+            "ok": true,
+            "tool": "grasp_object"
+          },
+          {
+            "ok": true,
+            "tool": "verify_pick_complete"
+          },
+          {
+            "ok": true,
+            "tool": "look"
+          },
+          {
+            "ok": true,
+            "tool": "find_pixel"
+          },
+          {
+            "ok": false,
+            "tool": "place_object_in"
+          },
+          {
+            "ok": true,
+            "tool": "look"
+          },
+          {
+            "ok": true,
+            "tool": "is_holding"
+          },
+          {
+            "ok": true,
+            "tool": "find_by_pointing"
+          },
+          {
+            "ok": true,
+            "tool": "look"
+          },
+          {
+            "ok": true,
+            "tool": "find_by_pointing"
+          },
+          {
+            "ok": true,
+            "tool": "done"
+          },
+          {
+            "ok": true,
+            "tool": "final_simulator_verdict"
+          }
+        ],
+        "trace_scope": "exact_episode",
+        "verdict": "simulator_success",
+        "video": "media/videos/plus-light-ketchup-basket.mp4",
+        "width": 512
+      },
+      {
+        "difficulty_level": 5,
+        "duration_s": 4.7,
+        "experiment": "libero_plus",
+        "height": 512,
+        "id": "plus-layout-black-bowl-plate",
+        "perturbation": "Objects Layout",
+        "poster": "media/posters/plus-layout-black-bowl-plate.jpg",
+        "release": "libero-clean-20260819-r164-cream-cheese-relational",
+        "seed": 0,
+        "stage": "r164_canonical_pass2",
+        "subtitle": "Adaptive Pass@2 \u00b7 Objects Layout",
+        "task": "libero_spatial/1763",
+        "title": "Object layout \u00b7 bowl to plate",
+        "tool_chain": [
+          {
+            "ok": true,
+            "tool": "look"
+          },
+          {
+            "ok": false,
+            "tool": "visual_pick_place"
+          },
+          {
+            "ok": true,
+            "tool": "is_holding"
+          },
+          {
+            "ok": true,
+            "tool": "look"
+          },
+          {
+            "ok": false,
+            "tool": "find_pixel"
+          },
+          {
+            "ok": true,
+            "tool": "find_by_pointing"
+          },
+          {
+            "ok": false,
+            "tool": "place_on_surface"
+          },
+          {
+            "ok": true,
+            "tool": "home"
+          },
+          {
+            "ok": true,
+            "tool": "look"
+          },
+          {
+            "ok": true,
+            "tool": "verify_pick_complete"
+          },
+          {
+            "ok": true,
+            "tool": "find_by_pointing"
+          },
+          {
+            "ok": true,
+            "tool": "unproject_pixel"
+          },
+          {
+            "ok": false,
+            "tool": "place_held_at_target_servo"
+          },
+          {
+            "ok": true,
+            "tool": "place_held_at_target_servo"
+          },
+          {
+            "ok": true,
+            "tool": "look"
+          },
+          {
+            "ok": true,
+            "tool": "is_holding"
+          },
+          {
+            "ok": true,
+            "tool": "find_by_pointing"
+          },
+          {
+            "ok": true,
+            "tool": "done"
+          },
+          {
+            "ok": true,
+            "tool": "final_simulator_verdict"
+          }
+        ],
+        "trace_scope": "exact_episode",
+        "verdict": "simulator_success",
+        "video": "media/videos/plus-layout-black-bowl-plate.mp4",
+        "width": 512
+      },
+      {
+        "difficulty_level": 5,
+        "duration_s": 4.1,
+        "experiment": "libero_plus",
+        "height": 512,
+        "id": "plus-init-black-bowl-plate",
+        "perturbation": "Robot Initial States",
+        "poster": "media/posters/plus-init-black-bowl-plate.jpg",
+        "release": "libero-clean-20260819-r164-cream-cheese-relational",
+        "seed": 0,
+        "stage": "r164_canonical_pass2",
+        "subtitle": "Adaptive Pass@2 \u00b7 Robot Initial States",
+        "task": "libero_spatial/587",
+        "title": "Robot initial state \u00b7 bowl to plate",
+        "tool_chain": [
+          {
+            "ok": false,
+            "tool": "visual_pick_place"
+          },
+          {
+            "ok": true,
+            "tool": "place_on_surface"
+          },
+          {
+            "ok": true,
+            "tool": "look"
+          },
+          {
+            "ok": true,
+            "tool": "is_holding"
+          },
+          {
+            "ok": true,
+            "tool": "find_by_pointing"
+          },
+          {
+            "ok": true,
+            "tool": "done"
+          },
+          {
+            "ok": true,
+            "tool": "final_simulator_verdict"
+          }
+        ],
+        "trace_scope": "exact_episode",
+        "verdict": "simulator_success",
+        "video": "media/videos/plus-init-black-bowl-plate.mp4",
+        "width": 512
+      }
+    ]
+  },
   "panel": {
     "categories": 7,
     "identities": 840,

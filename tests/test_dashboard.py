@@ -182,6 +182,35 @@ def test_static_preview_packages_verified_publication_media(tmp_path: Path) -> N
     assert "/data" + "/yijia" not in payload_text
 
 
+def test_static_preview_packages_four_libero_plus_success_videos(tmp_path: Path) -> None:
+    output = build_static_preview(tmp_path / "site")
+    plus = build_dashboard_payload()["publication"]["experiments"]["libero_plus"]
+    videos = plus["media"]["videos"]
+
+    assert len(videos) == 4
+    assert len({video["task"] for video in videos}) == 4
+    assert {video["perturbation"] for video in videos} == {
+        "Camera Viewpoints",
+        "Light Conditions",
+        "Objects Layout",
+        "Robot Initial States",
+    }
+    assert {video["verdict"] for video in videos} == {"simulator_success"}
+    assert {video["experiment"] for video in videos} == {"libero_plus"}
+    assert all(video["tool_chain"] for video in videos)
+    assert all(
+        video["tool_chain"][-1]
+        == {"tool": "final_simulator_verdict", "ok": True}
+        for video in videos
+    )
+
+    for video in videos:
+        for field in ("video", "poster"):
+            path = output / video[field]
+            assert path.is_file(), path
+            assert path.stat().st_size > 1_000, path
+
+
 def test_project_page_orders_evidence_sections_and_exposes_video_trace_dialog() -> None:
     static = Path(__file__).resolve().parents[1] / "src/robohermes_libero/static"
     html = (static / "index.html").read_text(encoding="utf-8")
