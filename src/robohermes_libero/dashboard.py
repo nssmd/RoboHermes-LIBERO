@@ -23,14 +23,22 @@ def _default_manifest() -> Path:
     return default_manifest_path()
 
 
-def _publication_path() -> Path:
-    source_path = _repo_root() / "evidence" / "publication-v1" / "experiments.json"
+def _publication_path(name: str = "experiments.json") -> Path:
+    source_path = _repo_root() / "evidence" / "publication-v1" / name
     if source_path.is_file():
         return source_path
     packaged = importlib.resources.files("robohermes_libero").joinpath(
-        "evidence/publication-v1/experiments.json"
+        f"evidence/publication-v1/{name}"
     )
     return Path(str(packaged))
+
+
+def _load_publication() -> dict:
+    publication = json.loads(_publication_path().read_text(encoding="utf-8"))
+    publication["experiments"]["libero_plus"] = json.loads(
+        _publication_path("libero_plus_final.json").read_text(encoding="utf-8")
+    )
+    return publication
 
 
 def _read_jsonl(path: Path) -> list[dict]:
@@ -97,7 +105,7 @@ def build_dashboard_payload(result_path: Path | None = None) -> dict:
         "product": "RoboHermes",
         "benchmark": "LIBERO Short 120",
         "result": result,
-        "publication": json.loads(_publication_path().read_text(encoding="utf-8")),
+        "publication": _load_publication(),
         "tasks": tasks,
         "commands": {
             "setup": "./setup.sh",

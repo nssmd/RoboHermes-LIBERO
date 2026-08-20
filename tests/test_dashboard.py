@@ -58,6 +58,76 @@ def test_dashboard_includes_locked_publication_experiment_matrix() -> None:
     assert act["claim_scope"] == "matched_success_case_not_generalization"
 
 
+def test_dashboard_includes_final_libero_plus_adaptive_result() -> None:
+    plus = build_dashboard_payload()["publication"]["experiments"]["libero_plus"]
+
+    assert plus["schema"] == "robohermes.libero_plus_adaptive_final.v1"
+    assert plus["status"] == "final"
+    assert plus["panel"] == {
+        "identities": 840,
+        "categories": 7,
+        "suites": 3,
+        "seed": 0,
+        "source_commit": "4976dc30028e805ff8094b55501d532c48fec182",
+    }
+    assert plus["fixed"]["success"] == 261
+    assert plus["fixed"]["failure"] == 579
+    assert plus["fixed"]["rate"] == 261 / 840
+    assert plus["adaptive"]["success"] == 398
+    assert plus["adaptive"]["failure"] == 442
+    assert plus["adaptive"]["rate"] == 398 / 840
+    assert plus["uplift"]["successes"] == 137
+    assert plus["uplift"]["percentage_points"] == 100 * 137 / 840
+    assert [row["new_successes"] for row in plus["stages"]] == [15, 104, 6, 12]
+    assert plus["adaptive"]["efficiency"]["total_tokens"] == 1_473_552_635
+    assert plus["adaptive"]["efficiency"]["unmetered_vlm_calls"] == 0
+
+    assert [row["name"] for row in plus["by_category"]] == [
+        "Background Textures",
+        "Camera Viewpoints",
+        "Language Instructions",
+        "Light Conditions",
+        "Objects Layout",
+        "Robot Initial States",
+        "Sensor Noise",
+    ]
+    assert [row["total"] for row in plus["by_category"]] == [120] * 7
+    assert [row["adaptive_success"] for row in plus["by_category"]] == [
+        67,
+        54,
+        70,
+        65,
+        52,
+        66,
+        24,
+    ]
+    assert [row["name"] for row in plus["by_suite"]] == [
+        "libero_spatial",
+        "libero_object",
+        "libero_goal",
+    ]
+    assert [row["adaptive_success"] for row in plus["by_suite"]] == [140, 169, 89]
+    assert len(plus["fixed_success_task_keys"]) == 261
+    assert len(plus["adaptive_success_task_keys"]) == 398
+    assert set(plus["fixed_success_task_keys"]) <= set(plus["adaptive_success_task_keys"])
+    assert plus["integrity"] == {
+        "adaptive_pass2_infrastructure_records": 0,
+        "adaptive_pass2_terminal_identities": 68,
+        "check_task_visible": False,
+        "checkpoint_or_policy": False,
+        "completion_latch": False,
+        "controller": "JOINT_POSITION",
+        "final_simulator_verdict_only": True,
+        "fixed_terminal_identities": 840,
+        "hidden_ground_truth_visible": False,
+        "osc": False,
+        "reasoning_effort": "medium",
+        "requested_model": "responses/gpt-5.6-sol",
+        "served_models": ["gpt-5.6-sol"],
+        "unmetered_vlm_calls": 0,
+    }
+
+
 def test_publication_sources_cover_competitive_reference_set() -> None:
     sources = build_dashboard_payload()["publication"]["sources"]
     urls = {source["url"] for source in sources}
