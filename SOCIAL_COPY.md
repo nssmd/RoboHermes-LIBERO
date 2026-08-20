@@ -10,11 +10,11 @@ GitHub: https://github.com/nssmd/RoboHermes-LIBERO
 
 ## X single post, Chinese
 
-RoboHermes LIBERO 已开源：让 GPT 组合可检查的机器人代码技能，并由仿真器决定经验能否进入下一轮。跨 release 覆盖 95/120；matched Code-on/off 为 29.0% vs 21.5%，中位 token 降低 29.4%。严格结果、视频 trace 和局限都在项目页。https://nssmd.github.io/RoboHermes-LIBERO/
+RoboHermes LIBERO 已开源：在 840 个 LIBERO-Plus 扰动 identity 上，adaptive Pass@2 从 fixed 261/840 提高到 398/840（+16.3 pp）。另有 short 跨 release 覆盖 95/120、matched Code-on/off 29.0% vs 21.5% 和完整视频 trace。https://nssmd.github.io/RoboHermes-LIBERO/
 
 ## X single post, English
 
-RoboHermes LIBERO is open: inspectable robot code skills, GPT composition, and simulator-gated evolution. Adaptive coverage reaches 95/120; matched Code-on/off is 29.0% vs 21.5% with 29.4% lower median tokens. Protocols and limits: https://nssmd.github.io/RoboHermes-LIBERO/
+RoboHermes LIBERO is open. On 840 stratified LIBERO-Plus identities, adaptive Pass@2 reaches 398/840 vs 261/840 fixed (+16.3 pp). The release also includes 95/120 short development coverage, matched Code-on/off, cost accounting, and trace-backed videos. https://nssmd.github.io/RoboHermes-LIBERO/
 
 ## X thread, Chinese
 
@@ -32,7 +32,7 @@ RoboHermes LIBERO is open: inspectable robot code skills, GPT composition, and s
 
 ### 3/7
 
-Adaptive headline 是 95/120，但必须说清楚：这是多个 release 的累计 development coverage，不是固定方法 Pass@10。可完整计量的十轮顺序实验是 32 -> 45 -> 52 -> 66 -> 71 -> 76 -> 81 -> 82 -> 82 -> 83，消耗 2.342B tokens、11.09h active wall time。
+完整 LIBERO-Plus 面板有 840 个 identity，覆盖 7 类扰动与 3 个 short suite。Fixed 是 261/840；adaptive Pass@2 是 398/840，提升 137 个 identity（+16.3 pp），使用 1.474B metered tokens、16.35h active wall。它是跨 release development result，不是 fixed-policy score。
 
 配图：Adaptive development coverage chart。
 
@@ -56,7 +56,7 @@ ACT 目前只有一个完整 matched case：code-backed grasp -> 304-step ACT co
 
 ### 7/7
 
-接下来缺的东西很具体：LIBERO-Plus 扰动矩阵、adaptive holdout promotion、完整失败/token ledger、policy-as-skill ablation，以及有固定 denominator 的 real-robot panel。当前版本不宣称超过 RoboHarness 或 OpenETA，只公开已经有证据支持的部分。
+接下来缺的东西很具体：adaptive holdout promotion、最终 fixed-release Plus 对照、policy-as-skill ablation，以及有固定 denominator 的 real-robot panel。当前版本不宣称超过 RoboHarness 或 OpenETA，只公开已经有证据支持的部分。
 
 项目页：https://nssmd.github.io/RoboHermes-LIBERO/
 
@@ -74,7 +74,7 @@ Planner, Engineer, and Reviewer see RGB-D, proprioception, tools, and visible tr
 
 ### 3/6
 
-Adaptive development coverage is 95/120 across evolving releases. The measured 10-round sequence is 32 -> 83 tasks, using 2.342B metered tokens and 11.09 active hours. The headline is cumulative coverage, not fixed-method Pass@10.
+The final LIBERO-Plus panel has 840 identities across seven perturbation families. Adaptive Pass@2 reaches 398/840 vs 261/840 fixed, +137 identities and +16.3 pp, using 1.474B metered tokens and 16.35 active hours. This is cross-release development coverage, not a fixed-policy score.
 
 ### 4/6
 
@@ -86,7 +86,7 @@ The strict no-checker/no-latch Standard-130 result is 67/130 Pass@10. ACT has on
 
 ### 6/6
 
-The release includes one-command setup, 120-task replay, six decoded success videos with tool chains, protocol-aware RoboHarness/OpenETA context, and explicit gaps. Project: https://nssmd.github.io/RoboHermes-LIBERO/
+The release includes one-command setup, 120-task replay, ten decoded success videos with tool chains, final LIBERO-Plus aggregates, protocol-aware RoboHarness/OpenETA context, and explicit gaps. Project: https://nssmd.github.io/RoboHermes-LIBERO/
 
 ## Video captions and alt text
 
@@ -129,7 +129,8 @@ Alt text: A short LIBERO simulation video shows a robot carrying a black bowl ac
 ## Suggested publication order
 
 1. Post the single English or Chinese announcement with the four-panel hero.
-2. Publish the thread with architecture, adaptive curve, matched Code-on/off, strict result, and ACT video in that order.
+2. Publish the thread with architecture, LIBERO-Plus figure, matched Code-on/off, strict result, and ACT video in that order.
 3. Pin a reply containing the GitHub reproduction command and the experiment-comparison report.
 4. Use “adaptive development coverage” wherever `95/120` appears.
 5. Use “matched case” wherever the ACT success appears.
+6. Use “adaptive Pass@2 development result” wherever `398/840` appears.

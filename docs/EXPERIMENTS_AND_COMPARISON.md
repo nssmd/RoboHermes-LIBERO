@@ -1,23 +1,37 @@
 # RoboHermes 实验盘点与竞品对比
 
-更新日期：2026-08-18
-检索窗口：2026-07-18 至 2026-08-18；为解释方法脉络，另纳入 2026 年 3 月的第一篇 RoboHarness 和 2026 年 6 月的 ENPIRE。
+更新日期：2026-08-20
+检索窗口：2026-07-20 至 2026-08-20；为解释方法脉络，另纳入 2026 年 3 月的第一篇 RoboHarness 和 2026 年 6 月的 ENPIRE。
 
 ## 结论摘要
 
-RoboHermes 当前最扎实的结论不是“在同一榜单上超过 RoboHarness 或 OpenETA”，而是下面三点：
+RoboHermes 当前最扎实的结论不是“在同一榜单上超过 RoboHarness 或 OpenETA”，而是下面四点：
 
-1. 在覆盖全部 120 个 LIBERO short tasks 的持续开发过程中，Native simulator success 覆盖从顺序实验的 Pass@1 `32/120` 增长到 Pass@10 `83/120`，后续 residual releases 将跨版本累计覆盖锁定为 `95/120`。
-2. 在 120 个任务、5 个匹配 seed、每组 600 个 task-seed episode 的 Code-on/off 实验中，固化后的代码技能把 episode success 从 `129/600` 提高到 `174/600`，提升 `7.5` 个百分点。McNemar 精确检验 `p=8.06e-5`，task-cluster bootstrap 95% CI 为 `+3.7` 至 `+11.5` 个百分点。
-3. 在独立的 118-task 匹配效率面板中，Code-on 的中位 episode token 为 `2.58M`，Code-off 为 `3.65M`，降低 `29.4%`；中位 wall time 从 `845s` 降至 `701s`。这支持“成功经验转成代码后，可减少重复 VLM 推理”的机制结论。
+1. 在 840 个分层 LIBERO-Plus identity 上，fixed single-attempt 为 `261/840`，adaptive Pass@2 为 `398/840`，增加 137 个成功 identity，即 `+16.3` 个百分点。七类扰动与三套 short suite 均有完整 final simulator verdict。
+2. 在覆盖全部 120 个 LIBERO short tasks 的持续开发过程中，Native simulator success 覆盖从顺序实验的 Pass@1 `32/120` 增长到 Pass@10 `83/120`，后续 residual releases 将跨版本累计覆盖锁定为 `95/120`。
+3. 在 120 个任务、5 个匹配 seed、每组 600 个 task-seed episode 的 Code-on/off 实验中，固化后的代码技能把 episode success 从 `129/600` 提高到 `174/600`，提升 `7.5` 个百分点。McNemar 精确检验 `p=8.06e-5`，task-cluster bootstrap 95% CI 为 `+3.7` 至 `+11.5` 个百分点。
+4. 在独立的 118-task 匹配效率面板中，Code-on 的中位 episode token 为 `2.58M`，Code-off 为 `3.65M`，降低 `29.4%`；中位 wall time 从 `845s` 降至 `701s`。这支持“成功经验转成代码后，可减少重复 VLM 推理”的机制结论。
 
-当前最大的缺口同样明确：没有正式 real-robot task-rate，没有与 LIBERO-Plus 对齐的 OOD 扰动矩阵，没有异构 policy handoff 实验；`95/120` 还是跨 release 的 adaptive development coverage，而不是单一 release 的常规 Pass@10。
+当前最大的缺口同样明确：没有正式 real-robot task-rate，没有预注册 adaptive train/holdout promotion，也没有异构 policy handoff 实验。LIBERO-Plus `398/840` 与 short `95/120` 都是跨 release 的 adaptive development coverage，而不是单一固定 release 的常规成功率。
 
 These protocols are not a shared leaderboard.
 
 ## 1. 目前跑了哪些实验
 
-### 1.1 Adaptive task-level Pass@10
+### 1.1 LIBERO-Plus 分层扰动面板
+
+该面板包含 840 个 identity：七类官方扰动各 120 个，Spatial、Object、Goal 三套 short suite 各 280 个。每个 identity 使用 seed 0；fixed arm 只有一次尝试，adaptive arm 只对选定 fixed failures 启用后续审核 release。成功仅取最终 simulator verdict。
+
+| 指标 | Fixed | Adaptive |
+|---|---:|---:|
+| Success | `261/840 = 31.1%` | `398/840 = 47.4%` |
+| Failure | `579` | `442` |
+| 增益 | - | `+137 identities / +16.3 pp` |
+| Agent-visible checker/latch | 否 | 否 |
+
+四个 adaptive stage 分别新增 `15, 104, 6, 12` 个成功 identity。所有 adaptive 有效尝试累计 `1,473,552,635` metered tokens，active wall time `16.35h`，unmetered VLM calls 为 0。最大类别增益来自 Language Instructions（`+21.7 pp`），最小来自 Sensor Noise（`+5.8 pp`）。这说明自适应 release 在完整扰动面板上带来广泛增益，但不等价于固定 policy 或 held-out generalization。
+
+### 1.2 Adaptive task-level Pass@10
 
 | 项目 | 数值 | 能说明什么 | 不能说明什么 |
 |---|---:|---|---|
@@ -29,7 +43,7 @@ These protocols are not a shared leaderboard.
 
 这 95 个任务由 67 个 strict Standard-130 short successes 和 28 个不重叠的 adaptive residual successes 构成。公开 evidence bundle 每个成功任务保留一条 canonical native-success row，可以精确 replay `95/120`，但不包含所有失败和基础设施记录，因此不能用它估算完整 campaign 成本。
 
-### 1.2 十轮顺序自进化实验
+### 1.3 十轮顺序自进化实验
 
 顺序曲线为：
 
@@ -50,7 +64,7 @@ Pass@10 83/120
 
 这条曲线支持“覆盖任务数随持续试验和代码固化增加”。它没有证明每一轮单位 token 的边际收益单调增加，也没有把后续 12 个 residual successes 伪接到原来的十轮横轴上。
 
-### 1.3 Strict Standard-130 Pass@10
+### 1.4 Strict Standard-130 Pass@10
 
 该协议覆盖 130 个任务，包括 Spatial、Object、Goal、LIBERO-10 和 LIBERO-90。Agent 看不到 `check_task`、success latch、object pose 或 policy checkpoint；成功只来自工具循环结束后的 final simulator verdict。
 
@@ -66,7 +80,7 @@ Pass@10 83/120
 
 Suite 结果为 Spatial `9/10`、Object `10/10`、Goal `7/10`、LIBERO-10 `0/10`、LIBERO-90 `41/90`。LIBERO-10 的 `0/10` 是当前系统的硬缺口，不能被 adaptive headline 遮住。
 
-### 1.4 Matched Code-on/off
+### 1.5 Matched Code-on/off
 
 “Code”在这里不是笼统的视觉固化。Code-on 暴露由 Round 1 成功轨迹固化并通过 canary 的 `visual_pick_place` compound；Code-off 保留相同的 base tools，但不暴露该 compound。两组使用相同 release、模型、medium reasoning、任务、seed 和预算。
 
@@ -91,13 +105,13 @@ Suite 结果为 Spatial `9/10`、Object `10/10`、Goal `7/10`、LIBERO-10 `0/10`
 
 成功显著性和效率不是同一个样本面板，网页和文稿均分开标注。
 
-### 1.5 ACT 数据飞轮
+### 1.6 ACT 数据飞轮
 
 ACT 当前有一个完整 matched case：`libero_spatial_swap/0 seed3`。流程是 code-backed grasp、ACT corrective transport `304` steps、code-backed placement，最终 native simulator verdict 为 success。
 
 它证明成功轨迹转数据、纠错采集、训练和 hybrid execution 可以闭环。它只有 `1/1` 个 matched trial，且不是 held-out，所以不能写成 ACT 的总体成功率或泛化指标。
 
-### 1.6 未纳入公开 headline 的实验
+### 1.7 未纳入公开 headline 的实验
 
 - ASPIRE targeted development 属于诊断和定点修复，不是完整 benchmark 结果。
 - 早期 RoboTwin 结果属于另一个平台，不能混入 LIBERO 排名。
@@ -165,6 +179,7 @@ ENPIRE 与 RoboHermes 的直接任务不同，但它提供了更成熟的“时�
 
 | 系统 | 核心执行能力 | 成功反馈是否给 Agent | 主要评测 | Real robot | 公开复现状态 |
 |---|---|---|---|---|---|
+| RoboHermes Plus adaptive | RGB-D code skills，审核 release，adaptive Pass@2 | 否；仅 episode 结束后 host verdict | LIBERO-Plus `398/840`，fixed `261/840` | 无正式指标 | final aggregate、分层、成本和 4 个 trace 视频公开 |
 | RoboHermes strict | RGB-D code skills，IK/joint trajectory，无 policy checkpoint | 否；仅 episode 结束后 host verdict | Standard-130 Pass@10 `67/130` | 无正式指标 | 代码、setup、compact evidence 已公开；完整 raw campaign 未公开 |
 | RoboHermes adaptive | 同上，可在 campaign overlay 中进化 | 否 | LIBERO short cross-release `95/120` | 不在本次 scope | compact replay 可复现；95 不是单 release rerun |
 | OpenETA for Codex | Multi-view point marking + Cartesian `move_to` | 是；`check_task` + terminal latch | 130-task Pass@5 `117/130` | interface-level only | 代码和 launcher 已公开 |
@@ -176,7 +191,7 @@ ENPIRE 与 RoboHermes 的直接任务不同，但它提供了更成熟的“时�
 
 ### 4.1 评测宽度
 
-7 月 RoboHarness 同时给出 original、七类 LIBERO-Plus perturbations、LoHo、500 custom tasks 和 135 real trials。RoboHermes 当前系统量化只覆盖 LIBERO short 和 Standard-130，扰动实验没有形成可发布的标准矩阵。
+7 月 RoboHarness 同时给出 original、七类 LIBERO-Plus perturbations、LoHo、500 custom tasks 和 135 real trials。RoboHermes 现在有 840-identity LIBERO-Plus 分层矩阵，但仍缺 LoHo 系统面板、custom-task 泛化和固定 denominator 的 real-robot trials。
 
 ### 4.2 Policy 组合与 handoff
 
@@ -192,7 +207,7 @@ RoboHermes 的 `95/120` 来自多个 release。别人可以 replay evidence，�
 
 ### 4.5 完整公开证据
 
-当前仓库公开 95 条成功 evidence rows 和 6 个精选视频，未公开全部失败、基础设施记录、95 个 canonical videos 和完整 token ledger。内部证据比公开 bundle 完整，但第三方无法独立审计所有 campaign spend 和 failure taxonomy。
+当前仓库公开 95 条 short success evidence rows、10 个精选视频和 LIBERO-Plus final aggregate/token ledger，仍未公开全部失败视频、全部基础设施记录和每个 raw prompt。内部证据比公开 bundle 完整，第三方仍不能独立审计所有 failure taxonomy。
 
 ### 4.6 标准评测基础设施
 
@@ -224,8 +239,8 @@ Strict track 的核心任务执行不需要 `pi0.5`、OpenVLA-OFT 或专用 poli
 
 按论文价值和可执行性排序：
 
-1. **标准扰动矩阵。** 对齐 LIBERO-Plus 的 robot state、language、layout、background、sensor、camera、light，使用固定 task-seed pairs。成功仍只取 post-hoc native verdict，不向 Agent 暴露 checker。
-2. **Adaptive holdout protocol。** 不关闭自进化，而是预注册 train tasks、candidate canary 和 held-out tasks；每次 overlay promotion 必须同时过 source success reproduction 和 held-out non-regression。
+1. **Adaptive holdout protocol。** 不关闭自进化，而是预注册 train tasks、candidate canary 和 held-out tasks；每次 overlay promotion 必须同时过 source success reproduction 和 held-out non-regression。
+2. **固定 release Plus 对照。** 在不继续改代码的条件下，对最终 release 跑一个完整 held-out Plus 面板，区分跨 release discovery coverage 与单版本 generalization。
 3. **完整 artifact release。** 发布 95 个 canonical success videos、全部失败/infra rows 的 sanitized index、完整 token/time totals 和 failure taxonomy。大文件可放 GitHub Release，不必塞进 wheel。
 4. **Policy-as-skill ablation。** 在不改现有 code-first baseline 的前提下，加入一个 VLA 和一个 TAMP adapter，做 code-only、single-policy、naive routing、capability-aware routing、handoff bridge 五组匹配实验。
 5. **Real-robot bounded panel。** 从 2 至 3 个可自动 reset 和自动判定的 pick/place tasks 开始，先报告固定 denominator、连续视频、安全停止和人工介入次数，不直接追求大而全。
@@ -235,6 +250,7 @@ Strict track 的核心任务执行不需要 `pi0.5`、OpenVLA-OFT 或专用 poli
 
 可以说：
 
+- 在 840 个分层 LIBERO-Plus identity 上，adaptive Pass@2 从 fixed `261/840` 提高到 `398/840`，增加 `16.3` 个百分点；这是跨 release development result。
 - RoboHermes 在持续迭代中取得 95/120 个 LIBERO short tasks 的跨 release native-success coverage。
 - 在 matched five-seed Code-on/off 实验中，固化代码技能把 episode success 提高 7.5 个百分点，并降低匹配面板的 token 和 wall time。
 - Strict Standard-130 在禁止 Agent-visible checker、success latch、hidden pose 和 policy checkpoint 的协议下取得 67/130 Pass@10。
@@ -243,7 +259,9 @@ Strict track 的核心任务执行不需要 `pi0.5`、OpenVLA-OFT 或专用 poli
 不能说：
 
 - RoboHermes 以 `95/120` 击败 OpenETA 或 RoboHarness。
+- RoboHermes 的 `398/840` 与 RoboHarness 的 `93.2%` 是同协议直接排名。
 - `95/120` 是最新单一 release 的常规 Pass@10。
+- `398/840` 是最终固定 release 的 held-out success rate。
 - ACT 已具备 held-out generalization。
 - 仿真结果证明 real-world deployment readiness 或 safety。
 

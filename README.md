@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img alt="59 tests passed" src="https://img.shields.io/badge/tests-59_passed-16845b">
+  <img alt="63 tests passed" src="https://img.shields.io/badge/tests-63_passed-16845b">
   <a href="LICENSE"><img alt="Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-1f6feb"></a>
   <img alt="Python 3.10-3.12" src="https://img.shields.io/badge/python-3.10--3.12-3776ab">
   <img alt="LIBERO short 120" src="https://img.shields.io/badge/LIBERO_short-120_tasks-16845b">
@@ -22,6 +22,7 @@ harness verdict.
 
 | Metric | Result | Scope |
 |---|---:|---|
+| **LIBERO-Plus adaptive Pass@2** | **398/840 (47.4%)** | 840 stratified identities; fixed 261/840; +16.3 pp across evolving releases |
 | **Adaptive task-level Pass@10** | **95/120 (79.2%)** | Cross-release adaptive development coverage |
 | Sequential adaptive campaign | 32/120 -> 83/120 | Ten evolving-release rounds; 2.342B tokens, 11.09 active hours |
 | Strict Standard-130 Pass@10 | 67/130 (51.5%) | No Agent-visible checker, latch, hidden pose, or policy checkpoint |
@@ -32,8 +33,15 @@ harness verdict.
 The adaptive breakdown is Spatial `9/10`, Object `10/10`, Goal `9/10`, and
 LIBERO-90 `67/90`. This headline is cumulative coverage across evolving
 releases. It is **not** a frozen-policy result, a single-release result, or
-conventional fixed-method Pass@10. Strict, adaptive, matched-ablation, and ACT
-results stay separate in the data and UI.
+conventional fixed-method Pass@10. LIBERO-Plus, strict, adaptive,
+matched-ablation, and ACT results stay separate in the data and UI.
+
+The final LIBERO-Plus panel covers seven perturbation categories and three
+short suites. Fixed single-attempt succeeds on `261/840`; adaptive Pass@2
+reaches `398/840`, adding 137 identities (`+16.3` percentage points). The
+adaptive stages consume `1.474B` metered tokens and `16.35h` active wall time.
+This is adaptive development coverage, not a fixed-policy score or a direct
+RoboHarness/OpenETA leaderboard comparison.
 
 ```bash
 ./robohermes results replay \
@@ -53,14 +61,18 @@ failed or infrastructure attempts.
 
 ## Videos And Publication Data
 
-The project page includes six decoded native-success videos: four exact
-Standard-130 episodes, one sequential-adaptive episode, and the ACT matched
-case. Every video opens with its task, seed, evidence scope, and ordered tool
-name/outcome chain. The four-panel hero contains only LIBERO short successes.
+The project page includes ten decoded native-success videos: four exact
+Standard-130 episodes, one sequential-adaptive episode, the ACT matched case,
+and four LIBERO-Plus perturbation successes. Every video opens with its task,
+seed, evidence scope, and ordered tool name/outcome chain. The hero contains
+only LIBERO simulator successes.
 
 Publication values are machine-readable in
 [`evidence/publication-v1/experiments.json`](evidence/publication-v1/experiments.json).
-The dashboard renders this file without maintaining a second statistics path.
+The final Plus object is
+[`evidence/publication-v1/libero_plus_final.json`](evidence/publication-v1/libero_plus_final.json).
+The dashboard packages both sources without maintaining a second statistics
+path.
 
 - [Experiment inventory and RoboHarness/OpenETA comparison](docs/EXPERIMENTS_AND_COMPARISON.md)
 - [Chinese media draft](PRESS_KIT_ZH.md)

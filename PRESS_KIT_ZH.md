@@ -19,6 +19,14 @@ RoboHermes 把一次任务拆成三个可见角色。Planner 根据指令和技�
 
 这个限制会让数字变低，却让结果更容易解释。一个动作函数返回 `ok`，只说明动作执行完了；夹爪看起来抓住物体，只说明当前证据支持继续；只有最后的 simulator verdict 才算任务成功。
 
+## 840 个 LIBERO-Plus 扰动 identity：从 31.1% 到 47.4%
+
+RoboHermes 新完成了一组覆盖七类官方扰动、三个 short suite 的 840-identity LIBERO-Plus 面板。Fixed single-attempt 成功 `261/840`（31.1%）；允许审核 release 对 fixed failures 做 adaptive Pass@2 后，成功达到 `398/840`（47.4%），净增 137 个 identity，即 `+16.3` 个百分点。
+
+七类扰动都使用相同的 final simulator verdict 口径。Language Instructions 增益最大，为 `+21.7 pp`；Sensor Noise 增益最小，为 `+5.8 pp`。Spatial、Object、Goal 三套 suite 分别提升 `+13.2`、`+20.7`、`+15.0` 个百分点。
+
+这次 adaptive campaign 的有效尝试累计使用 `1.474B` metered tokens，active wall time 为 `16.35h`。四个 release stage 分别新增 `15, 104, 6, 12` 个成功 identity。这个结果证明审核后的 code-backed adaptation 能在完整扰动面板上扩展覆盖；它仍是跨 release development result，不是固定 policy 或 held-out generalization。
+
 ## 从 32 个任务到 95 个任务
 
 RoboHermes 的 headline 是 Adaptive task-level Pass@10 `95/120`，其中 Spatial 为 `9/10`、Object 为 `10/10`、Goal 为 `9/10`、LIBERO-90 为 `67/90`。
@@ -57,7 +65,7 @@ RoboHermes 还跑了一条 Strict Standard-130 track。130 个任务各有最多
 
 RoboHermes 当前更强的是另一组证据。代码技能、三角色 runtime 和 evolution gate 已经公开；strict track 明确隔离 hidden ground truth；Code-on/off 有 1200 个有效 episode 的配对统计；token、VLM calls 和 wall time 都按匹配面板计量。
 
-下一步最值得补的不是继续在同一任务上刷 seed，而是对齐 LIBERO-Plus 扰动、建立 adaptive train/holdout promotion protocol、公开完整失败与 token ledger，并加入 policy-as-skill 和真实机器人小规模固定面板。
+下一步最值得补的不是继续在同一任务上刷 seed，而是建立 adaptive train/holdout promotion protocol、补一个不再改代码的最终 release Plus 对照，并加入 policy-as-skill 和真实机器人小规模固定面板。
 
 ## 开源内容
 
@@ -68,7 +76,7 @@ RoboHermes 当前更强的是另一组证据。代码技能、三角色 runtime 
 - 35 个 LIBERO base tools 和一个公开 compound skill；
 - adaptive 与 fixed 两种 campaign 入口；
 - 95-task compact evidence bundle；
-- 6 个可解码成功视频，每个视频附工具调用链；
+- 10 个可解码成功视频，每个视频附工具调用链；
 - 120-task dashboard、实验矩阵和竞品协议对比。
 
 最短复现路径：
@@ -86,6 +94,7 @@ cd RoboHermes-LIBERO
 
 | 结论 | 数值 | 必须附带的边界 |
 |---|---:|---|
+| LIBERO-Plus adaptive Pass@2 | `398/840 vs 261/840 fixed` | 跨 release 840-identity development result，不是 fixed-policy score |
 | Adaptive development coverage | `95/120` | 跨 release，不是 fixed-method Pass@10 |
 | Sequential adaptive campaign | `32/120 -> 83/120` | 十轮 evolving-release experiment |
 | Strict Standard-130 | `67/130 Pass@10` | Agent 看不到 checker、latch、hidden pose 或 policy checkpoint |

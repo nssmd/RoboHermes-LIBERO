@@ -484,13 +484,14 @@
   "positioning": {
     "gaps": [
       "No audited real-robot task-rate experiment in the public RoboHermes release.",
-      "No matched LIBERO-Plus or other standardized perturbation panel against current RoboHarness baselines.",
+      "No fixed-release or held-out LIBERO-Plus panel matched to current RoboHarness policy baselines; the 840-identity result is adaptive and cross-release.",
       "No heterogeneous trained-policy routing or learned handoff bridge comparable to the July RoboHarness system.",
       "The 95/120 headline is cross-release adaptive coverage, not a one-command single-release simulator reproduction.",
       "The compact public bundle does not yet publish every failed rollout or all 95 canonical success videos."
     ],
     "advantages": [
       "Inspectable code skills and simulator-gated online evolution are released rather than represented only by a project page.",
+      "A complete 840-identity LIBERO-Plus panel reports fixed and adaptive outcomes, all seven perturbation categories, metered tokens, active wall time, and final simulator verdicts.",
       "The strict track uses no VLA/policy checkpoint and keeps native task truth outside Planner, Engineer, Reviewer, skills, and prompts.",
       "Matched five-seed evidence isolates the effect of a solidified code-backed compound and reports paired uncertainty.",
       "Token, VLM-call, and wall-time efficiency are measured on a matched panel rather than inferred from success alone.",
