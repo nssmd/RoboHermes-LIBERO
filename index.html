@@ -6,6 +6,7 @@
     <meta name="color-scheme" content="light">
     <meta name="description" content="RoboHermes: inspectable robot skills, GPT composition, and simulator-gated self-evolution on LIBERO.">
     <title>RoboHermes | Skill-First Robot Self-Evolution</title>
+    <link rel="icon" href="data:,">
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
@@ -17,6 +18,7 @@
       <nav aria-label="Project sections">
         <a href="#architecture">Architecture</a>
         <a href="#simulations">Rollouts</a>
+        <a href="#libero-plus">LIBERO-Plus</a>
         <a href="#experiments">Evidence</a>
         <a href="#comparison">Context</a>
         <a href="#tasks">Tasks</a>
@@ -34,13 +36,14 @@
         <p class="hero-deck">Inspectable code skills, GPT-driven composition, and simulator-gated self-evolution from visible RGB-D evidence.</p>
         <div class="hero-links" aria-label="Project resources">
           <a href="https://github.com/nssmd/RoboHermes-LIBERO">GitHub</a>
-          <a href="#experiments">Experimental evidence</a>
+          <a href="#libero-plus">Final LIBERO-Plus evidence</a>
           <a href="#reproduce">Run the release</a>
         </div>
         <div class="hero-results" aria-label="Headline results">
+          <span><strong id="hero-plus-score">--</strong>LIBERO-Plus adaptive Pass@2</span>
+          <span><strong id="hero-plus-uplift">--</strong>Gain over fixed evaluation</span>
           <span><strong id="hero-adaptive">95/120</strong>Adaptive development coverage</span>
           <span><strong>67/130</strong>Strict Standard-130 Pass@10</span>
-          <span><strong>+7.5 pp</strong>Matched Code-on episode gain</span>
         </div>
       </div>
       <a class="scroll-cue" href="#architecture">Architecture first <span aria-hidden="true">↓</span></a>
@@ -52,10 +55,11 @@
         <nav>
           <a href="#architecture">01 Architecture</a>
           <a href="#simulations">02 Simulator rollouts</a>
-          <a href="#experiments">03 Experimental evidence</a>
-          <a href="#comparison">04 Competitive context</a>
-          <a href="#tasks">05 Task evidence</a>
-          <a href="#reproduce">06 Reproduce</a>
+          <a href="#libero-plus">03 LIBERO-Plus</a>
+          <a href="#experiments">04 Prior evidence</a>
+          <a href="#comparison">05 Competitive context</a>
+          <a href="#tasks">06 Task evidence</a>
+          <a href="#reproduce">07 Reproduce</a>
         </nav>
         <div class="outline-note">
           <span>Result boundary</span>
@@ -65,13 +69,13 @@
 
       <article class="article-shell">
         <header class="project-intro">
-          <p class="section-label">PROJECT RELEASE / 18 AUG 2026</p>
+          <p class="section-label">PROJECT RELEASE / 20 AUG 2026</p>
           <h2>A physical agent that turns verified experience into inspectable code.</h2>
           <p>RoboHermes separates visible reasoning from execution authority. A Planner proposes a task strategy, an Engineer composes camera-grounded tools, and a Reviewer diagnoses the visible trace. Candidate code enters an isolated overlay and is retained only after a native simulator-success harness verdict.</p>
           <div class="intro-facts">
             <span><strong>35</strong>base tools</span>
-            <span><strong>120</strong>short tasks</span>
-            <span><strong>10</strong>ordered seeds</span>
+            <span><strong>840</strong>Plus identities</span>
+            <span><strong>7</strong>perturbation families</span>
             <span><strong>0</strong>Agent-visible task checkers</span>
           </div>
         </header>
@@ -130,7 +134,7 @@
             <div><span>02</span><h2>Simulator rollouts</h2></div>
             <p>One representative video per task, paired with its execution trace.</p>
           </div>
-          <p class="section-lede">These six clips are qualitative evidence attached to named experiments. Four come from the strict Standard-130 campaign, one from the sequential adaptive campaign, and one from the ACT hybrid case. Each ends in a native simulator-success verdict.</p>
+          <p class="section-lede">These six clips are qualitative evidence attached to named experiments. Four additional LIBERO-Plus clips appear in the next section. Every clip maps to one task and ends in a native simulator-success verdict.</p>
           <div id="video-grid" class="video-grid" aria-label="Verified rollout videos"></div>
           <div class="evidence-key">
             <span><i class="key-success"></i> tool completed</span>
@@ -139,9 +143,58 @@
           </div>
         </section>
 
+        <section id="libero-plus" class="article-section plus-section">
+          <div class="section-heading">
+            <div><span>03</span><h2>LIBERO-Plus adaptive evaluation</h2></div>
+            <p>840 stratified perturbation identities, seven categories, three short suites, and final simulator verdicts only.</p>
+          </div>
+
+          <div class="plus-score-lockup">
+            <div class="plus-score-copy">
+              <span>FINAL / Adaptive Pass@2</span>
+              <h3>Verified experience recovers failures across the complete perturbation panel.</h3>
+              <p>The fixed arm receives one attempt per identity. Adaptive releases retry only selected fixed failures with reviewed code-backed changes. No task checker, completion latch, checkpoint, policy, object pose, or hidden predicate is visible to the Agent.</p>
+            </div>
+            <div class="plus-score-pair" aria-label="LIBERO-Plus final scores">
+              <div><span>Fixed</span><strong id="plus-fixed-score">--</strong><small id="plus-fixed-rate">--</small></div>
+              <div class="plus-adaptive"><span>Adaptive</span><strong id="plus-adaptive-score">--</strong><small id="plus-adaptive-rate">--</small></div>
+              <div class="plus-uplift"><span>Measured gain</span><strong id="plus-uplift-score">--</strong><small id="plus-uplift-identities">--</small></div>
+            </div>
+          </div>
+
+          <figure class="plus-figure">
+            <img src="media/figures/libero-plus-final.svg" alt="Fixed and adaptive LIBERO-Plus success, perturbation and suite breakdowns, and release-stage contribution" loading="eager">
+            <figcaption>Final 840-identity LIBERO-Plus panel. Fixed and Adaptive use the same selected identities; adaptive successes accumulate across reviewed release stages. Values are loaded from the public final evidence object.</figcaption>
+          </figure>
+
+          <div class="plus-cost-band" aria-label="LIBERO-Plus adaptive cost">
+            <div><span>Metered adaptive tokens</span><strong id="plus-token-cost">--</strong><small>all valid adaptive attempts</small></div>
+            <div><span>Active wall time</span><strong id="plus-active-wall">--</strong><small>union of active run intervals</small></div>
+            <div><span>Valid adaptive attempts</span><strong id="plus-attempt-count">--</strong><small>infrastructure excluded</small></div>
+            <div><span>Unmetered VLM calls</span><strong id="plus-unmetered">--</strong><small>Planner + Engineer + Reviewer</small></div>
+          </div>
+
+          <div class="plus-stage-heading">
+            <span>RELEASE CONTRIBUTION</span>
+            <p>Newly solved identities are de-duplicated against fixed and every earlier adaptive stage.</p>
+          </div>
+          <div id="plus-stage-grid" class="plus-stage-grid" aria-label="Adaptive release contribution"></div>
+
+          <div class="plus-video-heading">
+            <div><span>NATIVE SUCCESS ROLLOUTS</span><h3>Four perturbations, four exact traces.</h3></div>
+            <p>Each video opens its ordered, argument-free registered tool chain.</p>
+          </div>
+          <div id="plus-video-grid" class="video-grid plus-video-grid" aria-label="LIBERO-Plus success videos"></div>
+
+          <aside class="plus-boundary">
+            <strong>Claim boundary</strong>
+            <p>This is identity-level adaptive Pass@2 on a stratified LIBERO-Plus panel. It is not a fixed-policy score and is not directly comparable with checkpoint-based or checker-enabled RoboHarness/OpenETA protocols.</p>
+          </aside>
+        </section>
+
         <section id="experiments" class="article-section experiments-section">
           <div class="section-heading">
-            <div><span>03</span><h2>Experimental evidence</h2></div>
+            <div><span>04</span><h2>Prior experimental evidence</h2></div>
             <p>Four result tracks, four different questions.</p>
           </div>
 
@@ -231,8 +284,8 @@
 
         <section id="comparison" class="article-section comparison-section">
           <div class="section-heading">
-            <div><span>04</span><h2>Competitive context</h2></div>
-            <p>Search window: 18 July to 18 August 2026, plus foundational references.</p>
+            <div><span>05</span><h2>Competitive context</h2></div>
+            <p>Search window: 20 July to 20 August 2026, plus foundational references.</p>
           </div>
           <div class="comparison-warning">
             <strong>Protocols differ; this is not a shared leaderboard.</strong>
@@ -260,7 +313,7 @@
 
         <section id="tasks" class="article-section task-section">
           <div class="section-heading task-heading">
-            <div><span>05</span><h2>Task evidence</h2></div>
+            <div><span>06</span><h2>Task evidence</h2></div>
             <div class="table-tools">
               <div class="segments" role="group" aria-label="Filter tasks">
                 <button type="button" data-filter="all" aria-pressed="true">All</button>
@@ -282,7 +335,7 @@
 
         <section id="reproduce" class="article-section reproduce-section">
           <div class="section-heading">
-            <div><span>06</span><h2>Reproduce the release</h2></div>
+            <div><span>07</span><h2>Reproduce the release</h2></div>
             <p>Replay the evidence on CPU or start a new simulator campaign.</p>
           </div>
           <div id="command-list" class="command-list"></div>

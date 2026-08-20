@@ -3,6 +3,9 @@ const state = { data: null, filter: "all", query: "", videos: new Map() };
 const fmtInt = value => value == null ? "-" : new Intl.NumberFormat("en-US").format(value);
 const fmtTime = value => value == null ? "-" : value >= 60 ? `${(value / 60).toFixed(1)}m` : `${Math.round(value)}s`;
 const fmtMillion = value => `${(value / 1_000_000).toFixed(2)}M`;
+const fmtBillion = value => `${(value / 1_000_000_000).toFixed(3)}B`;
+const fmtHours = value => `${(value / 3600).toFixed(2)}h`;
+const fmtPercent = value => `${(100 * value).toFixed(1)}%`;
 const shortRelease = value => !value ? "-" : value.replace("libero-clean-", "");
 const escapeHtml = value => String(value ?? "").replace(/[&<>'"]/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[char]);
 
@@ -24,9 +27,8 @@ function renderLineChart(elementId, values, total, label, strict = false) {
     </svg>`;
 }
 
-function renderVideos(media) {
-  state.videos = new Map(media.videos.map(video => [video.id, video]));
-  document.getElementById("video-grid").innerHTML = media.videos.map(video => `
+function videoCards(videos) {
+  return videos.map(video => `
     <article class="video-card">
       <div class="video-surface">
         <video autoplay loop muted playsinline preload="metadata" poster="${escapeHtml(video.poster)}" src="${escapeHtml(video.video)}"></video>
@@ -38,6 +40,14 @@ function renderVideos(media) {
         <p><strong>${escapeHtml(video.task)}</strong><span>seed ${video.seed} · ${video.duration_s.toFixed(1)}s</span></p>
       </div>
     </article>`).join("");
+}
+
+function renderVideos(media, plusMedia) {
+  const plusVideos = plusMedia?.videos ?? [];
+  const videos = [...media.videos, ...plusVideos];
+  state.videos = new Map(videos.map(video => [video.id, video]));
+  document.getElementById("video-grid").innerHTML = videoCards(media.videos);
+  document.getElementById("plus-video-grid").innerHTML = videoCards(plusVideos);
   document.querySelectorAll("[data-video-id]").forEach(button => {
     button.addEventListener("click", () => openVideo(state.videos.get(button.dataset.videoId)));
   });
@@ -49,7 +59,8 @@ function openVideo(video) {
   const player = document.getElementById("dialog-video");
   document.getElementById("dialog-scope").textContent = video.subtitle;
   document.getElementById("dialog-title").textContent = video.title;
-  document.getElementById("dialog-meta").textContent = `${video.task} · seed ${video.seed} · ${video.trace_scope.replaceAll("_", " ")}`;
+  const perturbation = video.perturbation ? ` · ${video.perturbation}` : "";
+  document.getElementById("dialog-meta").textContent = `${video.task} · seed ${video.seed}${perturbation} · ${video.trace_scope.replaceAll("_", " ")}`;
   document.getElementById("dialog-verdict").textContent = "SIMULATOR SUCCESS";
   document.getElementById("video-tool-chain").innerHTML = video.tool_chain.map(step => {
     const verdict = step.tool === "final_simulator_verdict";
@@ -60,6 +71,42 @@ function openVideo(video) {
   player.load();
   dialog.showModal();
   player.play().catch(() => {});
+}
+
+function renderLiberoPlus(plus) {
+  const total = plus.panel.identities;
+  document.getElementById("hero-plus-score").textContent = `${plus.adaptive.success}/${total}`;
+  document.getElementById("hero-plus-uplift").textContent = `+${plus.uplift.percentage_points.toFixed(1)} pp`;
+  document.getElementById("plus-fixed-score").textContent = `${plus.fixed.success}/${total}`;
+  document.getElementById("plus-fixed-rate").textContent = fmtPercent(plus.fixed.rate);
+  document.getElementById("plus-adaptive-score").textContent = `${plus.adaptive.success}/${total}`;
+  document.getElementById("plus-adaptive-rate").textContent = fmtPercent(plus.adaptive.rate);
+  document.getElementById("plus-uplift-score").textContent = `+${plus.uplift.percentage_points.toFixed(1)} pp`;
+  document.getElementById("plus-uplift-identities").textContent = `+${plus.uplift.successes} solved identities`;
+
+  const efficiency = plus.adaptive.efficiency;
+  document.getElementById("plus-token-cost").textContent = fmtBillion(efficiency.total_tokens);
+  document.getElementById("plus-active-wall").textContent = fmtHours(efficiency.active_wall_s);
+  document.getElementById("plus-attempt-count").textContent = fmtInt(efficiency.valid_attempts);
+  document.getElementById("plus-unmetered").textContent = fmtInt(efficiency.unmetered_vlm_calls);
+
+  const names = {
+    r160_cluster: "r160 / semantic cluster",
+    r160_wave: "r160 / broad residual",
+    r164_semantic: "r164 / relational repair",
+    r164_canonical_pass2: "r164 / canonical Pass@2",
+  };
+  document.getElementById("plus-stage-grid").innerHTML = plus.stages.map((stage, index) => `
+    <article>
+      <span>0${index + 1} / ${escapeHtml(names[stage.stage])}</span>
+      <strong>+${stage.new_successes}</strong>
+      <p>${stage.cumulative_success}/${total} cumulative</p>
+      <dl>
+        <div><dt>tokens</dt><dd>${fmtMillion(stage.efficiency.total_tokens)}</dd></div>
+        <div><dt>active wall</dt><dd>${fmtHours(stage.efficiency.active_wall_s)}</dd></div>
+        <div><dt>attempts</dt><dd>${stage.efficiency.valid_attempts}</dd></div>
+      </dl>
+    </article>`).join("");
 }
 
 function closeVideo() {
@@ -149,7 +196,8 @@ function render(data) {
   const publication = data.publication;
   const experiments = publication.experiments;
   document.getElementById("hero-adaptive").textContent = `${publication.headline.solved_tasks}/${publication.headline.total_tasks}`;
-  renderVideos(publication.media);
+  renderLiberoPlus(experiments.libero_plus);
+  renderVideos(publication.media, experiments.libero_plus.media);
   renderLineChart("adaptive-chart", experiments.adaptive_sequential.pass_curve, 120, "Sequential adaptive coverage");
   renderLineChart("strict-chart", experiments.strict_standard130.pass_curve, 130, "Strict Standard-130 Pass at k", true);
   renderCodeExperiment(experiments.matched_code);
