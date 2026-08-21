@@ -10,68 +10,53 @@
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <header class="topbar">
-      <a class="brand" href="#overview" aria-label="RoboHermes overview">
-        <span class="brand-mark">RH</span>
-        <span>RoboHermes</span>
-      </a>
-      <nav aria-label="Project sections">
-        <a href="#architecture">Architecture</a>
-        <a href="#simulations">Rollouts</a>
-        <a href="#libero-plus">LIBERO-Plus</a>
-        <a href="#experiments">Evidence</a>
-        <a href="#comparison">Context</a>
-        <a href="#tasks">Tasks</a>
-        <a href="#reproduce">Reproduce</a>
-      </nav>
-      <div class="evidence-state"><span></span> Native simulator verdicts</div>
-    </header>
-
-    <section id="overview" class="hero" aria-labelledby="hero-title">
-      <video class="hero-video" autoplay loop muted playsinline preload="auto" src="media/hero-libero-short.mp4"></video>
-      <div class="hero-shade" aria-hidden="true"></div>
-      <div class="hero-content">
-        <p class="hero-kicker">SKILL-FIRST EMBODIED AGENT / LIBERO</p>
-        <h1 id="hero-title">RoboHermes</h1>
-        <p class="hero-deck">Inspectable code skills, GPT-driven composition, and simulator-gated self-evolution from visible RGB-D evidence.</p>
-        <div class="hero-links" aria-label="Project resources">
-          <a href="https://github.com/nssmd/RoboHermes-LIBERO">GitHub</a>
-          <a href="#libero-plus">Final LIBERO-Plus evidence</a>
-          <a href="#reproduce">Run the release</a>
+    <section id="overview" class="article-hero" aria-labelledby="hero-title">
+      <div class="article-hero__sticky">
+        <video class="article-hero__video" autoplay loop muted playsinline preload="auto" src="media/hero-libero-short.mp4"></video>
+        <div class="hero-shade" aria-hidden="true"></div>
+        <div class="article-hero__title">
+          <h1 id="hero-title" class="article-hero__wordmark">RoboHermes</h1>
         </div>
-        <div class="hero-results" aria-label="Headline results">
-          <span><strong id="hero-plus-score">--</strong>LIBERO-Plus adaptive Pass@2</span>
-          <span><strong id="hero-plus-uplift">--</strong>Gain over fixed evaluation</span>
-          <span><strong id="hero-adaptive">95/120</strong>Adaptive development coverage</span>
-          <span><strong>67/130</strong>Strict Standard-130 Pass@10</span>
-        </div>
+        <a class="scroll-cue" href="#article-content">Scroll to explore</a>
       </div>
-      <a class="scroll-cue" href="#architecture">Architecture first <span aria-hidden="true">↓</span></a>
     </section>
 
-    <main class="article-layout">
-      <aside class="article-outline" aria-label="Article outline">
-        <strong>Contents</strong>
-        <nav>
-          <a href="#architecture">01 Architecture</a>
-          <a href="#simulations">02 Simulator rollouts</a>
-          <a href="#libero-plus">03 LIBERO-Plus</a>
-          <a href="#experiments">04 Prior evidence</a>
-          <a href="#comparison">05 Competitive context</a>
-          <a href="#tasks">06 Task evidence</a>
-          <a href="#reproduce">07 Reproduce</a>
-        </nav>
-        <div class="outline-note">
-          <span>Result boundary</span>
-          <p>Adaptive, strict, matched-ablation, and ACT results remain separate.</p>
-        </div>
-      </aside>
+    <main id="article-content" class="article-body">
+      <div class="article-layout">
+        <aside class="article-outline" aria-label="Article outline">
+          <strong>Contents</strong>
+          <nav>
+            <a href="#article-title">Title</a>
+            <a href="#architecture">01 Architecture</a>
+            <a href="#simulations">02 Simulator rollouts</a>
+            <a href="#libero-plus">03 LIBERO-Plus</a>
+            <a href="#experiments">04 Prior evidence</a>
+            <a href="#comparison">05 Competitive context</a>
+            <a href="#tasks">06 Task evidence</a>
+            <a href="#reproduce">07 Reproduce</a>
+          </nav>
+          <div class="outline-note">
+            <span>Result boundary</span>
+            <p>Adaptive, strict, matched-ablation, and ACT results remain separate.</p>
+          </div>
+        </aside>
 
-      <article class="article-shell">
-        <header class="project-intro">
+        <article class="article-shell">
+        <header id="article-title" class="project-intro article-title-block">
           <p class="section-label">PROJECT RELEASE / 20 AUG 2026</p>
-          <h2>A physical agent that turns verified experience into inspectable code.</h2>
+          <h1>RoboHermes: verified robot experience as inspectable code.</h1>
           <p>RoboHermes separates visible reasoning from execution authority. A Planner proposes a task strategy, an Engineer composes camera-grounded tools, and a Reviewer diagnoses the visible trace. Candidate code enters an isolated overlay and is retained only after a native simulator-success harness verdict.</p>
+          <div class="article-links" aria-label="Project resources">
+            <a href="https://github.com/nssmd/RoboHermes-LIBERO">GitHub</a>
+            <a href="#libero-plus">LIBERO-Plus evidence</a>
+            <a href="#reproduce">Reproduce</a>
+          </div>
+          <div class="intro-results" aria-label="Headline results">
+            <span><strong id="hero-plus-score">--</strong>LIBERO-Plus adaptive Pass@2</span>
+            <span><strong id="hero-plus-uplift">--</strong>Gain over fixed evaluation</span>
+            <span><strong id="hero-adaptive">95/120</strong>Adaptive development coverage</span>
+            <span><strong>67/130</strong>Strict Standard-130 Pass@10</span>
+          </div>
           <div class="intro-facts">
             <span><strong>35</strong>base tools</span>
             <span><strong>840</strong>Plus identities</span>
@@ -345,7 +330,8 @@
             <a href="https://github.com/nssmd/RoboHermes-LIBERO/blob/main/SOCIAL_COPY.md">X launch copy</a>
           </div>
         </section>
-      </article>
+        </article>
+      </div>
     </main>
 
     <footer>
