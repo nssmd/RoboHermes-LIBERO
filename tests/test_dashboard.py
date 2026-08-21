@@ -253,3 +253,28 @@ def test_project_page_exposes_enpire_style_libero_plus_evidence_surface() -> Non
     assert "media/figures/libero-plus-final.svg" in html
     assert "840 stratified perturbation identities" in html
     assert "Adaptive Pass@2" in html
+
+
+def test_project_page_uses_enpire_editorial_layout() -> None:
+    static = Path(__file__).resolve().parents[1] / "src/robohermes_libero/static"
+    html = (static / "index.html").read_text(encoding="utf-8")
+    css = (static / "styles.css").read_text(encoding="utf-8")
+
+    assert 'class="topbar"' not in html
+    assert 'class="article-hero"' in html
+    assert 'class="article-hero__sticky"' in html
+    assert 'class="article-hero__wordmark"' in html
+    assert 'id="article-content"' in html
+    assert 'id="article-title"' in html
+    assert 'class="article-body"' in html
+    assert 'class="article-links"' in html
+    assert 'class="intro-results"' in html
+
+    hero = html[html.index('id="overview"') : html.index("</section>")]
+    assert 'class="hero-results"' not in hero
+    assert 'class="hero-links"' not in hero
+    assert html.index('id="overview"') < html.index('id="article-content"')
+    assert html.index('id="article-title"') < html.index('id="architecture"')
+
+    assert "grid-template-columns: 176px minmax(0, 965px)" in css
+    assert "width: min(965px, 100%)" in css
