@@ -54,10 +54,10 @@ catalog. Its token/time totals cover those success evidence rows only, not all
 failed or infrastructure attempts.
 
 <p align="center">
-  <img src="docs/assets/dashboard.png" alt="RoboHermes project page with a LIBERO rollout hero, evidence labels, and native simulator results" width="100%">
+  <img src="docs/assets/dashboard.png" alt="roborsi ENPIRE-style manuscript page with verified LIBERO evidence and native simulator results" width="100%">
 </p>
 
-<p align="center"><a href="https://nssmd.github.io/RoboHermes-LIBERO/"><strong>Open the live project page and rollout evidence</strong></a></p>
+<p align="center"><a href="https://robo-rsi.com/"><strong>Open the live project page and rollout evidence</strong></a></p>
 
 ## Videos And Publication Data
 

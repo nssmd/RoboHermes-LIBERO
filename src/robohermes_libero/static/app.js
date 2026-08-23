@@ -8,6 +8,8 @@ const fmtHours = value => `${(value / 3600).toFixed(2)}h`;
 const fmtPercent = value => `${(100 * value).toFixed(1)}%`;
 const shortRelease = value => !value ? "-" : value.replace("libero-clean-", "");
 const escapeHtml = value => String(value ?? "").replace(/[&<>'"]/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[char]);
+const brandText = value => String(value ?? "").replaceAll("RoboHermes", "roborsi");
+const escapeBrand = value => escapeHtml(brandText(value));
 
 function renderLineChart(elementId, values, total, label, strict = false) {
   const element = document.getElementById(elementId);
@@ -27,27 +29,27 @@ function renderLineChart(elementId, values, total, label, strict = false) {
     </svg>`;
 }
 
-function videoCards(videos) {
-  return videos.map(video => `
-    <article class="video-card">
-      <div class="video-surface">
+function videoFigures(videos) {
+  return videos.map((video, index) => `
+    <figure class="case-figure ${index % 2 ? "case-figure--reverse" : ""}">
+      <div class="case-media">
         <video autoplay loop muted playsinline preload="metadata" poster="${escapeHtml(video.poster)}" src="${escapeHtml(video.video)}"></video>
-        <button class="video-open" type="button" data-video-id="${escapeHtml(video.id)}" aria-label="Open evidence for ${escapeHtml(video.title)}" title="Open evidence">↗</button>
+        <button class="trace-open" type="button" data-video-id="${escapeHtml(video.id)}" aria-label="Open evidence for ${escapeHtml(video.title)}">Trace</button>
       </div>
-      <div class="video-card-body">
+      <figcaption>
         <span>${escapeHtml(video.subtitle)}</span>
-        <h3>${escapeHtml(video.title)}</h3>
-        <p><strong>${escapeHtml(video.task)}</strong><span>seed ${video.seed} · ${video.duration_s.toFixed(1)}s</span></p>
-      </div>
-    </article>`).join("");
+        <strong>${escapeHtml(video.title)}</strong>
+        <small>${escapeHtml(video.task)} · seed ${video.seed} · ${video.duration_s.toFixed(1)}s</small>
+      </figcaption>
+    </figure>`).join("");
 }
 
 function renderVideos(media, plusMedia) {
   const plusVideos = plusMedia?.videos ?? [];
   const videos = [...media.videos, ...plusVideos];
   state.videos = new Map(videos.map(video => [video.id, video]));
-  document.getElementById("video-grid").innerHTML = videoCards(media.videos);
-  document.getElementById("plus-video-grid").innerHTML = videoCards(plusVideos);
+  document.getElementById("video-grid").innerHTML = videoFigures(media.videos);
+  document.getElementById("plus-video-grid").innerHTML = videoFigures(plusVideos);
   document.querySelectorAll("[data-video-id]").forEach(button => {
     button.addEventListener("click", () => openVideo(state.videos.get(button.dataset.videoId)));
   });
@@ -155,11 +157,11 @@ function renderComparison(publication) {
       <td><a class="comparison-system" href="${sourceById[row.id]}" target="_blank" rel="noreferrer">${escapeHtml(row.system)}</a><span class="comparison-date">${escapeHtml(row.date)}</span></td>
       <td>${escapeHtml(row.evaluation)}</td>
       <td>${escapeHtml(row.reported_result)}</td>
-      <td>${escapeHtml(row.policy_dependency)}<br><br><strong>Success feedback:</strong> ${escapeHtml(row.visible_success_checker)}</td>
-      <td><span class="not-comparable">Not direct</span><br>${escapeHtml(row.why_not_direct)}</td>
+      <td>${escapeBrand(row.policy_dependency)}<br><br><strong>Success feedback:</strong> ${escapeBrand(row.visible_success_checker)}</td>
+      <td><span class="not-comparable">Not direct</span><br>${escapeBrand(row.why_not_direct)}</td>
     </tr>`).join("");
-  document.getElementById("gap-list").innerHTML = publication.positioning.gaps.map(item => `<li>${escapeHtml(item)}</li>`).join("");
-  document.getElementById("advantage-list").innerHTML = publication.positioning.advantages.map(item => `<li>${escapeHtml(item)}</li>`).join("");
+  document.getElementById("gap-list").innerHTML = publication.positioning.gaps.map(item => `<li>${escapeBrand(item)}</li>`).join("");
+  document.getElementById("advantage-list").innerHTML = publication.positioning.advantages.map(item => `<li>${escapeBrand(item)}</li>`).join("");
 }
 
 function renderTasks() {
@@ -193,6 +195,7 @@ function renderCommands(commands) {
 
 function render(data) {
   state.data = data;
+  document.getElementById("data-status").textContent = "";
   const publication = data.publication;
   const experiments = publication.experiments;
   document.getElementById("hero-adaptive").textContent = `${publication.headline.solved_tasks}/${publication.headline.total_tasks}`;
@@ -244,5 +247,5 @@ fetch("data.json")
   })
   .then(render)
   .catch(error => {
-    document.querySelector(".project-intro > p:not(.section-label)").textContent = `Project data failed to load: ${error.message}`;
+    document.getElementById("data-status").textContent = `Evidence data unavailable: ${error.message}`;
   });

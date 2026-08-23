@@ -255,26 +255,52 @@ def test_project_page_exposes_enpire_style_libero_plus_evidence_surface() -> Non
     assert "Adaptive Pass@2" in html
 
 
-def test_project_page_uses_enpire_editorial_layout() -> None:
+def test_project_page_uses_exact_roborsi_enpire_manuscript() -> None:
     static = Path(__file__).resolve().parents[1] / "src/robohermes_libero/static"
     html = (static / "index.html").read_text(encoding="utf-8")
     css = (static / "styles.css").read_text(encoding="utf-8")
 
-    assert 'class="topbar"' not in html
-    assert 'class="article-hero"' in html
-    assert 'class="article-hero__sticky"' in html
-    assert 'class="article-hero__wordmark"' in html
-    assert 'id="article-content"' in html
-    assert 'id="article-title"' in html
-    assert 'class="article-body"' in html
-    assert 'class="article-links"' in html
-    assert 'class="intro-results"' in html
-
     hero = html[html.index('id="overview"') : html.index("</section>")]
-    assert 'class="hero-results"' not in hero
-    assert 'class="hero-links"' not in hero
+    assert "roborsi: verified robot experience as inspectable code" in html
+    assert "RoboHermes |" not in html
+    assert "article-hero__wordmark" not in hero
+    assert "hero-shade" not in hero
+    assert 'class="scroll-cue"' in hero
+    assert 'class="article-margin"' in html
+    assert 'class="article-sidenote"' in html
     assert html.index('id="overview"') < html.index('id="article-content"')
     assert html.index('id="article-title"') < html.index('id="architecture"')
+    assert "minmax(320px, 1fr)" in css
+    assert "min(965px" in css
+    assert "width: 264px" in css
+    assert 'url("fonts/source-serif-4-latin.woff2")' in css
+    assert 'url("fonts/jetbrains-mono-latin.woff2")' in css
+    assert "linear-gradient" not in css
+    assert "radial-gradient" not in css
 
-    assert "grid-template-columns: 176px minmax(0, 965px)" in css
-    assert "width: min(965px, 100%)" in css
+
+def test_static_preview_packages_manuscript_fonts(tmp_path: Path) -> None:
+    output = build_static_preview(tmp_path / "site")
+
+    assert (output / "fonts/source-serif-4-latin.woff2").stat().st_size > 10_000
+    assert (output / "fonts/jetbrains-mono-latin.woff2").stat().st_size > 10_000
+    assert (output / "fonts/FONT-LICENSES.md").is_file()
+
+
+def test_static_preview_preserves_custom_domain(tmp_path: Path) -> None:
+    output = build_static_preview(tmp_path / "site")
+
+    assert (output / "CNAME").read_text(encoding="utf-8") == "robo-rsi.com\n"
+
+
+def test_project_page_renders_rollouts_as_case_figures() -> None:
+    static = Path(__file__).resolve().parents[1] / "src/robohermes_libero/static"
+    html = (static / "index.html").read_text(encoding="utf-8")
+    javascript = (static / "app.js").read_text(encoding="utf-8")
+
+    assert 'id="data-status"' in html
+    assert "function videoFigures(videos)" in javascript
+    assert 'class="case-figure ' in javascript
+    assert 'class="video-card"' not in javascript
+    assert 'document.getElementById("data-status")' in javascript
+    assert 'document.querySelector(".project-intro' not in javascript
