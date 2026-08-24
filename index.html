@@ -7,7 +7,7 @@
     <meta name="description" content="roborsi turns simulator-verified robot experience into inspectable code-backed skills on LIBERO.">
     <title>roborsi | Verified Robot Self-Improvement</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="styles.css?v=20260824d">
+    <link rel="stylesheet" href="styles.css?v=20260824e">
   </head>
   <body>
     <section id="overview" class="article-hero" aria-label="roborsi robot rollout">
@@ -32,8 +32,6 @@
             <a href="#dynamics">Evolution dynamics</a>
             <a href="#robotwin">RoboTwin</a>
             <a href="#comparison">Context</a>
-            <a href="#tasks">Task evidence</a>
-            <a href="#reproduce">Reproduce</a>
           </nav>
         </aside>
 
@@ -45,7 +43,7 @@
             <nav class="article-links" aria-label="Project resources">
               <a href="https://github.com/nssmd/RoboHermes-LIBERO">GitHub</a>
               <a href="#libero-plus">Evidence</a>
-              <a href="#reproduce">Reproduce</a>
+              <a href="#demo">Demo</a>
             </nav>
           </header>
 
@@ -86,6 +84,10 @@
               <p><span>Self-evolution</span><strong>32 to 83/120</strong><small>Cross-release adaptive development coverage; not fixed-policy Pass@10.</small></p>
               <p><span>Solidified code</span><strong>+7.5 pp / -29.4%</strong><small>Matched Code-on/off panels. Video illustrates code-backed execution.</small></p>
             </div>
+            <h3>All recorded rollouts</h3>
+            <p>All thirteen published recordings are collected below. Play any clip in place or open Trace for its available ordered tool calls and terminal simulator verdict.</p>
+            <div id="demo-video-grid" class="case-study-list compact-cases demo-rollout-grid" aria-label="All recorded robot rollouts with tool traces"></div>
+            <p class="scope-note">The three historical RoboTwin recordings retain final-verdict-only traces because their original per-call logs were not archived. No missing calls are inferred.</p>
           </section>
 
           <section id="architecture" class="paper-section architecture-section">
@@ -271,33 +273,6 @@
             <p class="source-line">Source-backed report: <a href="https://github.com/nssmd/RoboHermes-LIBERO/blob/main/docs/EXPERIMENTS_AND_COMPARISON.md">experiments and comparison</a></p>
           </section>
 
-          <section id="tasks" class="paper-section task-section">
-            <p class="section-number">06</p>
-            <h2>Task evidence</h2>
-            <div class="table-tools">
-              <div class="segments" role="group" aria-label="Filter tasks">
-                <button type="button" data-filter="all" aria-pressed="true">All</button>
-                <button type="button" data-filter="solved" aria-pressed="false">Solved</button>
-                <button type="button" data-filter="open" aria-pressed="false">Open</button>
-              </div>
-              <label><span class="sr-only">Search tasks</span><input id="task-search" type="search" placeholder="Search task ID"></label>
-            </div>
-            <p>The compact bundle retains one canonical native-success row for each solved task. Token and time values cover success evidence rows only, not total campaign spend.</p>
-            <div class="table-frame"><table><thead><tr><th>Task</th><th>Suite</th><th>Verdict</th><th>Seed</th><th>Release</th><th>Tokens</th><th>Elapsed</th><th>Evidence</th></tr></thead><tbody id="task-body"></tbody></table></div>
-            <div id="table-count" class="table-count"></div>
-          </section>
-
-          <section id="reproduce" class="paper-section reproduce-section">
-            <p class="section-number">07</p>
-            <h2>Reproduce the release</h2>
-            <p>Replay the public evidence on CPU or start a new simulator campaign from the pinned release.</p>
-            <div id="command-list" class="command-list"></div>
-            <nav class="release-links" aria-label="Release documents">
-              <a href="https://github.com/nssmd/RoboHermes-LIBERO/blob/main/REPRODUCING.md">Protocol</a>
-              <a href="https://github.com/nssmd/RoboHermes-LIBERO/blob/main/PRESS_KIT_ZH.md">Chinese media draft</a>
-              <a href="https://github.com/nssmd/RoboHermes-LIBERO/blob/main/SOCIAL_COPY.md">X launch copy</a>
-            </nav>
-          </section>
         </article>
 
         <aside class="article-margin" aria-label="Paper annotations">
@@ -327,6 +302,6 @@
       </div>
     </dialog>
 
-    <script src="app.js?v=20260824d" defer></script>
+    <script src="app.js?v=20260824e" defer></script>
   </body>
 </html>
