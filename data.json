@@ -1488,6 +1488,125 @@
         },
         "treatment": "Code-on exposes the solidified visual_pick_place compound; Code-off uses the same base tools without that compound."
       },
+      "robotwin_historical": {
+        "attempts_per_task": "up to 10-20",
+        "audit_correction": {
+          "after": 33,
+          "before": 34,
+          "elapsed_hours": 62.85,
+          "reason": "A previously counted task was removed during strict predicate and leakage review."
+        },
+        "claim_boundary": "The 36/50 result is task-level pass@k over up to 10-20 attempts. The wall-clock curve contains heavily overlapping runs and one visible audit correction, so it shows campaign solution discovery rather than clean sequential-learning causality or a 72% single-episode success rate. The 9/50 pure-Engineer value is a historical comparison, not a replayable paired role ablation in this repository.",
+        "claim_scope": "historical_parallel_solution_discovery_not_fixed_policy",
+        "elapsed_hours": [
+          0.0,
+          1.127,
+          1.792,
+          3.799,
+          17.642,
+          18.791,
+          25.086,
+          38.622,
+          62.85,
+          87.26
+        ],
+        "media": {
+          "videos": [
+            {
+              "duration_s": 45.8,
+              "experiment": "robotwin_historical",
+              "id": "robotwin-grab-roller-seed22",
+              "platform": "RoboTwin",
+              "poster": "media/posters/robotwin-grab-roller-seed22.jpg",
+              "seed": 22,
+              "subtitle": "Predicate-confirmed historical episode",
+              "task": "grab_roller",
+              "title": "Grab roller",
+              "tool_chain": [
+                {
+                  "ok": true,
+                  "tool": "final_simulator_verdict"
+                }
+              ],
+              "trace_note": "The archived video and final predicate are exact. The original per-episode call log is not retained in the current public bundle.",
+              "trace_scope": "final_verdict_only",
+              "verdict": "simulator_predicate_success",
+              "video": "media/videos/robotwin-grab-roller-seed22.mp4"
+            },
+            {
+              "duration_s": 44.1,
+              "experiment": "robotwin_historical",
+              "id": "robotwin-place-container-plate-seed21",
+              "platform": "RoboTwin",
+              "poster": "media/posters/robotwin-place-container-plate-seed21.jpg",
+              "seed": 21,
+              "subtitle": "Predicate-confirmed historical episode",
+              "task": "place_container_plate",
+              "title": "Place container on plate",
+              "tool_chain": [
+                {
+                  "ok": true,
+                  "tool": "final_simulator_verdict"
+                }
+              ],
+              "trace_note": "The archived video and final predicate are exact. The original per-episode call log is not retained in the current public bundle.",
+              "trace_scope": "final_verdict_only",
+              "verdict": "simulator_predicate_success",
+              "video": "media/videos/robotwin-place-container-plate-seed21.mp4"
+            },
+            {
+              "duration_s": 37.8,
+              "experiment": "robotwin_historical",
+              "id": "robotwin-turn-switch-seed23",
+              "platform": "RoboTwin",
+              "poster": "media/posters/robotwin-turn-switch-seed23.jpg",
+              "seed": 23,
+              "subtitle": "Predicate-confirmed historical episode",
+              "task": "turn_switch",
+              "title": "Turn switch",
+              "tool_chain": [
+                {
+                  "ok": true,
+                  "tool": "final_simulator_verdict"
+                }
+              ],
+              "trace_note": "The archived video and final predicate are exact. The original per-episode call log is not retained in the current public bundle.",
+              "trace_scope": "final_verdict_only",
+              "verdict": "simulator_predicate_success",
+              "video": "media/videos/robotwin-turn-switch-seed23.mp4"
+            }
+          ]
+        },
+        "parallel_overlap_fraction": 0.87,
+        "per_episode_success_rate": 0.24644549763033174,
+        "platform": "RoboTwin",
+        "provenance": {
+          "exact_episode_tool_traces_retained": false,
+          "full_episode_ledger_in_public_repo": false,
+          "predicate_confirmed_media": true,
+          "summary_source": "Audited 2026-08-13 cross-platform dashboard and imported strict solved-task reports."
+        },
+        "pure_engineer_solved": 9,
+        "schema": "roborsi.robotwin_historical.v1",
+        "solved_over_time": [
+          17,
+          19,
+          20,
+          21,
+          25,
+          26,
+          29,
+          34,
+          33,
+          36
+        ],
+        "status": "historical_audited_summary",
+        "successful_episodes": 104,
+        "task_solve_rate": 0.72,
+        "tasks": 50,
+        "three_role_solved": 36,
+        "verdict_episodes": 422
+      },
       "strict_standard130": {
         "action_success_latch": false,
         "by_suite": {
@@ -1529,6 +1648,104 @@
           67
         ],
         "rate": 0.5153846153846153,
+        "round_dynamics": {
+          "claim_boundary": "Pass@k is cumulative retry coverage and is monotonic by construction. Round totals shrink with the residual denominator, while per-episode medians are non-monotonic and releases change. These rows do not establish that the model becomes faster or better over time.",
+          "claim_scope": "descriptive_residual_rounds_not_evolution",
+          "first5_to_last5_median_change": {
+            "tokens": -0.13591279805461032,
+            "vlm_calls": -0.030612244897959218,
+            "wall": 0.07951265363154159
+          },
+          "median_elapsed_s": [
+            830.836,
+            870.264,
+            953.839,
+            943.92,
+            866.945,
+            816.9045,
+            822.2785,
+            944.749,
+            939.461,
+            960.94
+          ],
+          "median_total_tokens": [
+            3688439.0,
+            3856719.0,
+            2877367.0,
+            2059593.0,
+            2609440.0,
+            1944753.0,
+            1973671.5,
+            2831001.0,
+            2486296.0,
+            2652550.0
+          ],
+          "median_vlm_calls": [
+            43.0,
+            49.0,
+            53.0,
+            49.0,
+            51.0,
+            47.0,
+            47.5,
+            48.0,
+            48.0,
+            43.0
+          ],
+          "pass_curve": [
+            23,
+            35,
+            43,
+            49,
+            56,
+            60,
+            61,
+            63,
+            64,
+            67
+          ],
+          "release_changed_between_rounds": true,
+          "residual_task_set_changed_between_rounds": true,
+          "round_total_tokens": [
+            593701254,
+            501495990,
+            344405517,
+            214097224,
+            231028110,
+            171077989,
+            187033364,
+            211186446,
+            236293090,
+            191792492
+          ],
+          "round_wall_s": [
+            11078.872107,
+            10394.395612,
+            7652.084981,
+            6339.75786,
+            4405.370834,
+            4231.559385,
+            6019.140757,
+            3989.392405,
+            4375.387768,
+            3029.99552
+          ],
+          "scheduled_tasks": [
+            130,
+            107,
+            95,
+            87,
+            81,
+            74,
+            70,
+            69,
+            67,
+            66
+          ],
+          "schema": "roborsi.strict_round_dynamics.v1",
+          "source": "Sanitized from the final Standard-130 campaign summary and round metrics recorded on 2026-08-16.",
+          "status": "final_descriptive_summary"
+        },
         "solved_tasks": 67,
         "status": "final",
         "success_source": "final simulator verdict only",

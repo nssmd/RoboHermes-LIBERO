@@ -44,12 +44,14 @@ function videoFigures(videos) {
     </figure>`).join("");
 }
 
-function renderVideos(media, plusMedia) {
+function renderVideos(media, plusMedia, robotwinMedia) {
   const plusVideos = plusMedia?.videos ?? [];
-  const videos = [...media.videos, ...plusVideos];
+  const robotwinVideos = robotwinMedia?.videos ?? [];
+  const videos = [...media.videos, ...plusVideos, ...robotwinVideos];
   state.videos = new Map(videos.map(video => [video.id, video]));
   document.getElementById("video-grid").innerHTML = videoFigures(media.videos);
   document.getElementById("plus-video-grid").innerHTML = videoFigures(plusVideos);
+  document.getElementById("robotwin-video-grid").innerHTML = videoFigures(robotwinVideos);
   document.querySelectorAll("[data-video-id]").forEach(button => {
     button.addEventListener("click", () => openVideo(state.videos.get(button.dataset.videoId)));
   });
@@ -62,8 +64,10 @@ function openVideo(video) {
   document.getElementById("dialog-scope").textContent = video.subtitle;
   document.getElementById("dialog-title").textContent = video.title;
   const perturbation = video.perturbation ? ` · ${video.perturbation}` : "";
-  document.getElementById("dialog-meta").textContent = `${video.task} · seed ${video.seed}${perturbation} · ${video.trace_scope.replaceAll("_", " ")}`;
+  const traceScope = String(video.trace_scope ?? "trace unavailable").replaceAll("_", " ");
+  document.getElementById("dialog-meta").textContent = `${video.task} · seed ${video.seed}${perturbation} · ${traceScope}`;
   document.getElementById("dialog-verdict").textContent = "SIMULATOR SUCCESS";
+  document.getElementById("dialog-trace-note").textContent = video.trace_note ?? "";
   document.getElementById("video-tool-chain").innerHTML = video.tool_chain.map(step => {
     const verdict = step.tool === "final_simulator_verdict";
     return `<li class="${step.ok ? "" : "failed"} ${verdict ? "verdict-step" : ""}"><span>${escapeHtml(step.tool)}</span><span>${step.ok ? "PASS" : "RETRY"}</span></li>`;
@@ -73,6 +77,13 @@ function openVideo(video) {
   player.load();
   dialog.showModal();
   player.play().catch(() => {});
+}
+
+function renderRobotwin(robotwin) {
+  document.getElementById("robotwin-pure").textContent = `${robotwin.pure_engineer_solved}/${robotwin.tasks}`;
+  document.getElementById("robotwin-three-role").textContent = `${robotwin.three_role_solved}/${robotwin.tasks}`;
+  document.getElementById("robotwin-episode").textContent = `${robotwin.successful_episodes}/${robotwin.verdict_episodes} (${fmtPercent(robotwin.per_episode_success_rate)})`;
+  document.getElementById("robotwin-window").textContent = `${robotwin.elapsed_hours.at(-1).toFixed(2)} h`;
 }
 
 function renderLiberoPlus(plus) {
@@ -200,7 +211,8 @@ function render(data) {
   const experiments = publication.experiments;
   document.getElementById("hero-adaptive").textContent = `${publication.headline.solved_tasks}/${publication.headline.total_tasks}`;
   renderLiberoPlus(experiments.libero_plus);
-  renderVideos(publication.media, experiments.libero_plus.media);
+  renderRobotwin(experiments.robotwin_historical);
+  renderVideos(publication.media, experiments.libero_plus.media, experiments.robotwin_historical.media);
   renderLineChart("adaptive-chart", experiments.adaptive_sequential.pass_curve, 120, "Sequential adaptive coverage");
   renderLineChart("strict-chart", experiments.strict_standard130.pass_curve, 130, "Strict Standard-130 Pass at k", true);
   renderCodeExperiment(experiments.matched_code);
