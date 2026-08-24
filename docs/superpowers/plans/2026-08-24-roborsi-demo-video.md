@@ -241,7 +241,7 @@ Run the complete repository gate and decode every MP4. Verify `/` and
 `/zh.html` at 1440 and 1728 pixel desktop widths, including dynamic traces,
 video playback, typography, overflow, requests, and console output.
 
-- [ ] **Step 5: Publish both documents**
+- [x] **Step 5: Publish both documents**
 
 Fast-forward the tested source commit to `main`, rebuild `gh-pages`, preserve
 `CNAME`, and verify both public URLs and language-specific demo assets.
