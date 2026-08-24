@@ -139,4 +139,3 @@ def test_demo_smoke_render_is_complete_h264_with_distinct_scenes(tmp_path: Path)
     assert poster_frame is not None
     assert poster_frame.shape[:2] == (270, 480)
     assert float(poster_frame.std()) > 12.0
-

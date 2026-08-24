@@ -118,4 +118,3 @@ JavaScript syntax, wheel/sdist build, a complete decode of every published MP4,
 and desktop Chromium QA at 1440 x 1000 and 1728 x 1117. Browser QA checks that
 the demo reaches ready state, the poster/video are nonblank, controls work, and
 there are no request, console, overflow, or overlap failures.
-
