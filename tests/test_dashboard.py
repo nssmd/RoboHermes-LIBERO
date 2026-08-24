@@ -220,6 +220,33 @@ def test_static_preview_packages_robotwin_media_and_dynamics_figure(tmp_path: Pa
     assert "Pass@k is not an evolution curve" in html
 
 
+def test_static_preview_packages_evidence_demo(tmp_path: Path) -> None:
+    output = build_static_preview(tmp_path / "site")
+    video = output / "media/demo/roborsi-demo.mp4"
+    poster = output / "media/demo/roborsi-demo-poster.jpg"
+
+    assert video.is_file()
+    assert video.stat().st_size > 1_000_000
+    assert poster.is_file()
+    assert poster.stat().st_size > 50_000
+
+    html = (output / "index.html").read_text(encoding="utf-8")
+    abstract_start = html.index('<section id="abstract"')
+    abstract_end = html.index("</section>", abstract_start)
+    demo_start = html.index('<section id="demo"')
+    architecture_start = html.index('<section id="architecture"')
+    assert abstract_end < demo_start < architecture_start
+    assert 'href="#demo">Demo</a>' in html
+    assert 'src="media/demo/roborsi-demo.mp4"' in html
+    assert 'poster="media/demo/roborsi-demo-poster.jpg"' in html
+    demo_markup = html[demo_start:architecture_start]
+    assert "controls" in demo_markup
+    assert "Cross-release adaptive development coverage; not fixed-policy Pass@10." in html
+    assert "Matched Code-on/off panels. Video illustrates code-backed execution." in html
+    assert "styles.css?v=20260824d" in html
+    assert "app.js?v=20260824d" in html
+
+
 def test_publication_sources_cover_competitive_reference_set() -> None:
     sources = build_dashboard_payload()["publication"]["sources"]
     urls = {source["url"] for source in sources}
