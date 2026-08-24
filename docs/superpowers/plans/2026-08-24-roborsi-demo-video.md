@@ -115,7 +115,9 @@ only the compositor if needed.
 
 Require the preview to contain both demo assets, a `#demo` section immediately
 after Abstract, one outline link, native video controls, the poster reference,
-and both claim-boundary captions.
+both claim-boundary captions, and a unified 13-video trace library. Require the
+Task evidence and Reproduce sections to be absent and the paper background to
+be pure white.
 
 - [ ] **Step 2: Verify RED**
 
@@ -129,8 +131,10 @@ Expected: failure because the section is absent.
 - [ ] **Step 3: Add the HTML and restrained demo styles**
 
 Insert the section after Abstract, add the outline link, use an unframed
-16:9 figure with native controls, and add a three-column claim strip. Bump the
-CSS and JavaScript cache query to `20260824d`.
+16:9 figure with native controls, add a three-column claim strip, and render all
+13 existing recordings with on-demand controls and Trace actions. Remove the
+Task evidence/Reproduce DOM and their dedicated JS/CSS. Bump the CSS and
+JavaScript cache query to `20260824e`.
 
 - [ ] **Step 4: Verify GREEN**
 

@@ -1,12 +1,10 @@
-const state = { data: null, filter: "all", query: "", videos: new Map() };
+const state = { videos: new Map() };
 
 const fmtInt = value => value == null ? "-" : new Intl.NumberFormat("en-US").format(value);
-const fmtTime = value => value == null ? "-" : value >= 60 ? `${(value / 60).toFixed(1)}m` : `${Math.round(value)}s`;
 const fmtMillion = value => `${(value / 1_000_000).toFixed(2)}M`;
 const fmtBillion = value => `${(value / 1_000_000_000).toFixed(3)}B`;
 const fmtHours = value => `${(value / 3600).toFixed(2)}h`;
 const fmtPercent = value => `${(100 * value).toFixed(1)}%`;
-const shortRelease = value => !value ? "-" : value.replace("libero-clean-", "");
 const escapeHtml = value => String(value ?? "").replace(/[&<>'"]/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[char]);
 const brandText = value => String(value ?? "").replaceAll("RoboHermes", "roborsi");
 const escapeBrand = value => escapeHtml(brandText(value));
@@ -29,11 +27,12 @@ function renderLineChart(elementId, values, total, label, strict = false) {
     </svg>`;
 }
 
-function videoFigures(videos) {
+function videoFigures(videos, {controls = false} = {}) {
+  const playback = controls ? "controls" : "autoplay";
   return videos.map((video, index) => `
     <figure class="case-figure ${index % 2 ? "case-figure--reverse" : ""}">
       <div class="case-media">
-        <video autoplay loop muted playsinline preload="metadata" poster="${escapeHtml(video.poster)}" src="${escapeHtml(video.video)}"></video>
+        <video ${playback} loop muted playsinline preload="metadata" poster="${escapeHtml(video.poster)}" src="${escapeHtml(video.video)}"></video>
         <button class="trace-open" type="button" data-video-id="${escapeHtml(video.id)}" aria-label="Open evidence for ${escapeHtml(video.title)}">Trace</button>
       </div>
       <figcaption>
@@ -49,6 +48,7 @@ function renderVideos(media, plusMedia, robotwinMedia) {
   const robotwinVideos = robotwinMedia?.videos ?? [];
   const videos = [...media.videos, ...plusVideos, ...robotwinVideos];
   state.videos = new Map(videos.map(video => [video.id, video]));
+  document.getElementById("demo-video-grid").innerHTML = videoFigures(videos, {controls: true});
   document.getElementById("video-grid").innerHTML = videoFigures(media.videos);
   document.getElementById("plus-video-grid").innerHTML = videoFigures(plusVideos);
   document.getElementById("robotwin-video-grid").innerHTML = videoFigures(robotwinVideos);
@@ -175,37 +175,7 @@ function renderComparison(publication) {
   document.getElementById("advantage-list").innerHTML = publication.positioning.advantages.map(item => `<li>${escapeBrand(item)}</li>`).join("");
 }
 
-function renderTasks() {
-  const rows = state.data.tasks.filter(row => {
-    const filterMatch = state.filter === "all" || (state.filter === "solved" ? row.solved : !row.solved);
-    return filterMatch && row.task_key.toLowerCase().includes(state.query);
-  });
-  document.getElementById("task-body").innerHTML = rows.map(row => `
-    <tr>
-      <td><strong>${escapeHtml(row.task_key)}</strong></td>
-      <td>${escapeHtml(row.suite.replace("libero_", ""))}</td>
-      <td><span class="verdict ${row.solved ? "solved" : ""}">${row.solved ? "success" : "open"}</span></td>
-      <td>${row.seed ?? "-"}</td>
-      <td title="${escapeHtml(row.release_id)}">${escapeHtml(shortRelease(row.release_id))}</td>
-      <td>${fmtInt(row.total_tokens)}</td>
-      <td>${fmtTime(row.elapsed_s)}</td>
-      <td class="evidence-name" title="${escapeHtml(row.video)}">${escapeHtml(row.video || "-")}</td>
-    </tr>`).join("");
-  document.getElementById("table-count").textContent = `${rows.length} of ${state.data.tasks.length} tasks`;
-}
-
-function renderCommands(commands) {
-  document.getElementById("command-list").innerHTML = Object.entries(commands).map(([name, command]) => `
-    <div class="command-row"><span>${escapeHtml(name)}</span><code>${escapeHtml(command)}</code><button type="button" data-copy="${escapeHtml(command)}" aria-label="Copy ${escapeHtml(name)} command" title="Copy">⧉</button></div>`).join("");
-  document.querySelectorAll("[data-copy]").forEach(button => button.addEventListener("click", async () => {
-    await navigator.clipboard.writeText(button.dataset.copy);
-    button.textContent = "✓";
-    setTimeout(() => { button.textContent = "⧉"; }, 1200);
-  }));
-}
-
 function render(data) {
-  state.data = data;
   document.getElementById("data-status").textContent = "";
   const publication = data.publication;
   const experiments = publication.experiments;
@@ -217,20 +187,7 @@ function render(data) {
   renderLineChart("strict-chart", experiments.strict_standard130.pass_curve, 130, "Strict Standard-130 Pass at k", true);
   renderCodeExperiment(experiments.matched_code);
   renderComparison(publication);
-  renderTasks();
-  renderCommands(data.commands);
 }
-
-document.querySelectorAll("[data-filter]").forEach(button => button.addEventListener("click", () => {
-  state.filter = button.dataset.filter;
-  document.querySelectorAll("[data-filter]").forEach(item => item.setAttribute("aria-pressed", String(item === button)));
-  renderTasks();
-}));
-
-document.getElementById("task-search").addEventListener("input", event => {
-  state.query = event.target.value.trim().toLowerCase();
-  renderTasks();
-});
 
 document.getElementById("video-close").addEventListener("click", closeVideo);
 document.getElementById("video-dialog").addEventListener("click", event => {

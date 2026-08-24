@@ -51,9 +51,15 @@ or letterbox it but must not substitute or fabricate frames.
 
 ### 12.0-24.0 s: Self-Evolution
 
-An animated line reveals the measured adaptive sequence
-`[32, 45, 52, 66, 71, 76, 81, 82, 82, 83]`. A synchronized loop highlights
-Observe, Diagnose, Solidify, and Reuse. The final frame states:
+Real rollout footage is the primary visual. The first third shows a named
+exploratory execution with visible recovery, the second shows the adaptive
+code-backed `visual_pick_place` success, and the final third plays four
+representative reuse successes simultaneously. A smaller synchronized chart
+reveals `[32, 45, 52, 66, 71, 76, 81, 82, 82, 83]`.
+
+These clips illustrate Explore, Solidify, and Reuse but are not a paired
+same-task comparison. The measured curve carries the chronological coverage
+claim. The final frame states:
 
 > Cross-release adaptive development coverage; not fixed-policy Pass@10.
 
@@ -73,8 +79,8 @@ reference to simulator-verified experience becoming inspectable code.
 
 ## Visual System
 
-The video follows the website's ENPIRE manuscript language: charcoal, warm
-paper, white figure wells, muted green, rust, and blue; Source Serif 4 for
+The video follows the website's ENPIRE manuscript language: charcoal, a pure
+white paper background, light-neutral figure wells, muted green, rust, and blue; Source Serif 4 for
 editorial text and JetBrains Mono for data labels. Layout uses thin rules,
 stable geometry, and at most 8 px radii. There are no gradients, decorative
 orbs, bokeh, oversized marketing copy, or fabricated robot imagery.
@@ -103,18 +109,26 @@ The production outputs are:
 
 Add a `Demo` manuscript section immediately after Abstract and a corresponding
 outline link. The video uses native controls, muted inline playback, a poster,
-and metadata preload. Its caption lists the three claim scopes and links users
-to the detailed evidence sections. `build_static_preview()` continues to copy
-the static tree, so no new packaging mechanism is introduced.
+and metadata preload. Its caption lists the three claim scopes. Below it, one
+unified library exposes all 13 existing recordings with native controls and a
+Trace action for each available tool chain. Historical RoboTwin clips remain
+explicitly final-verdict-only because their per-call logs were not archived.
+
+The visible Task evidence and Reproduce sections, their outline links, and
+their dedicated JavaScript/CSS are removed. The underlying public evidence and
+repository reproduction files remain unchanged. `build_static_preview()`
+continues to copy the static tree, so no new packaging mechanism is introduced.
 
 ## Verification
 
 The test suite must first fail while the generator is absent. A low-resolution
 smoke render then verifies dimensions, H.264, `yuv420p`, no audio, expected
-duration, a nonblank poster, and visually distinct nonblank scene samples.
+duration, a nonblank poster, visually distinct nonblank scene samples, and
+large temporal changes inside the evolution scene's dedicated video region.
 
 Release verification includes the full pytest suite, Ruff, release checks,
 JavaScript syntax, wheel/sdist build, a complete decode of every published MP4,
 and desktop Chromium QA at 1440 x 1000 and 1728 x 1117. Browser QA checks that
 the demo reaches ready state, the poster/video are nonblank, controls work, and
-there are no request, console, overflow, or overlap failures.
+all 13 library videos and their available traces render without request,
+console, overflow, or overlap failures.

@@ -241,10 +241,37 @@ def test_static_preview_packages_evidence_demo(tmp_path: Path) -> None:
     assert 'poster="media/demo/roborsi-demo-poster.jpg"' in html
     demo_markup = html[demo_start:architecture_start]
     assert "controls" in demo_markup
+    assert 'id="demo-video-grid"' in demo_markup
     assert "Cross-release adaptive development coverage; not fixed-policy Pass@10." in html
     assert "Matched Code-on/off panels. Video illustrates code-backed execution." in html
-    assert "styles.css?v=20260824d" in html
-    assert "app.js?v=20260824d" in html
+    assert "styles.css?v=20260824e" in html
+    assert "app.js?v=20260824e" in html
+
+
+def test_demo_library_unifies_all_recordings_and_available_traces() -> None:
+    static = Path(__file__).resolve().parents[1] / "src/robohermes_libero/static"
+    payload = build_dashboard_payload()["publication"]
+    videos = [
+        *payload["media"]["videos"],
+        *payload["experiments"]["libero_plus"]["media"]["videos"],
+        *payload["experiments"]["robotwin_historical"]["media"]["videos"],
+    ]
+    html = (static / "index.html").read_text(encoding="utf-8")
+    javascript = (static / "app.js").read_text(encoding="utf-8")
+
+    assert len(videos) == 13
+    assert len({row["id"] for row in videos}) == 13
+    assert all(row["tool_chain"] for row in videos)
+    assert all(row["tool_chain"][-1]["tool"] == "final_simulator_verdict" for row in videos)
+    assert 'id="demo-video-grid"' in html
+    assert (
+        'getElementById("demo-video-grid").innerHTML = '
+        'videoFigures(videos, {controls: true})'
+    ) in javascript
+    assert 'id="tasks"' not in html
+    assert 'id="reproduce"' not in html
+    assert 'href="#tasks"' not in html
+    assert 'href="#reproduce"' not in html
 
 
 def test_publication_sources_cover_competitive_reference_set() -> None:
@@ -340,8 +367,6 @@ def test_project_page_orders_evidence_sections_and_exposes_video_trace_dialog() 
         "libero-plus",
         "experiments",
         "comparison",
-        "tasks",
-        "reproduce",
     ]
     offsets = [html.index(f'id="{section}"') for section in sections]
     assert offsets == sorted(offsets)
@@ -396,6 +421,8 @@ def test_project_page_uses_exact_roborsi_enpire_manuscript() -> None:
     assert 'url("fonts/jetbrains-mono-latin.woff2")' in css
     assert "linear-gradient" not in css
     assert "radial-gradient" not in css
+    assert "--paper: #ffffff;" in css
+    assert "#f6f6ef" not in css
 
 
 def test_static_preview_packages_manuscript_fonts(tmp_path: Path) -> None:
@@ -418,7 +445,7 @@ def test_project_page_renders_rollouts_as_case_figures() -> None:
     javascript = (static / "app.js").read_text(encoding="utf-8")
 
     assert 'id="data-status"' in html
-    assert "function videoFigures(videos)" in javascript
+    assert "function videoFigures(videos, {controls = false} = {})" in javascript
     assert 'class="case-figure ' in javascript
     assert 'class="video-card"' not in javascript
     assert 'document.getElementById("data-status")' in javascript

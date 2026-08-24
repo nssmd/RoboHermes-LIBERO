@@ -48,6 +48,25 @@ def test_demo_manifest_has_nine_verified_sources_and_bounded_claims() -> None:
             "not fixed-policy Pass@10."
         ),
     }
+    assert manifest["evolution_video"] == {
+        "phases": [
+            {"id": "explore", "sources": ["strict-moka-pot-stove"]},
+            {"id": "solidify", "sources": ["adaptive-black-bowl-plate"]},
+            {
+                "id": "reuse",
+                "sources": [
+                    "strict-ketchup-basket",
+                    "strict-bowl-tray",
+                    "strict-pudding-basket",
+                    "act-corrective-transport",
+                ],
+            },
+        ],
+        "caption": (
+            "Representative rollout footage synchronized to measured coverage; "
+            "not a paired same-task comparison."
+        ),
+    }
     assert manifest["matched_code"] == {
         "episode_success_delta_pp": 7.5,
         "median_token_reduction_pct": 29.4,
@@ -134,6 +153,23 @@ def test_demo_smoke_render_is_complete_h264_with_distinct_scenes(tmp_path: Path)
     capture.release()
     for left, right in zip(samples, samples[1:]):
         assert float(np.mean(np.abs(left - right))) > 8.0
+
+    evolution_frames = []
+    for timestamp_s in (1.35, 1.75, 2.2):
+        capture = cv2.VideoCapture(str(output))
+        capture.set(cv2.CAP_PROP_POS_MSEC, timestamp_s * 1000)
+        ok, frame = capture.read()
+        capture.release()
+        assert ok, timestamp_s
+        height, width = frame.shape[:2]
+        video_region = frame[
+            round(0.22 * height) : round(0.80 * height),
+            round(0.04 * width) : round(0.51 * width),
+        ]
+        assert float(video_region.std()) > 20.0, timestamp_s
+        evolution_frames.append(video_region.astype(np.float32))
+    for left, right in zip(evolution_frames, evolution_frames[1:]):
+        assert float(np.mean(np.abs(left - right))) > 15.0
 
     poster_frame = cv2.imread(str(poster))
     assert poster_frame is not None

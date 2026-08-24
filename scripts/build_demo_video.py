@@ -22,6 +22,10 @@ ADAPTIVE_CAPTION = (
 MATCHED_CAPTION = (
     "Matched Code-on/off panels. Video illustrates code-backed execution."
 )
+EVOLUTION_VIDEO_CAPTION = (
+    "Representative rollout footage synchronized to measured coverage; "
+    "not a paired same-task comparison."
+)
 SCENES = (
     {"id": "verified_tasks", "duration_s": 12.0},
     {"id": "adaptive_evolution", "duration_s": 12.0},
@@ -137,6 +141,22 @@ def build_manifest() -> dict[str, Any]:
             "total_tasks": adaptive["total_tasks"],
             "caption": ADAPTIVE_CAPTION,
         },
+        "evolution_video": {
+            "phases": [
+                {"id": "explore", "sources": ["strict-moka-pot-stove"]},
+                {"id": "solidify", "sources": ["adaptive-black-bowl-plate"]},
+                {
+                    "id": "reuse",
+                    "sources": [
+                        "strict-ketchup-basket",
+                        "strict-bowl-tray",
+                        "strict-pudding-basket",
+                        "act-corrective-transport",
+                    ],
+                },
+            ],
+            "caption": EVOLUTION_VIDEO_CAPTION,
+        },
         "matched_code": {
             "episode_success_delta_pp": matched["success"]["paired_delta_pp"],
             "median_token_reduction_pct": round(
@@ -246,7 +266,8 @@ class FontBook:
 
 
 class DemoRenderer:
-    PAPER = (246, 246, 239)
+    PAPER = (255, 255, 255)
+    FIGURE = (248, 249, 248)
     WHITE = (255, 255, 255)
     INK = (19, 21, 19)
     INK_SOFT = (85, 89, 85)
@@ -491,12 +512,63 @@ class DemoRenderer:
 
     def render_evolution(self, progress: float) -> Any:
         frame = self.blank(self.PAPER)
+        panel_left = self.x(76)
+        panel_top = self.y(238)
+        panel_width = self.x(900)
+        panel_height = self.y(620)
+        phase_specs = self.manifest["evolution_video"]["phases"]
+        phase_index = min(2, int(progress * 3))
+        phase_start = phase_index / 3
+        phase_progress = min(1.0, (progress - phase_start) * 3)
+        source_by_id = {source["id"]: source for source in self.sources}
+        mosaic_tiles = []
+
+        if phase_index < 2:
+            source_id = phase_specs[phase_index]["sources"][0]
+            sample = self.samplers[source_id].sample(
+                phase_progress * 10.0,
+                panel_width,
+                panel_height,
+            )
+            frame[
+                panel_top : panel_top + panel_height,
+                panel_left : panel_left + panel_width,
+            ] = sample
+        else:
+            gap = self.s(10)
+            tile_width = (panel_width - gap) // 2
+            tile_height = (panel_height - gap) // 2
+            for tile_index, source_id in enumerate(phase_specs[2]["sources"]):
+                row, column = divmod(tile_index, 2)
+                left = panel_left + column * (tile_width + gap)
+                top = panel_top + row * (tile_height + gap)
+                sample = self.samplers[source_id].sample(
+                    phase_progress * 10.0 + tile_index * 0.8,
+                    tile_width,
+                    tile_height,
+                )
+                frame[top : top + tile_height, left : left + tile_width] = sample
+                mosaic_tiles.append((left, top, tile_width, tile_height, source_id))
+
+        phase_fade = _smoothstep(min(1.0, phase_progress / 0.08))
+        if phase_fade < 1.0:
+            region = frame[
+                panel_top : panel_top + panel_height,
+                panel_left : panel_left + panel_width,
+            ]
+            dark = self.np.full_like(region, self._bgr(self.DARK))
+            frame[
+                panel_top : panel_top + panel_height,
+                panel_left : panel_left + panel_width,
+            ] = self.cv2.addWeighted(region, phase_fade, dark, 1.0 - phase_fade, 0)
+
         canvas, draw = self.begin_draw(frame)
+        mono_10 = self.fonts.get("mono", 10)
         mono_11 = self.fonts.get("mono", 11)
         mono_13 = self.fonts.get("mono", 13)
         serif_24 = self.fonts.get("serif", 24)
         serif_46 = self.fonts.get("serif", 46)
-        serif_72 = self.fonts.get("serif", 72)
+        serif_54 = self.fonts.get("serif", 54)
 
         draw.text(
             (self.x(76), self.y(58)),
@@ -512,17 +584,94 @@ class DemoRenderer:
         )
         draw.text(
             (self.x(78), self.y(166)),
-            "Measured sequential adaptive rounds",
+            "Real rollouts synchronized to measured sequential adaptive rounds",
             font=mono_13,
             fill=(*self.MUTED, 255),
         )
 
-        chart = (self.x(76), self.y(242), self.x(1302), self.y(858))
-        draw.rectangle(chart, fill=(*self.WHITE, 255), outline=(*self.HAIRLINE, 255))
-        plot_left = self.x(154)
-        plot_right = self.x(1242)
-        plot_top = self.y(302)
-        plot_bottom = self.y(790)
+        phase_titles = (
+            ("01 / EXPLORE", "Visible execution and recovery"),
+            ("02 / SOLIDIFY", "Reviewed success becomes reusable code"),
+            ("03 / REUSE", "Representative successes across more tasks"),
+        )
+        phase_accent = (self.RUST, self.GREEN, self.BLUE)[phase_index]
+        draw.rectangle(
+            (
+                panel_left,
+                panel_top,
+                panel_left + panel_width - 1,
+                panel_top + panel_height - 1,
+            ),
+            outline=(*self.INK, 150),
+            width=self.s(1),
+        )
+        draw.rectangle(
+            (
+                panel_left + self.s(16),
+                panel_top + self.s(16),
+                panel_left + self.s(255),
+                panel_top + self.s(53),
+            ),
+            fill=(*self.DARK, 220),
+        )
+        draw.text(
+            (panel_left + self.s(29), panel_top + self.s(27)),
+            phase_titles[phase_index][0],
+            font=mono_11,
+            fill=(*phase_accent, 255),
+        )
+        if phase_index < 2:
+            source_id = phase_specs[phase_index]["sources"][0]
+            source = source_by_id[source_id]
+            band_height = self.s(82)
+            draw.rectangle(
+                (
+                    panel_left,
+                    panel_top + panel_height - band_height,
+                    panel_left + panel_width,
+                    panel_top + panel_height,
+                ),
+                fill=(*self.DARK, 224),
+            )
+            draw.text(
+                (
+                    panel_left + self.s(23),
+                    panel_top + panel_height - self.s(57),
+                ),
+                phase_titles[phase_index][1],
+                font=serif_24,
+                fill=(*self.WHITE, 245),
+            )
+            draw.text(
+                (
+                    panel_left + self.s(23),
+                    panel_top + panel_height - self.s(29),
+                ),
+                f"{source['label']} / {source['task']} / seed {source['seed']}",
+                font=mono_10,
+                fill=(*self.WHITE, 175),
+            )
+        else:
+            for left, top, width, height, source_id in mosaic_tiles:
+                source = source_by_id[source_id]
+                band_height = self.s(42)
+                draw.rectangle(
+                    (left, top + height - band_height, left + width, top + height),
+                    fill=(*self.DARK, 218),
+                )
+                draw.text(
+                    (left + self.s(13), top + height - self.s(25)),
+                    source["label"],
+                    font=mono_10,
+                    fill=(*self.WHITE, 230),
+                )
+
+        chart = (self.x(1040), self.y(238), self.x(1842), self.y(610))
+        draw.rectangle(chart, fill=(*self.FIGURE, 255), outline=(*self.HAIRLINE, 255))
+        plot_left = self.x(1104)
+        plot_right = self.x(1794)
+        plot_top = self.y(342)
+        plot_bottom = self.y(535)
         total = self.manifest["adaptive"]["total_tasks"]
         values = self.manifest["adaptive"]["coverage"]
         for tick in (0, 30, 60, 90, 120):
@@ -589,85 +738,84 @@ class DemoRenderer:
             fill=(*self.GREEN, 255),
         )
         draw.text(
-            (plot_left, self.y(822)),
-            "ADAPTIVE ROUND",
+            (self.x(1070), self.y(263)),
+            "MEASURED COVERAGE",
             font=mono_11,
             fill=(*self.MUTED, 255),
         )
-
-        right_x = self.x(1390)
         draw.text(
-            (right_x, self.y(246)),
+            (self.x(1810), self.y(252)),
             f"{round(current_value)} / 120",
-            font=serif_72,
+            font=serif_54,
             fill=(*self.INK, 255),
+            anchor="ra",
         )
         draw.text(
-            (right_x, self.y(336)),
-            f"ROUND {max(1, math.ceil(current_round))} / 10",
-            font=mono_13,
+            (self.x(1070), self.y(305)),
+            f"ADAPTIVE ROUND {max(1, math.ceil(current_round))} / 10",
+            font=mono_11,
             fill=(*self.GREEN, 255),
         )
+
         stages = (
-            ("01", "Observe", "RGB-D + visible trace"),
-            ("02", "Diagnose", "Planner / Engineer / Reviewer"),
-            ("03", "Solidify", "successful behavior to code"),
-            ("04", "Reuse", "next tasks inherit the skill"),
+            ("01", "Explore", "real rollout, visible execution and recovery"),
+            ("02", "Solidify", "reviewed success becomes visual_pick_place code"),
+            ("03", "Reuse", "representative successes across additional tasks"),
         )
-        active_stage = min(3, int(progress * 4))
+        stage_left = self.x(1040)
+        stage_right = self.x(1842)
         for stage_index, (number, label, detail) in enumerate(stages):
-            top = self.y(405 + stage_index * 112)
-            stage_color = self.RUST if stage_index == active_stage else self.MUTED
-            if stage_index == active_stage:
+            top = self.y(650 + stage_index * 92)
+            stage_color = (
+                (self.RUST, self.GREEN, self.BLUE)[stage_index]
+                if stage_index == phase_index
+                else self.MUTED
+            )
+            if stage_index == phase_index:
                 draw.rectangle(
-                    (right_x - self.s(12), top - self.s(13), self.x(1842), top + self.s(72)),
+                    (stage_left, top - self.s(12), stage_right, top + self.s(66)),
                     fill=(*self.GREEN_SOFT, 255),
                 )
             draw.text(
-                (right_x, top),
+                (stage_left + self.s(16), top),
                 number,
                 font=mono_11,
                 fill=(*stage_color, 255),
             )
             draw.text(
-                (right_x + self.s(48), top - self.s(5)),
+                (stage_left + self.s(72), top - self.s(5)),
                 label,
                 font=serif_24,
                 fill=(*self.INK, 255),
             )
             draw.text(
-                (right_x + self.s(48), top + self.s(35)),
+                (stage_left + self.s(72), top + self.s(33)),
                 detail,
                 font=mono_11,
                 fill=(*self.MUTED, 255),
             )
-            if stage_index < len(stages) - 1:
-                draw.line(
-                    (
-                        right_x + self.s(12),
-                        top + self.s(78),
-                        right_x + self.s(12),
-                        top + self.s(96),
-                    ),
-                    fill=(*self.HAIRLINE, 255),
-                    width=self.s(1),
-                )
 
         draw.line(
-            (self.x(76), self.y(922), self.x(1842), self.y(922)),
+            (self.x(76), self.y(938), self.x(1842), self.y(938)),
             fill=(*self.HAIRLINE, 255),
             width=self.s(1),
         )
         draw.text(
-            (self.x(76), self.y(954)),
+            (self.x(76), self.y(965)),
+            EVOLUTION_VIDEO_CAPTION,
+            font=mono_11,
+            fill=(*self.INK_SOFT, 255),
+        )
+        draw.text(
+            (self.x(76), self.y(995)),
             ADAPTIVE_CAPTION,
-            font=mono_13,
+            font=mono_11,
             fill=(*self.INK_SOFT, 255),
         )
         if progress > 0.68:
             alpha = round(255 * _smoothstep((progress - 0.68) / 0.18))
             draw.text(
-                (self.x(1842), self.y(1000)),
+                (self.x(1842), self.y(1030)),
                 "Later locked releases extend cross-release coverage to 95/120.",
                 font=mono_11,
                 fill=(*self.BLUE, alpha),
