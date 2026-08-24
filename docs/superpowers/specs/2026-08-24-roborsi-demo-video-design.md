@@ -34,32 +34,36 @@ the demo.
 
 The master is 39 seconds, 1920 x 1080, 30 fps, H.264, `yuv420p`, silent.
 
-### 0.0-12.0 s: Nine Verified Tasks
+### 0.0-12.0 s: Rotating 3 x 3 Task Wall
 
-A 3 x 3 grid plays nine real task videos concurrently. Compact labels identify
-the task and platform; a simulator-confirmed status line establishes the
-evidence contract without implying that nine examples are a metric.
+A 3 x 3 grid plays nine real task videos concurrently, then rotates to a second
+page. The union covers all 13 existing success recordings while retaining the
+nine-cell visual composition. Compact labels identify task and platform; a
+simulator-confirmed status line establishes the evidence contract without
+implying that the videos are a benchmark denominator.
 
-The nine sources are:
+The 13 sources are:
 
 - LIBERO: moka pot to stove, ketchup to basket, pudding to basket, bowl to
   tray, adaptive bowl to plate, and ACT corrective transport.
 - RoboTwin historical: grab roller, place container on plate, and turn switch.
+- LIBERO-Plus: camera, lighting, layout, and initial-state perturbation cases.
 
 RoboTwin footage is retained at its native exposure. The compositor may crop
 or letterbox it but must not substitute or fabricate frames.
 
 ### 12.0-24.0 s: Self-Evolution
 
-Real rollout footage is the primary visual. The first third shows a named
-exploratory execution with visible recovery, the second shows the adaptive
-code-backed `visual_pick_place` success, and the final third plays four
-representative reuse successes simultaneously. A smaller synchronized chart
-reveals `[32, 45, 52, 66, 71, 76, 81, 82, 82, 83]`.
+Two videos show `libero_spatial_swap/0`, seed 3, side by side. Before corrective
+data, bounded ACT completes 120 transport steps but under-transports and loses
+the hold during placement; the final simulator verdict is false. After
+corrective data and fine-tuning, ACT completes 304 steps and wrist-verified
+placement reaches a true final verdict. Both videos use normalized episode
+progress because their archived durations differ.
 
-These clips illustrate Explore, Solidify, and Reuse but are not a paired
-same-task comparison. The measured curve carries the chronological coverage
-claim. The final frame states:
+A separate chart reveals `[32, 45, 52, 66, 71, 76, 81, 82, 82, 83]`. The film
+explicitly separates this aggregate cross-release coverage measure from the
+single matched ACT case. The final frame states:
 
 > Cross-release adaptive development coverage; not fixed-policy Pass@10.
 
@@ -110,7 +114,8 @@ The production outputs are:
 Add a `Demo` manuscript section immediately after Abstract and a corresponding
 outline link. The video uses native controls, muted inline playback, a poster,
 and metadata preload. Its caption lists the three claim scopes. Below it, one
-unified library exposes all 13 existing recordings with native controls and a
+matched ACT Before/After block exposes the retained failure and success clips.
+A unified library then exposes all 14 recordings with native controls and a
 Trace action for each available tool chain. Historical RoboTwin clips remain
 explicitly final-verdict-only because their per-call logs were not archived.
 
@@ -124,11 +129,11 @@ continues to copy the static tree, so no new packaging mechanism is introduced.
 The test suite must first fail while the generator is absent. A low-resolution
 smoke render then verifies dimensions, H.264, `yuv420p`, no audio, expected
 duration, a nonblank poster, visually distinct nonblank scene samples, and
-large temporal changes inside the evolution scene's dedicated video region.
+two distinct rotating grid pages and distinct final Before/After frames.
 
 Release verification includes the full pytest suite, Ruff, release checks,
 JavaScript syntax, wheel/sdist build, a complete decode of every published MP4,
 and desktop Chromium QA at 1440 x 1000 and 1728 x 1117. Browser QA checks that
 the demo reaches ready state, the poster/video are nonblank, controls work, and
-all 13 library videos and their available traces render without request,
+all 14 library videos and their available traces render without request,
 console, overflow, or overlap failures.

@@ -30,7 +30,7 @@ function renderLineChart(elementId, values, total, label, strict = false) {
 function videoFigures(videos, {controls = false} = {}) {
   const playback = controls ? "controls" : "autoplay";
   return videos.map((video, index) => `
-    <figure class="case-figure ${index % 2 ? "case-figure--reverse" : ""}">
+    <figure class="case-figure ${index % 2 ? "case-figure--reverse" : ""} ${video.verdict.includes("failure") ? "case-figure--failure" : ""}">
       <div class="case-media">
         <video ${playback} loop muted playsinline preload="metadata" poster="${escapeHtml(video.poster)}" src="${escapeHtml(video.video)}"></video>
         <button class="trace-open" type="button" data-video-id="${escapeHtml(video.id)}" aria-label="Open evidence for ${escapeHtml(video.title)}">Trace</button>
@@ -43,12 +43,19 @@ function videoFigures(videos, {controls = false} = {}) {
     </figure>`).join("");
 }
 
-function renderVideos(media, plusMedia, robotwinMedia) {
+function renderVideos(media, plusMedia, robotwinMedia, actComparison) {
   const plusVideos = plusMedia?.videos ?? [];
   const robotwinVideos = robotwinMedia?.videos ?? [];
-  const videos = [...media.videos, ...plusVideos, ...robotwinVideos];
+  const beforeVideo = actComparison?.before;
+  const diagnosticVideos = beforeVideo ? [beforeVideo] : [];
+  const videos = [...media.videos, ...plusVideos, ...robotwinVideos, ...diagnosticVideos];
   state.videos = new Map(videos.map(video => [video.id, video]));
   document.getElementById("demo-video-grid").innerHTML = videoFigures(videos, {controls: true});
+  const afterVideo = state.videos.get(actComparison?.after_id);
+  document.getElementById("act-before-after-grid").innerHTML = videoFigures(
+    [beforeVideo, afterVideo].filter(Boolean),
+    {controls: true},
+  );
   document.getElementById("video-grid").innerHTML = videoFigures(media.videos);
   document.getElementById("plus-video-grid").innerHTML = videoFigures(plusVideos);
   document.getElementById("robotwin-video-grid").innerHTML = videoFigures(robotwinVideos);
@@ -66,11 +73,17 @@ function openVideo(video) {
   const perturbation = video.perturbation ? ` · ${video.perturbation}` : "";
   const traceScope = String(video.trace_scope ?? "trace unavailable").replaceAll("_", " ");
   document.getElementById("dialog-meta").textContent = `${video.task} · seed ${video.seed}${perturbation} · ${traceScope}`;
-  document.getElementById("dialog-verdict").textContent = "SIMULATOR SUCCESS";
+  const succeeded = !String(video.verdict).includes("failure");
+  const verdictLabel = succeeded ? "SIMULATOR SUCCESS" : "SIMULATOR FAILURE";
+  const verdictElement = document.getElementById("dialog-verdict");
+  document.getElementById("dialog-verdict").textContent = verdictLabel;
+  verdictElement.classList.toggle("failed", !succeeded);
   document.getElementById("dialog-trace-note").textContent = video.trace_note ?? "";
   document.getElementById("video-tool-chain").innerHTML = video.tool_chain.map(step => {
     const verdict = step.tool === "final_simulator_verdict";
-    return `<li class="${step.ok ? "" : "failed"} ${verdict ? "verdict-step" : ""}"><span>${escapeHtml(step.tool)}</span><span>${step.ok ? "PASS" : "RETRY"}</span></li>`;
+    const status = step.ok ? "PASS" : verdict ? "FAIL" : "RETRY";
+    const detail = step.detail ? `<small>${escapeHtml(step.detail)}</small>` : "";
+    return `<li class="${step.ok ? "" : "failed"} ${verdict ? "verdict-step" : ""}"><span class="trace-call">${escapeHtml(step.tool)}${detail}</span><span>${status}</span></li>`;
   }).join("");
   player.src = video.video;
   player.poster = video.poster;
@@ -182,7 +195,12 @@ function render(data) {
   document.getElementById("hero-adaptive").textContent = `${publication.headline.solved_tasks}/${publication.headline.total_tasks}`;
   renderLiberoPlus(experiments.libero_plus);
   renderRobotwin(experiments.robotwin_historical);
-  renderVideos(publication.media, experiments.libero_plus.media, experiments.robotwin_historical.media);
+  renderVideos(
+    publication.media,
+    experiments.libero_plus.media,
+    experiments.robotwin_historical.media,
+    experiments.act.before_after,
+  );
   renderLineChart("adaptive-chart", experiments.adaptive_sequential.pass_curve, 120, "Sequential adaptive coverage");
   renderLineChart("strict-chart", experiments.strict_standard130.pass_curve, 130, "Strict Standard-130 Pass at k", true);
   renderCodeExperiment(experiments.matched_code);

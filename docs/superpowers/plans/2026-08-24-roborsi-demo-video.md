@@ -26,9 +26,10 @@ difference. Require a nonblank JPEG poster.
 
 - [ ] **Step 2: Write a source-and-caption contract test**
 
-Invoke `--print-manifest` and assert exactly nine unique source paths, the
+Invoke `--print-manifest` and assert 14 unique source paths, two nine-cell grid
+pages whose union contains 13 successes, the same-task same-seed ACT pair, the
 adaptive sequence `[32,45,52,66,71,76,81,82,82,83]`, the four matched values,
-and both claim-boundary captions.
+and all claim-boundary captions.
 
 - [ ] **Step 3: Run the test and verify RED**
 
@@ -46,8 +47,8 @@ Expected: failure because `scripts/build_demo_video.py` does not exist.
 
 - [ ] **Step 1: Add the canonical storyboard manifest**
 
-Define the nine relative video paths, task/platform labels, source offsets,
-scene durations, adaptive points, and matched Code-on values as immutable
+Define the 13 success paths, one retained failure path, task/platform labels,
+source offsets, scene durations, adaptive points, and matched Code-on values as immutable
 module constants. `--print-manifest` serializes this data without rendering.
 
 - [ ] **Step 2: Implement media sampling and frame geometry**
@@ -59,8 +60,8 @@ undecodable source path.
 
 - [ ] **Step 3: Implement the four scenes**
 
-Render the 3 x 3 task grid, animated adaptive chart and promotion loop, split
-code-backed rollout with matched metric bars, and final brand slate. Use the
+Render the rotating 3 x 3 task wall, matched ACT Before/After beside the
+separate adaptive curve, code-backed rollout with matched metric bars, and final brand slate. Use the
 local Source Serif 4 and JetBrains Mono assets through Pillow. Scale all fixed
 geometry from the 1920 x 1080 design coordinate system.
 
@@ -115,7 +116,8 @@ only the compositor if needed.
 
 Require the preview to contain both demo assets, a `#demo` section immediately
 after Abstract, one outline link, native video controls, the poster reference,
-both claim-boundary captions, and a unified 13-video trace library. Require the
+both claim-boundary captions, a matched Before/After block, and a unified
+14-video trace library. Require the
 Task evidence and Reproduce sections to be absent and the paper background to
 be pure white.
 
@@ -132,9 +134,9 @@ Expected: failure because the section is absent.
 
 Insert the section after Abstract, add the outline link, use an unframed
 16:9 figure with native controls, add a three-column claim strip, and render all
-13 existing recordings with on-demand controls and Trace actions. Remove the
+14 recordings with on-demand controls and Trace actions. Remove the
 Task evidence/Reproduce DOM and their dedicated JS/CSS. Bump the CSS and
-JavaScript cache query to `20260824e`.
+JavaScript cache query to `20260824f`.
 
 - [ ] **Step 4: Verify GREEN**
 

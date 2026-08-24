@@ -132,7 +132,39 @@
       "held_out": false,
       "ground_truth_in_policy_input": false,
       "claim_scope": "matched_success_case_not_generalization",
-      "claim_boundary": "One native simulator success demonstrates the data-to-policy-to-hybrid-execution loop. It does not establish held-out ACT performance."
+      "claim_boundary": "One native simulator success demonstrates the data-to-policy-to-hybrid-execution loop. It does not establish held-out ACT performance.",
+      "before_after": {
+        "status": "same_task_same_seed_matched_case",
+        "task": "libero_spatial_swap/0",
+        "seed": 3,
+        "time_alignment": "normalized_episode_progress",
+        "claim_scope": "single_matched_case_not_aggregate_policy_improvement",
+        "comparison_caption": "Same task and seed; videos use normalized episode progress. The aggregate coverage curve is a separate cross-release measure.",
+        "before": {
+          "id": "act-before-corrective",
+          "title": "Before corrective data",
+          "task": "libero_spatial_swap/0",
+          "seed": 3,
+          "experiment": "act_before_after",
+          "subtitle": "Bounded ACT under-transported and placement failed",
+          "video": "media/videos/act-before-corrective-seed3.mp4",
+          "poster": "media/posters/act-before-corrective-seed3.jpg",
+          "width": 256,
+          "height": 256,
+          "duration_s": 6.8,
+          "verdict": "simulator_failure",
+          "trace_scope": "hybrid_stage_trace",
+          "trace_note": "Ordered evaluator stages from the archived r2 episode record; no per-stage video timestamps were logged.",
+          "tool_chain": [
+            {"tool": "relation_point", "ok": true},
+            {"tool": "grasp_object", "ok": true},
+            {"tool": "act_transport_120", "ok": true, "detail": "120/120 learned transport steps"},
+            {"tool": "place_on_surface", "ok": false, "detail": "hold lost during hover approach"},
+            {"tool": "final_simulator_verdict", "ok": false, "detail": "final verdict=false"}
+          ]
+        },
+        "after_id": "act-corrective-transport"
+      }
     }
   },
   "media": {
@@ -405,11 +437,17 @@
         "duration_s": 16.2,
         "verdict": "simulator_success",
         "trace_scope": "hybrid_stage_trace",
+        "trace_note": "Ordered evaluator stages from the protected success record; no per-stage video timestamps were logged.",
         "tool_chain": [
-          {"tool": "code_backed_grasp", "ok": true},
-          {"tool": "act_corrective_transport_304_steps", "ok": true},
-          {"tool": "code_backed_placement", "ok": true},
-          {"tool": "final_simulator_verdict", "ok": true}
+          {"tool": "relation_point", "ok": true},
+          {"tool": "grasp_object", "ok": true},
+          {"tool": "act_transport_304", "ok": true, "detail": "304/304 learned transport steps"},
+          {"tool": "surface_approach", "ok": true},
+          {"tool": "surface_staged_descent", "ok": true},
+          {"tool": "surface_release_pose", "ok": true},
+          {"tool": "gripper_open", "ok": true},
+          {"tool": "retract", "ok": true},
+          {"tool": "final_simulator_verdict", "ok": true, "detail": "final verdict=true"}
         ]
       }
     ]

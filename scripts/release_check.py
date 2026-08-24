@@ -165,6 +165,31 @@ def collect_findings(root: Path) -> list[str]:
                 elif not (root / "src/robohermes_libero/static" / reference).is_file():
                     findings.append(f"publication media is missing: {reference}")
 
+            act = ((publication.get("experiments") or {}).get("act") or {})
+            comparison = act.get("before_after") or {}
+            before = comparison.get("before") or {}
+            if comparison.get("status") != "same_task_same_seed_matched_case":
+                findings.append("ACT before/after comparison status mismatch")
+            if (comparison.get("task"), comparison.get("seed")) != (
+                "libero_spatial_swap/0",
+                3,
+            ):
+                findings.append("ACT before/after task or seed mismatch")
+            if before.get("verdict") != "simulator_failure":
+                findings.append("ACT before video must retain simulator failure verdict")
+            if not before.get("tool_chain") or before["tool_chain"][-1] != {
+                "tool": "final_simulator_verdict",
+                "ok": False,
+                "detail": "final verdict=false",
+            }:
+                findings.append("ACT before video lacks exact final failure verdict")
+            for field in ("video", "poster"):
+                reference = before.get(field)
+                if not isinstance(reference, str) or not reference:
+                    findings.append(f"ACT before video contains an empty {field}")
+                elif not (root / "src/robohermes_libero/static" / reference).is_file():
+                    findings.append(f"ACT before media is missing: {reference}")
+
     report_path = root / "docs/EXPERIMENTS_AND_COMPARISON.md"
     if report_path.is_file():
         report = report_path.read_text(encoding="utf-8")

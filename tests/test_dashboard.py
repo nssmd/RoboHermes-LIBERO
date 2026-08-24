@@ -56,6 +56,30 @@ def test_dashboard_includes_locked_publication_experiment_matrix() -> None:
     assert act["trials"] == 1
     assert act["held_out"] is False
     assert act["claim_scope"] == "matched_success_case_not_generalization"
+    comparison = act["before_after"]
+    assert comparison["status"] == "same_task_same_seed_matched_case"
+    assert comparison["task"] == "libero_spatial_swap/0"
+    assert comparison["seed"] == 3
+    assert comparison["time_alignment"] == "normalized_episode_progress"
+    assert comparison["before"]["verdict"] == "simulator_failure"
+    assert comparison["before"]["duration_s"] == 6.8
+    assert comparison["before"]["tool_chain"][-1] == {
+        "tool": "final_simulator_verdict",
+        "ok": False,
+        "detail": "final verdict=false",
+    }
+    assert comparison["after_id"] == "act-corrective-transport"
+    after = next(
+        row
+        for row in publication["media"]["videos"]
+        if row["id"] == comparison["after_id"]
+    )
+    assert len(after["tool_chain"]) == 9
+    assert after["tool_chain"][-1] == {
+        "tool": "final_simulator_verdict",
+        "ok": True,
+        "detail": "final verdict=true",
+    }
 
 
 def test_dashboard_includes_final_libero_plus_adaptive_result() -> None:
@@ -242,10 +266,14 @@ def test_static_preview_packages_evidence_demo(tmp_path: Path) -> None:
     demo_markup = html[demo_start:architecture_start]
     assert "controls" in demo_markup
     assert 'id="demo-video-grid"' in demo_markup
+    assert 'id="act-before-after-grid"' in demo_markup
+    assert "Rotating 3 x 3" in demo_markup
+    assert "All fourteen published recordings" in demo_markup
+    assert "Every robot frame comes from a named simulator-verdict artifact" in demo_markup
     assert "Cross-release adaptive development coverage; not fixed-policy Pass@10." in html
     assert "Matched Code-on/off panels. Video illustrates code-backed execution." in html
-    assert "styles.css?v=20260824e" in html
-    assert "app.js?v=20260824e" in html
+    assert "styles.css?v=20260824f" in html
+    assert "app.js?v=20260824f" in html
 
 
 def test_demo_library_unifies_all_recordings_and_available_traces() -> None:
@@ -255,23 +283,42 @@ def test_demo_library_unifies_all_recordings_and_available_traces() -> None:
         *payload["media"]["videos"],
         *payload["experiments"]["libero_plus"]["media"]["videos"],
         *payload["experiments"]["robotwin_historical"]["media"]["videos"],
+        payload["experiments"]["act"]["before_after"]["before"],
     ]
     html = (static / "index.html").read_text(encoding="utf-8")
     javascript = (static / "app.js").read_text(encoding="utf-8")
 
-    assert len(videos) == 13
-    assert len({row["id"] for row in videos}) == 13
+    assert len(videos) == 14
+    assert len({row["id"] for row in videos}) == 14
     assert all(row["tool_chain"] for row in videos)
     assert all(row["tool_chain"][-1]["tool"] == "final_simulator_verdict" for row in videos)
     assert 'id="demo-video-grid"' in html
+    assert 'id="act-before-after-grid"' in html
     assert (
         'getElementById("demo-video-grid").innerHTML = '
         'videoFigures(videos, {controls: true})'
     ) in javascript
+    assert 'document.getElementById("dialog-verdict").textContent = verdictLabel' in javascript
     assert 'id="tasks"' not in html
     assert 'id="reproduce"' not in html
     assert 'href="#tasks"' not in html
     assert 'href="#reproduce"' not in html
+
+
+def test_static_preview_packages_act_before_corrective_video(tmp_path: Path) -> None:
+    output = build_static_preview(tmp_path / "site")
+    before = build_dashboard_payload()["publication"]["experiments"]["act"][
+        "before_after"
+    ]["before"]
+
+    assert before["task"] == "libero_spatial_swap/0"
+    assert before["seed"] == 3
+    assert before["verdict"] == "simulator_failure"
+    assert before["trace_scope"] == "hybrid_stage_trace"
+    for field in ("video", "poster"):
+        path = output / before[field]
+        assert path.is_file(), path
+        assert path.stat().st_size > 3_000
 
 
 def test_publication_sources_cover_competitive_reference_set() -> None:

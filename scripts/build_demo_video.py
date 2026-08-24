@@ -22,9 +22,9 @@ ADAPTIVE_CAPTION = (
 MATCHED_CAPTION = (
     "Matched Code-on/off panels. Video illustrates code-backed execution."
 )
-EVOLUTION_VIDEO_CAPTION = (
-    "Representative rollout footage synchronized to measured coverage; "
-    "not a paired same-task comparison."
+BEFORE_AFTER_CAPTION = (
+    "Same task and seed; videos use normalized episode progress. "
+    "The aggregate coverage curve is a separate cross-release measure."
 )
 SCENES = (
     {"id": "verified_tasks", "duration_s": 12.0},
@@ -87,10 +87,54 @@ SOURCE_SPECS = (
         "platform": "RoboTwin",
         "offset_s": 12.0,
     },
+    {
+        "id": "plus-camera-black-bowl-plate",
+        "label": "Camera shift",
+        "platform": "LIBERO",
+        "offset_s": 0.0,
+    },
+    {
+        "id": "plus-light-ketchup-basket",
+        "label": "Low-light ketchup",
+        "platform": "LIBERO",
+        "offset_s": 0.0,
+    },
+    {
+        "id": "plus-layout-black-bowl-plate",
+        "label": "Layout shift",
+        "platform": "LIBERO",
+        "offset_s": 0.0,
+    },
+    {
+        "id": "plus-init-black-bowl-plate",
+        "label": "Initial-state shift",
+        "platform": "LIBERO",
+        "offset_s": 0.0,
+    },
+    {
+        "id": "act-before-corrective",
+        "label": "ACT before repair",
+        "platform": "ACT",
+        "offset_s": 0.0,
+    },
+)
+GRID_PAGES = (
+    tuple(spec["id"] for spec in SOURCE_SPECS[:9]),
+    (
+        "plus-camera-black-bowl-plate",
+        "plus-light-ketchup-basket",
+        "plus-layout-black-bowl-plate",
+        "plus-init-black-bowl-plate",
+        "strict-moka-pot-stove",
+        "strict-pudding-basket",
+        "adaptive-black-bowl-plate",
+        "act-corrective-transport",
+        "robotwin-turn-switch-seed23",
+    ),
 )
 
 
-def _load_evidence() -> tuple[dict[str, Any], dict[str, Any]]:
+def _load_evidence() -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
     publication = json.loads(
         (ROOT / "evidence/publication-v1/experiments.json").read_text(encoding="utf-8")
     )
@@ -99,22 +143,33 @@ def _load_evidence() -> tuple[dict[str, Any], dict[str, Any]]:
             encoding="utf-8"
         )
     )
-    return publication, robotwin
+    libero_plus = json.loads(
+        (ROOT / "evidence/publication-v1/libero_plus_final.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    return publication, robotwin, libero_plus
 
 
 def build_manifest() -> dict[str, Any]:
-    publication, robotwin = _load_evidence()
+    publication, robotwin, libero_plus = _load_evidence()
     publication_media = publication["media"]["videos"]
     robotwin_media = robotwin["media"]["videos"]
-    records = {row["id"]: row for row in (*publication_media, *robotwin_media)}
+    plus_media = libero_plus["media"]["videos"]
+    act_before = publication["experiments"]["act"]["before_after"]["before"]
+    records = {
+        row["id"]: row
+        for row in (*publication_media, *robotwin_media, *plus_media, act_before)
+    }
     sources = []
     for spec in SOURCE_SPECS:
         record = records[spec["id"]]
-        verdict = (
-            "native_simulator_success"
-            if spec["platform"] == "LIBERO"
-            else "native_predicate_success"
-        )
+        if record["verdict"] == "simulator_failure":
+            verdict = "native_simulator_failure"
+        elif spec["platform"] == "RoboTwin":
+            verdict = "native_predicate_success"
+        else:
+            verdict = "native_simulator_success"
         sources.append(
             {
                 "id": spec["id"],
@@ -136,26 +191,31 @@ def build_manifest() -> dict[str, Any]:
         "master": {"width": 1920, "height": 1080, "fps": 30, "audio": False},
         "scenes": [dict(scene) for scene in SCENES],
         "sources": sources,
+        "task_grid": {
+            "layout": "3x3",
+            "pages": [list(page) for page in GRID_PAGES],
+            "unique_success_sources": len(set().union(*map(set, GRID_PAGES))),
+        },
         "adaptive": {
             "coverage": adaptive["pass_curve"],
             "total_tasks": adaptive["total_tasks"],
             "caption": ADAPTIVE_CAPTION,
         },
-        "evolution_video": {
-            "phases": [
-                {"id": "explore", "sources": ["strict-moka-pot-stove"]},
-                {"id": "solidify", "sources": ["adaptive-black-bowl-plate"]},
-                {
-                    "id": "reuse",
-                    "sources": [
-                        "strict-ketchup-basket",
-                        "strict-bowl-tray",
-                        "strict-pudding-basket",
-                        "act-corrective-transport",
-                    ],
-                },
-            ],
-            "caption": EVOLUTION_VIDEO_CAPTION,
+        "before_after": {
+            "task": "libero_spatial_swap/0",
+            "seed": 3,
+            "time_alignment": "normalized_episode_progress",
+            "before": {
+                "id": "act-before-corrective",
+                "transport_steps": 120,
+                "verdict": "native_simulator_failure",
+            },
+            "after": {
+                "id": "act-corrective-transport",
+                "transport_steps": 304,
+                "verdict": "native_simulator_success",
+            },
+            "caption": BEFORE_AFTER_CAPTION,
         },
         "matched_code": {
             "episode_success_delta_pp": matched["success"]["paired_delta_pp"],
@@ -367,14 +427,23 @@ class DemoRenderer:
         gap = self.s(12)
         x0 = self.x(498)
         y0 = self.y(78)
+        source_by_id = {source["id"]: source for source in self.sources}
+        pages = self.manifest["task_grid"]["pages"]
+        page_position = progress * len(pages)
+        page_index = min(len(pages) - 1, int(page_position))
+        page_progress = page_position - page_index
+        page_fade = _smoothstep(
+            min(1.0, page_progress / 0.06, (1.0 - page_progress) / 0.06)
+        )
         source_elapsed = progress * SCENES[0]["duration_s"]
         reveals = []
-        for index, source in enumerate(self.sources):
+        for index, source_id in enumerate(pages[page_index]):
+            source = source_by_id[source_id]
             row, column = divmod(index, 3)
             left = x0 + column * (tile + gap)
             top = y0 + row * (tile + gap)
             sample = self.samplers[source["id"]].sample(source_elapsed, tile, tile)
-            reveal = _smoothstep(progress * 2.0 - index * 0.055)
+            reveal = page_fade * _smoothstep(page_progress * 5.0 - index * 0.035)
             if reveal < 1.0:
                 dark_tile = self.np.full_like(sample, self._bgr(self.DARK_SOFT))
                 sample = self.cv2.addWeighted(sample, reveal, dark_tile, 1.0 - reveal, 0)
@@ -431,7 +500,7 @@ class DemoRenderer:
         )
         draw.multiline_text(
             (self.x(64), self.y(104)),
-            "Nine verified\nrobot tasks",
+            "13 recorded\nrobot rollouts",
             font=serif_62,
             fill=(*self.WHITE, 245),
             spacing=self.s(4),
@@ -443,7 +512,7 @@ class DemoRenderer:
         )
         draw.text(
             (self.x(64), self.y(324)),
-            "6",
+            "10",
             font=serif_30,
             fill=(*self.WHITE, 245),
         )
@@ -467,19 +536,19 @@ class DemoRenderer:
         )
         draw.text(
             (self.x(1475), self.y(82)),
-            "FINAL VERDICT",
+            f"ROTATING 3 x 3 / PAGE {page_index + 1} OF {len(pages)}",
             font=mono_12,
             fill=(*self.GREEN, 255),
         )
         draw.text(
             (self.x(1475), self.y(121)),
-            "9 / 9",
+            "13 / 13",
             font=serif_62,
             fill=(*self.WHITE, 245),
         )
         draw.multiline_text(
             (self.x(1475), self.y(217)),
-            "Named success videos\nNative simulator or\npredicate authority",
+            "All success recordings\nNative simulator or\npredicate authority",
             font=mono_14,
             fill=(*self.WHITE, 170),
             spacing=self.s(12),
@@ -512,55 +581,33 @@ class DemoRenderer:
 
     def render_evolution(self, progress: float) -> Any:
         frame = self.blank(self.PAPER)
-        panel_left = self.x(76)
+        before_left = self.x(76)
+        after_left = self.x(612)
         panel_top = self.y(238)
-        panel_width = self.x(900)
-        panel_height = self.y(620)
-        phase_specs = self.manifest["evolution_video"]["phases"]
+        panel_size = self.s(500)
+        before_id = self.manifest["before_after"]["before"]["id"]
+        after_id = self.manifest["before_after"]["after"]["id"]
+        before_sampler = self.samplers[before_id]
+        after_sampler = self.samplers[after_id]
+        before_frame = before_sampler.sample(
+            progress * before_sampler.duration_s * 0.995,
+            panel_size,
+            panel_size,
+        )
+        after_frame = after_sampler.sample(
+            progress * after_sampler.duration_s * 0.995,
+            panel_size,
+            panel_size,
+        )
+        frame[
+            panel_top : panel_top + panel_size,
+            before_left : before_left + panel_size,
+        ] = before_frame
+        frame[
+            panel_top : panel_top + panel_size,
+            after_left : after_left + panel_size,
+        ] = after_frame
         phase_index = min(2, int(progress * 3))
-        phase_start = phase_index / 3
-        phase_progress = min(1.0, (progress - phase_start) * 3)
-        source_by_id = {source["id"]: source for source in self.sources}
-        mosaic_tiles = []
-
-        if phase_index < 2:
-            source_id = phase_specs[phase_index]["sources"][0]
-            sample = self.samplers[source_id].sample(
-                phase_progress * 10.0,
-                panel_width,
-                panel_height,
-            )
-            frame[
-                panel_top : panel_top + panel_height,
-                panel_left : panel_left + panel_width,
-            ] = sample
-        else:
-            gap = self.s(10)
-            tile_width = (panel_width - gap) // 2
-            tile_height = (panel_height - gap) // 2
-            for tile_index, source_id in enumerate(phase_specs[2]["sources"]):
-                row, column = divmod(tile_index, 2)
-                left = panel_left + column * (tile_width + gap)
-                top = panel_top + row * (tile_height + gap)
-                sample = self.samplers[source_id].sample(
-                    phase_progress * 10.0 + tile_index * 0.8,
-                    tile_width,
-                    tile_height,
-                )
-                frame[top : top + tile_height, left : left + tile_width] = sample
-                mosaic_tiles.append((left, top, tile_width, tile_height, source_id))
-
-        phase_fade = _smoothstep(min(1.0, phase_progress / 0.08))
-        if phase_fade < 1.0:
-            region = frame[
-                panel_top : panel_top + panel_height,
-                panel_left : panel_left + panel_width,
-            ]
-            dark = self.np.full_like(region, self._bgr(self.DARK))
-            frame[
-                panel_top : panel_top + panel_height,
-                panel_left : panel_left + panel_width,
-            ] = self.cv2.addWeighted(region, phase_fade, dark, 1.0 - phase_fade, 0)
 
         canvas, draw = self.begin_draw(frame)
         mono_10 = self.fonts.get("mono", 10)
@@ -578,97 +625,70 @@ class DemoRenderer:
         )
         draw.text(
             (self.x(76), self.y(98)),
-            "Reviewed experience expands task coverage",
+            "One task, before and after corrective experience",
             font=serif_46,
             fill=(*self.INK, 255),
         )
         draw.text(
             (self.x(78), self.y(166)),
-            "Real rollouts synchronized to measured sequential adaptive rounds",
+            "libero_spatial_swap/0 / seed 3 / normalized episode progress",
             font=mono_13,
             fill=(*self.MUTED, 255),
         )
 
-        phase_titles = (
-            ("01 / EXPLORE", "Visible execution and recovery"),
-            ("02 / SOLIDIFY", "Reviewed success becomes reusable code"),
-            ("03 / REUSE", "Representative successes across more tasks"),
-        )
-        phase_accent = (self.RUST, self.GREEN, self.BLUE)[phase_index]
-        draw.rectangle(
+        panels = (
             (
-                panel_left,
-                panel_top,
-                panel_left + panel_width - 1,
-                panel_top + panel_height - 1,
+                before_left,
+                "BEFORE / FINAL FALSE",
+                "120 ACT steps / placement failed",
+                self.RUST,
             ),
-            outline=(*self.INK, 150),
-            width=self.s(1),
-        )
-        draw.rectangle(
             (
-                panel_left + self.s(16),
-                panel_top + self.s(16),
-                panel_left + self.s(255),
-                panel_top + self.s(53),
+                after_left,
+                "AFTER / FINAL TRUE",
+                "304 ACT steps / wrist-verified placement",
+                self.GREEN,
             ),
-            fill=(*self.DARK, 220),
         )
-        draw.text(
-            (panel_left + self.s(29), panel_top + self.s(27)),
-            phase_titles[phase_index][0],
-            font=mono_11,
-            fill=(*phase_accent, 255),
-        )
-        if phase_index < 2:
-            source_id = phase_specs[phase_index]["sources"][0]
-            source = source_by_id[source_id]
-            band_height = self.s(82)
+        band_height = self.s(88)
+        for left, label, detail, accent in panels:
+            draw.rectangle(
+                (left, panel_top, left + panel_size - 1, panel_top + panel_size - 1),
+                outline=(*accent, 255),
+                width=self.s(3),
+            )
             draw.rectangle(
                 (
-                    panel_left,
-                    panel_top + panel_height - band_height,
-                    panel_left + panel_width,
-                    panel_top + panel_height,
+                    left,
+                    panel_top + panel_size - band_height,
+                    left + panel_size,
+                    panel_top + panel_size,
                 ),
-                fill=(*self.DARK, 224),
+                fill=(*self.DARK, 226),
             )
             draw.text(
-                (
-                    panel_left + self.s(23),
-                    panel_top + panel_height - self.s(57),
-                ),
-                phase_titles[phase_index][1],
-                font=serif_24,
-                fill=(*self.WHITE, 245),
+                (left + self.s(20), panel_top + panel_size - self.s(60)),
+                label,
+                font=mono_11,
+                fill=(*accent, 255),
             )
             draw.text(
-                (
-                    panel_left + self.s(23),
-                    panel_top + panel_height - self.s(29),
-                ),
-                f"{source['label']} / {source['task']} / seed {source['seed']}",
+                (left + self.s(20), panel_top + panel_size - self.s(31)),
+                detail,
                 font=mono_10,
-                fill=(*self.WHITE, 175),
+                fill=(*self.WHITE, 210),
             )
-        else:
-            for left, top, width, height, source_id in mosaic_tiles:
-                source = source_by_id[source_id]
-                band_height = self.s(42)
-                draw.rectangle(
-                    (left, top + height - band_height, left + width, top + height),
-                    fill=(*self.DARK, 218),
-                )
-                draw.text(
-                    (left + self.s(13), top + height - self.s(25)),
-                    source["label"],
-                    font=mono_10,
-                    fill=(*self.WHITE, 230),
-                )
+        draw.text(
+            (self.x(594), self.y(475)),
+            ">",
+            font=serif_54,
+            fill=(*self.INK_SOFT, 255),
+            anchor="mm",
+        )
 
-        chart = (self.x(1040), self.y(238), self.x(1842), self.y(610))
+        chart = (self.x(1180), self.y(238), self.x(1842), self.y(610))
         draw.rectangle(chart, fill=(*self.FIGURE, 255), outline=(*self.HAIRLINE, 255))
-        plot_left = self.x(1104)
+        plot_left = self.x(1234)
         plot_right = self.x(1794)
         plot_top = self.y(342)
         plot_bottom = self.y(535)
@@ -738,8 +758,8 @@ class DemoRenderer:
             fill=(*self.GREEN, 255),
         )
         draw.text(
-            (self.x(1070), self.y(263)),
-            "MEASURED COVERAGE",
+            (self.x(1200), self.y(263)),
+            "SEPARATE AGGREGATE CURVE",
             font=mono_11,
             fill=(*self.MUTED, 255),
         )
@@ -751,18 +771,18 @@ class DemoRenderer:
             anchor="ra",
         )
         draw.text(
-            (self.x(1070), self.y(305)),
+            (self.x(1200), self.y(305)),
             f"ADAPTIVE ROUND {max(1, math.ceil(current_round))} / 10",
             font=mono_11,
             fill=(*self.GREEN, 255),
         )
 
         stages = (
-            ("01", "Explore", "real rollout, visible execution and recovery"),
-            ("02", "Solidify", "reviewed success becomes visual_pick_place code"),
-            ("03", "Reuse", "representative successes across additional tasks"),
+            ("01", "Failure", "120-step under-transport and hold loss"),
+            ("02", "Corrective data", "304-step visual expert trajectory"),
+            ("03", "Replay", "fine-tuned ACT plus wrist placement succeeds"),
         )
-        stage_left = self.x(1040)
+        stage_left = self.x(1180)
         stage_right = self.x(1842)
         for stage_index, (number, label, detail) in enumerate(stages):
             top = self.y(650 + stage_index * 92)
@@ -802,7 +822,7 @@ class DemoRenderer:
         )
         draw.text(
             (self.x(76), self.y(965)),
-            EVOLUTION_VIDEO_CAPTION,
+            BEFORE_AFTER_CAPTION,
             font=mono_11,
             fill=(*self.INK_SOFT, 255),
         )
@@ -1102,7 +1122,7 @@ def render_demo(args: argparse.Namespace, manifest: dict[str, Any]) -> None:
     ffmpeg = shutil.which("ffmpeg")
     if not ffmpeg:
         raise RuntimeError("ffmpeg is required to render the demo")
-    publication, _robotwin = _load_evidence()
+    publication, _robotwin, _libero_plus = _load_evidence()
     renderer = DemoRenderer(
         width=args.width,
         height=args.height,

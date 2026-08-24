@@ -22,21 +22,29 @@ def _run(*arguments: str) -> subprocess.CompletedProcess[str]:
     )
 
 
-def test_demo_manifest_has_nine_verified_sources_and_bounded_claims() -> None:
+def test_demo_manifest_has_rotating_grid_and_matched_before_after() -> None:
     result = _run("--print-manifest")
 
     assert result.returncode == 0, result.stderr
     manifest = json.loads(result.stdout)
     sources = manifest["sources"]
     paths = [row["path"] for row in sources]
-    assert len(sources) == 9
-    assert len(set(paths)) == 9
+    assert len(sources) == 14
+    assert len(set(paths)) == 14
     assert all((ROOT / path).is_file() for path in paths)
-    assert {row["platform"] for row in sources} == {"LIBERO", "RoboTwin"}
+    assert {row["platform"] for row in sources} == {"ACT", "LIBERO", "RoboTwin"}
     assert {row["verdict"] for row in sources} == {
+        "native_simulator_failure",
         "native_simulator_success",
         "native_predicate_success",
     }
+
+    task_grid = manifest["task_grid"]
+    assert task_grid["layout"] == "3x3"
+    assert len(task_grid["pages"]) == 2
+    assert all(len(page) == 9 for page in task_grid["pages"])
+    assert len(set().union(*map(set, task_grid["pages"]))) == 13
+    assert "act-before-corrective" not in set().union(*map(set, task_grid["pages"]))
 
     assert manifest["duration_s"] == 39.0
     assert sum(scene["duration_s"] for scene in manifest["scenes"]) == 39.0
@@ -48,23 +56,23 @@ def test_demo_manifest_has_nine_verified_sources_and_bounded_claims() -> None:
             "not fixed-policy Pass@10."
         ),
     }
-    assert manifest["evolution_video"] == {
-        "phases": [
-            {"id": "explore", "sources": ["strict-moka-pot-stove"]},
-            {"id": "solidify", "sources": ["adaptive-black-bowl-plate"]},
-            {
-                "id": "reuse",
-                "sources": [
-                    "strict-ketchup-basket",
-                    "strict-bowl-tray",
-                    "strict-pudding-basket",
-                    "act-corrective-transport",
-                ],
-            },
-        ],
+    assert manifest["before_after"] == {
+        "task": "libero_spatial_swap/0",
+        "seed": 3,
+        "time_alignment": "normalized_episode_progress",
+        "before": {
+            "id": "act-before-corrective",
+            "transport_steps": 120,
+            "verdict": "native_simulator_failure",
+        },
+        "after": {
+            "id": "act-corrective-transport",
+            "transport_steps": 304,
+            "verdict": "native_simulator_success",
+        },
         "caption": (
-            "Representative rollout footage synchronized to measured coverage; "
-            "not a paired same-task comparison."
+            "Same task and seed; videos use normalized episode progress. "
+            "The aggregate coverage curve is a separate cross-release measure."
         ),
     }
     assert manifest["matched_code"] == {
@@ -154,22 +162,41 @@ def test_demo_smoke_render_is_complete_h264_with_distinct_scenes(tmp_path: Path)
     for left, right in zip(samples, samples[1:]):
         assert float(np.mean(np.abs(left - right))) > 8.0
 
-    evolution_frames = []
-    for timestamp_s in (1.35, 1.75, 2.2):
+    grid_pages = []
+    for timestamp_s in (0.3, 0.9):
         capture = cv2.VideoCapture(str(output))
         capture.set(cv2.CAP_PROP_POS_MSEC, timestamp_s * 1000)
         ok, frame = capture.read()
         capture.release()
         assert ok, timestamp_s
         height, width = frame.shape[:2]
-        video_region = frame[
-            round(0.22 * height) : round(0.80 * height),
-            round(0.04 * width) : round(0.51 * width),
+        grid = frame[
+            round(0.07 * height) : round(0.93 * height),
+            round(0.25 * width) : round(0.75 * width),
         ]
-        assert float(video_region.std()) > 20.0, timestamp_s
-        evolution_frames.append(video_region.astype(np.float32))
-    for left, right in zip(evolution_frames, evolution_frames[1:]):
-        assert float(np.mean(np.abs(left - right))) > 15.0
+        grid_pages.append(grid.astype(np.float32))
+    assert float(np.mean(np.abs(grid_pages[0] - grid_pages[1]))) > 12.0
+
+    capture = cv2.VideoCapture(str(output))
+    capture.set(cv2.CAP_PROP_POS_MSEC, 2.25 * 1000)
+    ok, frame = capture.read()
+    capture.release()
+    assert ok
+    height, width = frame.shape[:2]
+    crop_width = round(0.25 * width)
+    before_left = round(0.04 * width)
+    after_left = round(0.32 * width)
+    before = frame[
+        round(0.25 * height) : round(0.74 * height),
+        before_left : before_left + crop_width,
+    ].astype(np.float32)
+    after = frame[
+        round(0.25 * height) : round(0.74 * height),
+        after_left : after_left + crop_width,
+    ].astype(np.float32)
+    assert float(before.std()) > 20.0
+    assert float(after.std()) > 20.0
+    assert float(np.mean(np.abs(before - after))) > 8.0
 
     poster_frame = cv2.imread(str(poster))
     assert poster_frame is not None
