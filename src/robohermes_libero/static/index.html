@@ -7,7 +7,7 @@
     <meta name="description" content="roborsi turns simulator-verified robot experience into inspectable code-backed skills on LIBERO.">
     <title>roborsi | Verified Robot Self-Improvement</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="styles.css?v=20260823">
+    <link rel="stylesheet" href="styles.css?v=20260824">
   </head>
   <body>
     <section id="overview" class="article-hero" aria-label="roborsi robot rollout">
@@ -28,6 +28,8 @@
             <a href="#simulations">Simulation evidence</a>
             <a href="#libero-plus">LIBERO-Plus</a>
             <a href="#experiments">Evaluation</a>
+            <a href="#dynamics">Evolution dynamics</a>
+            <a href="#robotwin">RoboTwin</a>
             <a href="#comparison">Context</a>
             <a href="#tasks">Task evidence</a>
             <a href="#reproduce">Reproduce</a>
@@ -36,7 +38,7 @@
 
         <article class="article-shell">
           <header id="article-title" class="article-title-block">
-            <p class="article-kicker">PUBLIC SIMULATOR RELEASE / 23 AUG 2026</p>
+            <p class="article-kicker">PUBLIC SIMULATOR RELEASE / 24 AUG 2026</p>
             <h1>roborsi: verified robot experience as inspectable code</h1>
             <p class="article-deck">A skill-first agent that composes visible robot tools, diagnoses execution traces, and retains code only after a native simulator verdict.</p>
             <nav class="article-links" aria-label="Project resources">
@@ -154,6 +156,37 @@
             <h2>Evaluation across evidence tracks</h2>
             <p>Four protocols answer different questions and remain separate throughout the release.</p>
 
+            <section id="dynamics" class="result-section dynamics-section" aria-labelledby="dynamics-title">
+              <header><div><span>CLAIM SEPARATION</span><h3 id="dynamics-title">What improves, and what does not</h3></div><strong>better + faster</strong></header>
+              <p><strong>Pass@k is not an evolution curve.</strong> Strict Standard-130 rises from 23 to 67 tasks because each task receives more ordered seeds; cumulative coverage is monotonic by construction. Its per-round median tokens and wall time are non-monotonic, the residual task set changes, and releases change between rounds.</p>
+              <figure class="paper-figure dynamics-figure">
+                <img src="media/figures/evolution-dynamics.svg" alt="Strict retry coverage, adaptive LIBERO development, historical RoboTwin campaign progress, and matched Code-on efficiency" loading="eager">
+                <figcaption>Figure 3. Four curves with four different contracts. Adaptive LIBERO and historical RoboTwin show solution-discovery progress; matched Code-on/off supplies the causal efficiency evidence. Strict Pass@k reports retry coverage only.</figcaption>
+              </figure>
+              <div class="dynamics-claims" aria-label="Evolution claim summary">
+                <p><span>Strict Standard-130</span><strong>Coverage, not evolution</strong><small>23 to 67 with a growing seed budget</small></p>
+                <p><span>Adaptive releases</span><strong>Better task coverage</strong><small>32/120 to 83/120 across evolving rounds</small></p>
+                <p><span>Matched Code-on/off</span><strong>Faster execution</strong><small>-29.4% median tokens; -17.0% median wall time</small></p>
+              </div>
+            </section>
+
+            <section id="robotwin" class="result-section robotwin-section" aria-labelledby="robotwin-title">
+              <header><div><span>HISTORICAL CROSS-PLATFORM EVIDENCE</span><h3 id="robotwin-title">RoboTwin solution discovery</h3></div><strong id="robotwin-three-role">36/50</strong></header>
+              <div class="sidenote-row">
+                <p>The historical RoboTwin reports list a pure Engineer baseline alongside the Planner-Engineer-Reviewer framework. Task-level pass@k is <strong id="robotwin-pure">9/50</strong> and 36/50 respectively, while strict per-episode success was <strong id="robotwin-episode">104/422 (24.6%)</strong>. The campaign window was <strong id="robotwin-window">87.26 h</strong>.</p>
+                <aside class="article-sidenote"><strong>Historical boundary</strong><p>Up to 10-20 attempts per task and 87% adjacent-attempt overlap. The full episode ledger is not public, so 9/50 versus 36/50 is not presented as a paired role ablation.</p></aside>
+              </div>
+              <div class="robotwin-facts">
+                <p><span>Pure Engineer</span><strong>9/50</strong><small>task coverage</small></p>
+                <p><span>Three roles</span><strong>36/50</strong><small>task-level pass@k</small></p>
+                <p><span>Strict episodes</span><strong>104/422</strong><small>24.6% success</small></p>
+                <p><span>Parallel overlap</span><strong>87%</strong><small>not sequential causality</small></p>
+              </div>
+              <h3>Predicate-confirmed episodes</h3>
+              <div id="robotwin-video-grid" class="case-study-list compact-cases robotwin-cases" aria-label="Historical RoboTwin success videos"></div>
+              <p class="scope-note">These three archived videos and their final simulator predicates are exact. Their original per-episode tool logs were not retained, so each dialog reports final-verdict-only provenance rather than inventing a call chain.</p>
+            </section>
+
             <section class="result-section" aria-labelledby="adaptive-title">
               <header><div><span>DEVELOPMENT RESULT</span><h3 id="adaptive-title">Adaptive development coverage</h3></div><strong>95/120</strong></header>
               <p>The measured ten-round sequence grows from 32 to 83 solved tasks while releases evolve between rounds. Later residual releases add 12 disjoint native successes, producing the locked 95-task cross-release headline.</p>
@@ -171,6 +204,7 @@
                 <figure><figcaption>Figure 4. Task-level Pass@k.</figcaption><div id="strict-chart" class="chart" aria-label="Strict Standard-130 Pass at k"></div></figure>
                 <dl><div><dt>Task failures</dt><dd>779</dd></div><div><dt>Total tokens</dt><dd>2.882B</dd></div><div><dt>VLM calls</dt><dd>43,076</dd></div></dl>
               </div>
+              <p class="scope-note">Trend interpretation: the first five versus last five round medians show 13.6% fewer tokens, 3.1% fewer VLM calls, but 8.0% longer wall time. Because releases and residual tasks change, none of these descriptive shifts establishes that the model gets progressively faster.</p>
             </section>
 
             <section class="result-section" aria-labelledby="code-title">
@@ -266,10 +300,11 @@
       </div>
       <div class="dialog-trace">
         <header><span>EXECUTION TRACE</span><strong id="dialog-verdict"></strong></header>
+        <p id="dialog-trace-note" class="dialog-trace-note"></p>
         <ol id="video-tool-chain"></ol>
       </div>
     </dialog>
 
-    <script src="app.js?v=20260823" defer></script>
+    <script src="app.js?v=20260824" defer></script>
   </body>
 </html>

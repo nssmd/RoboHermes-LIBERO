@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img alt="64 tests passed" src="https://img.shields.io/badge/tests-64_passed-16845b">
+  <img alt="70 tests passed" src="https://img.shields.io/badge/tests-70_passed-16845b">
   <a href="LICENSE"><img alt="Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-1f6feb"></a>
   <img alt="Python 3.10-3.12" src="https://img.shields.io/badge/python-3.10--3.12-3776ab">
   <img alt="LIBERO short 120" src="https://img.shields.io/badge/LIBERO_short-120_tasks-16845b">
@@ -29,12 +29,19 @@ harness verdict.
 | Matched Code-on/off | 174/600 vs 129/600 | Five seeds; +7.5 pp; McNemar `p=8.06e-5` |
 | Matched median tokens | 2.58M vs 3.65M | Separate 118-task Code-on/off efficiency panel |
 | ACT corrective transport | 1/1 native success | One matched seed-3 case; not held-out generalization |
+| Historical RoboTwin | 36/50 task pass@k | Pure Engineer report 9/50; strict episodes 104/422; not a paired role ablation |
 
 The adaptive breakdown is Spatial `9/10`, Object `10/10`, Goal `9/10`, and
 LIBERO-90 `67/90`. This headline is cumulative coverage across evolving
 releases. It is **not** a frozen-policy result, a single-release result, or
 conventional fixed-method Pass@10. LIBERO-Plus, strict, adaptive,
-matched-ablation, and ACT results stay separate in the data and UI.
+matched-ablation, ACT, and historical RoboTwin results stay separate in the data and UI.
+
+Strict Standard-130 Pass@k is retry coverage, not an evolution curve. The
+cross-release adaptive campaign supports broader task coverage, while the
+matched Code-on/off panel supports lower token, VLM-call, and wall-time cost.
+Historical RoboTwin shows parallel solution discovery from 17 to 36 tasks over
+87.26 hours, but 87% attempt overlap prevents a sequential-learning claim.
 
 The final LIBERO-Plus panel covers seven perturbation categories and three
 short suites. Fixed single-attempt succeeds on `261/840`; adaptive Pass@2
@@ -61,18 +68,22 @@ failed or infrastructure attempts.
 
 ## Videos And Publication Data
 
-The project page includes ten decoded native-success videos: four exact
+The project page includes thirteen decoded success videos: four exact
 Standard-130 episodes, one sequential-adaptive episode, the ACT matched case,
-and four LIBERO-Plus perturbation successes. Every video opens with its task,
-seed, evidence scope, and ordered tool name/outcome chain. The hero contains
-only LIBERO simulator successes.
+four LIBERO-Plus perturbation successes, and three historical RoboTwin
+predicate-confirmed episodes. The RoboTwin videos retain exact final verdicts
+but not their original per-episode tool logs; the UI labels them
+`final-verdict-only` rather than inferring a chain. The hero contains only
+LIBERO simulator successes.
 
 Publication values are machine-readable in
 [`evidence/publication-v1/experiments.json`](evidence/publication-v1/experiments.json).
 The final Plus object is
 [`evidence/publication-v1/libero_plus_final.json`](evidence/publication-v1/libero_plus_final.json).
-The dashboard packages both sources without maintaining a second statistics
-path.
+Strict round dynamics and historical RoboTwin evidence are stored separately
+in [`strict_round_dynamics.json`](evidence/publication-v1/strict_round_dynamics.json)
+and [`robotwin_historical.json`](evidence/publication-v1/robotwin_historical.json).
+The dashboard packages these sources without recomputing their statistics.
 
 - [Experiment inventory and RoboHarness/OpenETA comparison](docs/EXPERIMENTS_AND_COMPARISON.md)
 - [Chinese media draft](PRESS_KIT_ZH.md)
@@ -223,9 +234,11 @@ python scripts/release_check.py
 ## Scope And Dependencies
 
 This repository intentionally contains only the LIBERO short runtime and its
-transitive dependencies. It does not contain unrelated benchmark pipelines,
-private endpoints, credentials, historical raw logs, or machine-specific
-launchers.
+transitive dependencies. Publication assets additionally include a sanitized
+historical RoboTwin summary and three predicate-confirmed videos; they do not
+include the RoboTwin runtime or full episode ledger. The repository does not
+contain private endpoints, credentials, historical raw logs, or
+machine-specific launchers.
 
 RoboHermes is Apache-2.0. LIBERO and PyRoKi retain their upstream licenses.
 GraspGen is an optional external dependency with NVIDIA's non-commercial use

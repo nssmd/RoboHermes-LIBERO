@@ -128,6 +128,98 @@ def test_dashboard_includes_final_libero_plus_adaptive_result() -> None:
     }
 
 
+def test_dashboard_includes_strict_dynamics_and_historical_robotwin() -> None:
+    experiments = build_dashboard_payload()["publication"]["experiments"]
+    strict = experiments["strict_standard130"]
+    dynamics = strict["round_dynamics"]
+
+    assert dynamics["scheduled_tasks"] == [130, 107, 95, 87, 81, 74, 70, 69, 67, 66]
+    assert dynamics["median_total_tokens"] == [
+        3_688_439.0,
+        3_856_719.0,
+        2_877_367.0,
+        2_059_593.0,
+        2_609_440.0,
+        1_944_753.0,
+        1_973_671.5,
+        2_831_001.0,
+        2_486_296.0,
+        2_652_550.0,
+    ]
+    assert dynamics["median_elapsed_s"] == [
+        830.836,
+        870.264,
+        953.839,
+        943.92,
+        866.945,
+        816.9045,
+        822.2785,
+        944.749,
+        939.461,
+        960.94,
+    ]
+    assert dynamics["claim_scope"] == "descriptive_residual_rounds_not_evolution"
+    assert dynamics["first5_to_last5_median_change"]["tokens"] == -0.13591279805461032
+    assert dynamics["first5_to_last5_median_change"]["wall"] == 0.07951265363154159
+
+    robotwin = experiments["robotwin_historical"]
+    assert robotwin["status"] == "historical_audited_summary"
+    assert robotwin["tasks"] == 50
+    assert robotwin["pure_engineer_solved"] == 9
+    assert robotwin["three_role_solved"] == 36
+    assert robotwin["successful_episodes"] == 104
+    assert robotwin["verdict_episodes"] == 422
+    assert robotwin["per_episode_success_rate"] == 104 / 422
+    assert robotwin["elapsed_hours"] == [
+        0.0,
+        1.127,
+        1.792,
+        3.799,
+        17.642,
+        18.791,
+        25.086,
+        38.622,
+        62.85,
+        87.26,
+    ]
+    assert robotwin["solved_over_time"] == [17, 19, 20, 21, 25, 26, 29, 34, 33, 36]
+    assert robotwin["parallel_overlap_fraction"] == 0.87
+    assert robotwin["claim_scope"] == "historical_parallel_solution_discovery_not_fixed_policy"
+    assert robotwin["provenance"]["full_episode_ledger_in_public_repo"] is False
+    assert len(robotwin["media"]["videos"]) == 3
+    assert {row["verdict"] for row in robotwin["media"]["videos"]} == {
+        "simulator_predicate_success"
+    }
+    assert {row["trace_scope"] for row in robotwin["media"]["videos"]} == {
+        "final_verdict_only"
+    }
+
+
+def test_static_preview_packages_robotwin_media_and_dynamics_figure(tmp_path: Path) -> None:
+    output = build_static_preview(tmp_path / "site")
+    robotwin = build_dashboard_payload()["publication"]["experiments"]["robotwin_historical"]
+
+    figure_references = (
+        "media/figures/evolution-dynamics.svg",
+        "media/figures/evolution-dynamics.png",
+    )
+    for reference in figure_references:
+        path = output / reference
+        assert path.is_file(), reference
+        assert path.stat().st_size > 10_000
+    for video in robotwin["media"]["videos"]:
+        for field in ("video", "poster"):
+            path = output / video[field]
+            assert path.is_file(), path
+            assert path.stat().st_size > 3_000
+
+    html = (output / "index.html").read_text(encoding="utf-8")
+    assert 'id="dynamics"' in html
+    assert 'id="robotwin"' in html
+    assert 'id="robotwin-video-grid"' in html
+    assert "Pass@k is not an evolution curve" in html
+
+
 def test_publication_sources_cover_competitive_reference_set() -> None:
     sources = build_dashboard_payload()["publication"]["sources"]
     urls = {source["url"] for source in sources}

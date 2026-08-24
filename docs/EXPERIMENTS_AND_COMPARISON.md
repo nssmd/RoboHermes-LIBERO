@@ -11,6 +11,7 @@ RoboHermes 当前最扎实的结论不是“在同一榜单上超过 RoboHarness
 2. 在覆盖全部 120 个 LIBERO short tasks 的持续开发过程中，Native simulator success 覆盖从顺序实验的 Pass@1 `32/120` 增长到 Pass@10 `83/120`，后续 residual releases 将跨版本累计覆盖锁定为 `95/120`。
 3. 在 120 个任务、5 个匹配 seed、每组 600 个 task-seed episode 的 Code-on/off 实验中，固化后的代码技能把 episode success 从 `129/600` 提高到 `174/600`，提升 `7.5` 个百分点。McNemar 精确检验 `p=8.06e-5`，task-cluster bootstrap 95% CI 为 `+3.7` 至 `+11.5` 个百分点。
 4. 在独立的 118-task 匹配效率面板中，Code-on 的中位 episode token 为 `2.58M`，Code-off 为 `3.65M`，降低 `29.4%`；中位 wall time 从 `845s` 降至 `701s`。这支持“成功经验转成代码后，可减少重复 VLM 推理”的机制结论。
+5. 历史 RoboTwin campaign 在 50 个任务上记录了 pure Engineer `9/50` 与三角色 task-level pass@k `36/50`，严格 episode 为 `104/422 = 24.6%`。该 campaign 的 87% 相邻 attempt 重叠，因此只支持并行 solution-discovery coverage，不支持顺序学习或 72% 单次成功率。
 
 当前最大的缺口同样明确：没有正式 real-robot task-rate，没有预注册 adaptive train/holdout promotion，也没有异构 policy handoff 实验。LIBERO-Plus `398/840` 与 short `95/120` 都是跨 release 的 adaptive development coverage，而不是单一固定 release 的常规成功率。
 
@@ -80,6 +81,8 @@ Pass@10 83/120
 
 Suite 结果为 Spatial `9/10`、Object `10/10`、Goal `7/10`、LIBERO-10 `0/10`、LIBERO-90 `41/90`。LIBERO-10 的 `0/10` 是当前系统的硬缺口，不能被 adaptive headline 遮住。
 
+这条 Pass@k 曲线不是进化曲线。前五轮与后五轮的逐轮中位数相比，token 下降 `13.6%`、VLM calls 下降 `3.1%`，但 wall time 反而增加 `8.0%`；而且 residual task set 与 release 都在变化。因此不能据此宣称模型“越做越快”。更快的因果证据来自 matched Code-on/off 面板。
+
 ### 1.5 Matched Code-on/off
 
 “Code”在这里不是笼统的视觉固化。Code-on 暴露由 Round 1 成功轨迹固化并通过 canary 的 `visual_pick_place` compound；Code-off 保留相同的 base tools，但不暴露该 compound。两组使用相同 release、模型、medium reasoning、任务、seed 和预算。
@@ -114,7 +117,7 @@ ACT 当前有一个完整 matched case：`libero_spatial_swap/0 seed3`。流程�
 ### 1.7 未纳入公开 headline 的实验
 
 - ASPIRE targeted development 属于诊断和定点修复，不是完整 benchmark 结果。
-- 早期 RoboTwin 结果属于另一个平台，不能混入 LIBERO 排名。
+- 早期 RoboTwin 结果属于另一个平台；新项目页将其作为 historical cross-platform evidence 单列，不混入 LIBERO 排名。当前公开仓库没有完整 RoboTwin episode ledger，只有摘要与 3 个 predicate-confirmed 视频。
 - Long-horizon 工作当前由外部 owner 管理，不在本次 LIBERO short 公开仓库和评测盘点范围内。
 - 历史失败、损坏视频和 preflight 仍被保留，但不会进入成功画廊或 headline denominator。
 

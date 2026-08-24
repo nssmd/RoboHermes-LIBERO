@@ -1,0 +1,65 @@
+{
+  "schema": "roborsi.strict_round_dynamics.v1",
+  "status": "final_descriptive_summary",
+  "pass_curve": [23, 35, 43, 49, 56, 60, 61, 63, 64, 67],
+  "scheduled_tasks": [130, 107, 95, 87, 81, 74, 70, 69, 67, 66],
+  "median_total_tokens": [
+    3688439.0,
+    3856719.0,
+    2877367.0,
+    2059593.0,
+    2609440.0,
+    1944753.0,
+    1973671.5,
+    2831001.0,
+    2486296.0,
+    2652550.0
+  ],
+  "median_elapsed_s": [
+    830.836,
+    870.264,
+    953.839,
+    943.92,
+    866.945,
+    816.9045,
+    822.2785,
+    944.749,
+    939.461,
+    960.94
+  ],
+  "median_vlm_calls": [43.0, 49.0, 53.0, 49.0, 51.0, 47.0, 47.5, 48.0, 48.0, 43.0],
+  "round_total_tokens": [
+    593701254,
+    501495990,
+    344405517,
+    214097224,
+    231028110,
+    171077989,
+    187033364,
+    211186446,
+    236293090,
+    191792492
+  ],
+  "round_wall_s": [
+    11078.872107,
+    10394.395612,
+    7652.084981,
+    6339.75786,
+    4405.370834,
+    4231.559385,
+    6019.140757,
+    3989.392405,
+    4375.387768,
+    3029.99552
+  ],
+  "first5_to_last5_median_change": {
+    "tokens": -0.13591279805461032,
+    "wall": 0.07951265363154159,
+    "vlm_calls": -0.030612244897959218
+  },
+  "release_changed_between_rounds": true,
+  "residual_task_set_changed_between_rounds": true,
+  "claim_scope": "descriptive_residual_rounds_not_evolution",
+  "claim_boundary": "Pass@k is cumulative retry coverage and is monotonic by construction. Round totals shrink with the residual denominator, while per-episode medians are non-monotonic and releases change. These rows do not establish that the model becomes faster or better over time.",
+  "source": "Sanitized from the final Standard-130 campaign summary and round metrics recorded on 2026-08-16."
+}

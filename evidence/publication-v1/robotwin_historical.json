@@ -1,0 +1,82 @@
+{
+  "schema": "roborsi.robotwin_historical.v1",
+  "status": "historical_audited_summary",
+  "platform": "RoboTwin",
+  "tasks": 50,
+  "attempts_per_task": "up to 10-20",
+  "pure_engineer_solved": 9,
+  "three_role_solved": 36,
+  "task_solve_rate": 0.72,
+  "successful_episodes": 104,
+  "verdict_episodes": 422,
+  "per_episode_success_rate": 0.24644549763033174,
+  "elapsed_hours": [0.0, 1.127, 1.792, 3.799, 17.642, 18.791, 25.086, 38.622, 62.85, 87.26],
+  "solved_over_time": [17, 19, 20, 21, 25, 26, 29, 34, 33, 36],
+  "parallel_overlap_fraction": 0.87,
+  "audit_correction": {
+    "before": 34,
+    "after": 33,
+    "elapsed_hours": 62.85,
+    "reason": "A previously counted task was removed during strict predicate and leakage review."
+  },
+  "claim_scope": "historical_parallel_solution_discovery_not_fixed_policy",
+  "claim_boundary": "The 36/50 result is task-level pass@k over up to 10-20 attempts. The wall-clock curve contains heavily overlapping runs and one visible audit correction, so it shows campaign solution discovery rather than clean sequential-learning causality or a 72% single-episode success rate. The 9/50 pure-Engineer value is a historical comparison, not a replayable paired role ablation in this repository.",
+  "provenance": {
+    "summary_source": "Audited 2026-08-13 cross-platform dashboard and imported strict solved-task reports.",
+    "full_episode_ledger_in_public_repo": false,
+    "predicate_confirmed_media": true,
+    "exact_episode_tool_traces_retained": false
+  },
+  "media": {
+    "videos": [
+      {
+        "id": "robotwin-grab-roller-seed22",
+        "experiment": "robotwin_historical",
+        "platform": "RoboTwin",
+        "title": "Grab roller",
+        "subtitle": "Predicate-confirmed historical episode",
+        "task": "grab_roller",
+        "seed": 22,
+        "duration_s": 45.8,
+        "verdict": "simulator_predicate_success",
+        "video": "media/videos/robotwin-grab-roller-seed22.mp4",
+        "poster": "media/posters/robotwin-grab-roller-seed22.jpg",
+        "trace_scope": "final_verdict_only",
+        "trace_note": "The archived video and final predicate are exact. The original per-episode call log is not retained in the current public bundle.",
+        "tool_chain": [{"tool": "final_simulator_verdict", "ok": true}]
+      },
+      {
+        "id": "robotwin-place-container-plate-seed21",
+        "experiment": "robotwin_historical",
+        "platform": "RoboTwin",
+        "title": "Place container on plate",
+        "subtitle": "Predicate-confirmed historical episode",
+        "task": "place_container_plate",
+        "seed": 21,
+        "duration_s": 44.1,
+        "verdict": "simulator_predicate_success",
+        "video": "media/videos/robotwin-place-container-plate-seed21.mp4",
+        "poster": "media/posters/robotwin-place-container-plate-seed21.jpg",
+        "trace_scope": "final_verdict_only",
+        "trace_note": "The archived video and final predicate are exact. The original per-episode call log is not retained in the current public bundle.",
+        "tool_chain": [{"tool": "final_simulator_verdict", "ok": true}]
+      },
+      {
+        "id": "robotwin-turn-switch-seed23",
+        "experiment": "robotwin_historical",
+        "platform": "RoboTwin",
+        "title": "Turn switch",
+        "subtitle": "Predicate-confirmed historical episode",
+        "task": "turn_switch",
+        "seed": 23,
+        "duration_s": 37.8,
+        "verdict": "simulator_predicate_success",
+        "video": "media/videos/robotwin-turn-switch-seed23.mp4",
+        "poster": "media/posters/robotwin-turn-switch-seed23.jpg",
+        "trace_scope": "final_verdict_only",
+        "trace_note": "The archived video and final predicate are exact. The original per-episode call log is not retained in the current public bundle.",
+        "tool_chain": [{"tool": "final_simulator_verdict", "ok": true}]
+      }
+    ]
+  }
+}

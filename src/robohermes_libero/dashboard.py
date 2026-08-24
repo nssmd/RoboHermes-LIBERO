@@ -38,6 +38,12 @@ def _load_publication() -> dict:
     publication["experiments"]["libero_plus"] = json.loads(
         _publication_path("libero_plus_final.json").read_text(encoding="utf-8")
     )
+    publication["experiments"]["strict_standard130"]["round_dynamics"] = json.loads(
+        _publication_path("strict_round_dynamics.json").read_text(encoding="utf-8")
+    )
+    publication["experiments"]["robotwin_historical"] = json.loads(
+        _publication_path("robotwin_historical.json").read_text(encoding="utf-8")
+    )
     return publication
 
 
