@@ -79,6 +79,56 @@
     "experiments": {
       "act": {
         "act_steps": 304,
+        "before_after": {
+          "after_id": "act-corrective-transport",
+          "before": {
+            "duration_s": 6.8,
+            "experiment": "act_before_after",
+            "height": 256,
+            "id": "act-before-corrective",
+            "poster": "media/posters/act-before-corrective-seed3.jpg",
+            "seed": 3,
+            "subtitle": "Bounded ACT under-transported and placement failed",
+            "task": "libero_spatial_swap/0",
+            "title": "Before corrective data",
+            "tool_chain": [
+              {
+                "ok": true,
+                "tool": "relation_point"
+              },
+              {
+                "ok": true,
+                "tool": "grasp_object"
+              },
+              {
+                "detail": "120/120 learned transport steps",
+                "ok": true,
+                "tool": "act_transport_120"
+              },
+              {
+                "detail": "hold lost during hover approach",
+                "ok": false,
+                "tool": "place_on_surface"
+              },
+              {
+                "detail": "final verdict=false",
+                "ok": false,
+                "tool": "final_simulator_verdict"
+              }
+            ],
+            "trace_note": "Ordered evaluator stages from the archived r2 episode record; no per-stage video timestamps were logged.",
+            "trace_scope": "hybrid_stage_trace",
+            "verdict": "simulator_failure",
+            "video": "media/videos/act-before-corrective-seed3.mp4",
+            "width": 256
+          },
+          "claim_scope": "single_matched_case_not_aggregate_policy_improvement",
+          "comparison_caption": "Same task and seed; videos use normalized episode progress. The aggregate coverage curve is a separate cross-release measure.",
+          "seed": 3,
+          "status": "same_task_same_seed_matched_case",
+          "task": "libero_spatial_swap/0",
+          "time_alignment": "normalized_episode_progress"
+        },
         "claim_boundary": "One native simulator success demonstrates the data-to-policy-to-hybrid-execution loop. It does not establish held-out ACT performance.",
         "claim_scope": "matched_success_case_not_generalization",
         "ground_truth_in_policy_input": false,
@@ -2534,21 +2584,44 @@
           "tool_chain": [
             {
               "ok": true,
-              "tool": "code_backed_grasp"
+              "tool": "relation_point"
             },
             {
               "ok": true,
-              "tool": "act_corrective_transport_304_steps"
+              "tool": "grasp_object"
+            },
+            {
+              "detail": "304/304 learned transport steps",
+              "ok": true,
+              "tool": "act_transport_304"
             },
             {
               "ok": true,
-              "tool": "code_backed_placement"
+              "tool": "surface_approach"
             },
             {
+              "ok": true,
+              "tool": "surface_staged_descent"
+            },
+            {
+              "ok": true,
+              "tool": "surface_release_pose"
+            },
+            {
+              "ok": true,
+              "tool": "gripper_open"
+            },
+            {
+              "ok": true,
+              "tool": "retract"
+            },
+            {
+              "detail": "final verdict=true",
               "ok": true,
               "tool": "final_simulator_verdict"
             }
           ],
+          "trace_note": "Ordered evaluator stages from the protected success record; no per-stage video timestamps were logged.",
           "trace_scope": "hybrid_stage_trace",
           "verdict": "simulator_success",
           "video": "media/videos/act-corrective-transport.mp4",
