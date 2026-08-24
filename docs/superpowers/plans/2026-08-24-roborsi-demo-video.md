@@ -173,7 +173,7 @@ errors. Capture the Demo section at 1728 px for release inspection.
 - Publish: `main`
 - Publish: `gh-pages`
 - Preserve: `gh-pages/CNAME`
-- Update: `/data/yijia/zimo/.memory/log.md` and generated memory state
+- Update: the workspace-level `.memory/log.md` and generated memory state
 
 - [ ] **Step 1: Commit and fast-forward main**
 
@@ -197,4 +197,3 @@ new section and assets.
 Run `research-memory ingest --agent codex` if available; otherwise append a
 session entry containing source/deployment commits, media properties, tests,
 browser QA, public URLs, and remaining external HTTPS state.
-
