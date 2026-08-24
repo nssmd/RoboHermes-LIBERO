@@ -77,6 +77,10 @@ def collect_findings(root: Path) -> list[str]:
         "docs/EXPERIMENTS_AND_COMPARISON.md",
         "PRESS_KIT_ZH.md",
         "SOCIAL_COPY.md",
+        "src/robohermes_libero/static/zh.html",
+        "src/robohermes_libero/static/fonts/wqy-microhei.ttc",
+        "src/robohermes_libero/static/media/demo/roborsi-demo-zh.mp4",
+        "src/robohermes_libero/static/media/demo/roborsi-demo-zh-poster.jpg",
     )
     for relative in required:
         if not (root / relative).is_file():

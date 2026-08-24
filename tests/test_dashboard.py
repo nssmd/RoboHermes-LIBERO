@@ -267,13 +267,13 @@ def test_static_preview_packages_evidence_demo(tmp_path: Path) -> None:
     assert "controls" in demo_markup
     assert 'id="demo-video-grid"' in demo_markup
     assert 'id="act-before-after-grid"' in demo_markup
-    assert "Rotating 3 x 3" in demo_markup
+    assert "Simulator-confirmed rollouts and measured self-improvement" in demo_markup
     assert "All fourteen published recordings" in demo_markup
-    assert "Every robot frame comes from a named simulator-verdict artifact" in demo_markup
-    assert "Cross-release adaptive development coverage; not fixed-policy Pass@10." in html
-    assert "Matched Code-on/off panels. Video illustrates code-backed execution." in html
-    assert "styles.css?v=20260824f" in html
-    assert "app.js?v=20260824f" in html
+    assert "Each robot sequence is linked to a named task" in demo_markup
+    assert "Cross-release development coverage; not fixed-policy Pass@10." in html
+    assert "Matched success delta and median-token reduction." in html
+    assert "styles.css?v=20260824g" in html
+    assert "app.js?v=20260824g" in html
 
 
 def test_demo_library_unifies_all_recordings_and_available_traces() -> None:
@@ -452,7 +452,7 @@ def test_project_page_uses_exact_roborsi_enpire_manuscript() -> None:
     css = (static / "styles.css").read_text(encoding="utf-8")
 
     hero = html[html.index('id="overview"') : html.index("</section>")]
-    assert "roborsi: verified robot experience as inspectable code" in html
+    assert "roborsi: Simulator-Verified Robot Self-Improvement" in html
     assert "RoboHermes |" not in html
     assert "article-hero__wordmark" not in hero
     assert "hero-shade" not in hero
@@ -477,7 +477,88 @@ def test_static_preview_packages_manuscript_fonts(tmp_path: Path) -> None:
 
     assert (output / "fonts/source-serif-4-latin.woff2").stat().st_size > 10_000
     assert (output / "fonts/jetbrains-mono-latin.woff2").stat().st_size > 10_000
+    assert (output / "fonts/wqy-microhei.ttc").stat().st_size > 5_000_000
     assert (output / "fonts/FONT-LICENSES.md").is_file()
+
+
+def test_static_preview_packages_official_english_and_chinese_pages(tmp_path: Path) -> None:
+    output = build_static_preview(tmp_path / "site")
+    english = (output / "index.html").read_text(encoding="utf-8")
+    chinese = (output / "zh.html").read_text(encoding="utf-8")
+    javascript = (output / "app.js").read_text(encoding="utf-8")
+
+    assert '<html lang="en">' in english
+    assert '<html lang="zh-CN">' in chinese
+    assert 'href="zh.html"' in english
+    assert 'href="index.html"' in chinese
+    assert 'class="language-switch"' in english
+    assert 'class="language-switch"' in chinese
+    assert "roborsi: Simulator-Verified Robot Self-Improvement" in english
+    assert "roborsi：经仿真验证的机器人自进化系统" in chinese
+    assert "Simulator-confirmed rollouts and measured self-improvement" in english
+    assert "仿真验证的任务执行与可量化的自进化" in chinese
+    assert 'rel="canonical" href="https://robo-rsi.com/"' in english
+    assert 'rel="canonical" href="https://robo-rsi.com/zh.html"' in chinese
+    assert "one evolving skill system" not in english
+    assert "What improves, and what does not" not in english
+    for internal_phrase in (
+        "native-success",
+        "evidence scoped",
+        "locked 95-task",
+    ):
+        assert internal_phrase not in english
+    for mixed_or_internal_phrase in (
+        "原生成功录像",
+        "命名产物",
+        "墙钟时间",
+        "策略 checkpoint",
+        "held-out",
+        "失败 rollout",
+    ):
+        assert mixed_or_internal_phrase not in chinese
+
+    key_ids = (
+        "abstract",
+        "demo",
+        "act-before-after-grid",
+        "demo-video-grid",
+        "architecture",
+        "simulations",
+        "libero-plus",
+        "experiments",
+        "dynamics",
+        "robotwin",
+        "comparison",
+        "video-dialog",
+    )
+    for element_id in key_ids:
+        assert f'id="{element_id}"' in english
+        assert f'id="{element_id}"' in chinese
+
+    assert 'document.documentElement.lang.startsWith("zh")' in javascript
+    assert 'const VIDEO_ZH = {' in javascript
+    assert '"act-before-corrective": {' in javascript
+    assert '"SIMULATOR FAILURE": "仿真判定：失败"' in javascript
+    assert 'const numberLocale = isZh ? "zh-CN" : "en-US";' in javascript
+    comparison_zh = javascript[
+        javascript.index("const COMPARISON_ZH") : javascript.index("const POSITIONING_ZH")
+    ]
+    positioning_zh = javascript[
+        javascript.index("const POSITIONING_ZH") : javascript.index("function localizeVideo")
+    ]
+    for mixed_or_internal_phrase in ("rollout", "checkpoint", "held-out", "墙钟"):
+        assert mixed_or_internal_phrase not in comparison_zh
+        assert mixed_or_internal_phrase not in positioning_zh
+
+    for name in (
+        "media/demo/roborsi-demo.mp4",
+        "media/demo/roborsi-demo-poster.jpg",
+        "media/demo/roborsi-demo-zh.mp4",
+        "media/demo/roborsi-demo-zh-poster.jpg",
+    ):
+        path = output / name
+        assert path.is_file(), path
+        assert path.stat().st_size > 50_000
 
 
 def test_static_preview_preserves_custom_domain(tmp_path: Path) -> None:

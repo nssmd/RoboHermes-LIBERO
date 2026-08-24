@@ -74,7 +74,7 @@ results. Code-on is defined as exposing the solidified compound; Code-off keeps
 the model, release, tasks, seeds, base tools, and budget matched while removing
 that compound. The footer states:
 
-> Matched Code-on/off panels. Video illustrates code-backed execution.
+> Matched Code-on/off results. Video illustrates code-backed execution.
 
 ### 35.0-39.0 s: End Slate
 
@@ -108,6 +108,29 @@ The production outputs are:
 
 - `src/robohermes_libero/static/media/demo/roborsi-demo.mp4`
 - `src/robohermes_libero/static/media/demo/roborsi-demo-poster.jpg`
+- `src/robohermes_libero/static/media/demo/roborsi-demo-zh.mp4`
+- `src/robohermes_libero/static/media/demo/roborsi-demo-zh-poster.jpg`
+
+## Bilingual Publication
+
+The public release has two first-class static documents. `/index.html` is the
+English project page and `/zh.html` is the Simplified Chinese project page.
+Both pages retain the same section order, result values, task identifiers,
+figures, video library, and evidence boundaries. A fixed `EN / 中文` control
+switches documents without runtime machine translation.
+
+English copy follows a formal research-project register. Chinese copy is
+written independently for technical readers. Standard identifiers such as
+LIBERO, ACT, Pass@k, Code-on/off, Planner, Engineer, and Reviewer are retained,
+while avoidable internal shorthand is translated. Dynamic video titles, trace
+states, comparison rows, cost metrics, and failure verdicts follow the active
+document language.
+
+The compositor accepts `--language en|zh`. The Chinese master is rendered with
+the locally vendored WenQuanYi Micro Hei collection, so every frame is
+reproducible without host font discovery. English continues to use Source
+Serif 4 and JetBrains Mono. Font provenance and redistribution terms are
+recorded in `fonts/FONT-LICENSES.md`.
 
 ## Website Integration
 
@@ -134,6 +157,6 @@ two distinct rotating grid pages and distinct final Before/After frames.
 Release verification includes the full pytest suite, Ruff, release checks,
 JavaScript syntax, wheel/sdist build, a complete decode of every published MP4,
 and desktop Chromium QA at 1440 x 1000 and 1728 x 1117. Browser QA checks that
-the demo reaches ready state, the poster/video are nonblank, controls work, and
-all 14 library videos and their available traces render without request,
-console, overflow, or overlap failures.
+each language loads its corresponding master, the poster/video are nonblank,
+controls work, and all 14 library videos and their available traces render in
+the selected language without request, console, overflow, or overlap failures.

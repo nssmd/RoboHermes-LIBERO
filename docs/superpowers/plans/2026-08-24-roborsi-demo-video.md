@@ -203,3 +203,45 @@ new section and assets.
 Run `research-memory ingest --agent codex` if available; otherwise append a
 session entry containing source/deployment commits, media properties, tests,
 browser QA, public URLs, and remaining external HTTPS state.
+
+### Task 7: Publish First-Class English And Chinese Releases
+
+**Files:**
+- Modify: `src/robohermes_libero/static/index.html`
+- Create: `src/robohermes_libero/static/zh.html`
+- Modify: `src/robohermes_libero/static/app.js`
+- Modify: `src/robohermes_libero/static/styles.css`
+- Modify: `scripts/build_demo_video.py`
+- Modify: `scripts/release_check.py`
+- Modify: `tests/test_dashboard.py`
+- Modify: `tests/test_demo_video.py`
+
+- [x] **Step 1: Lock the bilingual publication contract**
+
+Require independent `lang=en` and `lang=zh-CN` documents, canonical and
+hreflang metadata, a fixed language switch, localized dynamic content, and
+language-specific demo media. Reject internal shorthand and avoidable English
+fragments in the Chinese publication.
+
+- [x] **Step 2: Implement the Chinese page and dynamic localization**
+
+Keep section order, figures, metrics, task identifiers, and evidence boundaries
+identical to English. Localize video titles, trace status, comparison rows,
+efficiency metrics, and terminal simulator verdicts without translating tool
+function names or benchmark identifiers.
+
+- [x] **Step 3: Render the Chinese evidence film**
+
+Add `--language en|zh`, vendor WenQuanYi Micro Hei with its license record,
+render the 39-second Chinese master and poster, and retain the English master.
+
+- [x] **Step 4: Run release and desktop browser verification**
+
+Run the complete repository gate and decode every MP4. Verify `/` and
+`/zh.html` at 1440 and 1728 pixel desktop widths, including dynamic traces,
+video playback, typography, overflow, requests, and console output.
+
+- [ ] **Step 5: Publish both documents**
+
+Fast-forward the tested source commit to `main`, rebuild `gh-pages`, preserve
+`CNAME`, and verify both public URLs and language-specific demo assets.

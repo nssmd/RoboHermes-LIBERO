@@ -81,7 +81,7 @@ def test_demo_manifest_has_rotating_grid_and_matched_before_after() -> None:
         "median_vlm_call_reduction_pct": 27.2,
         "median_wall_reduction_pct": 17.0,
         "caption": (
-            "Matched Code-on/off panels. "
+            "Matched Code-on/off results. "
             "Video illustrates code-backed execution."
         ),
     }
@@ -202,3 +202,49 @@ def test_demo_smoke_render_is_complete_h264_with_distinct_scenes(tmp_path: Path)
     assert poster_frame is not None
     assert poster_frame.shape[:2] == (270, 480)
     assert float(poster_frame.std()) > 12.0
+
+
+def test_chinese_demo_manifest_and_smoke_render(tmp_path: Path) -> None:
+    cv2 = pytest.importorskip("cv2")
+    if not shutil.which("ffmpeg") or not shutil.which("ffprobe"):
+        pytest.skip("FFmpeg and FFprobe are required for the Chinese demo")
+
+    manifest_result = _run("--language", "zh", "--print-manifest")
+    assert manifest_result.returncode == 0, manifest_result.stderr
+    manifest = json.loads(manifest_result.stdout)
+    assert manifest["language"] == "zh"
+    assert manifest["fonts"]["cjk"] == (
+        "src/robohermes_libero/static/fonts/wqy-microhei.ttc"
+    )
+    assert manifest["matched_code"]["caption"] == (
+        "Code-on/off 为配对实验；视频仅展示代码技能的执行过程。"
+    )
+
+    output = tmp_path / "demo-zh.mp4"
+    poster = tmp_path / "demo-zh-poster.jpg"
+    result = _run(
+        "--language",
+        "zh",
+        "--output",
+        str(output),
+        "--poster",
+        str(poster),
+        "--width",
+        "480",
+        "--height",
+        "270",
+        "--fps",
+        "6",
+        "--duration-scale",
+        "0.1",
+    )
+    assert result.returncode == 0, result.stderr
+    assert output.stat().st_size > 20_000
+    assert poster.stat().st_size > 5_000
+
+    capture = cv2.VideoCapture(str(output))
+    capture.set(cv2.CAP_PROP_POS_MSEC, 1.8 * 1000)
+    ok, frame = capture.read()
+    capture.release()
+    assert ok
+    assert float(frame.std()) > 20.0

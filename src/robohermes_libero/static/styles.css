@@ -14,6 +14,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "WenQuanYi Micro Hei";
+  src: url("fonts/wqy-microhei.ttc") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
 :root {
   --paper: #ffffff;
   --figure: #f7f8f7;
@@ -36,6 +44,11 @@
   letter-spacing: 0;
 }
 
+html[lang="zh-CN"] {
+  --serif: "WenQuanYi Micro Hei", "Microsoft YaHei", sans-serif;
+  --mono: "JetBrains Mono", "WenQuanYi Micro Hei", monospace;
+}
+
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { margin: 0; color: var(--ink); background: var(--paper); }
@@ -44,6 +57,13 @@ a { color: inherit; }
 code { font-family: var(--mono); font-size: 0.88em; }
 img, video, svg { display: block; max-width: 100%; }
 figure { min-width: 0; margin: 0; }
+
+.language-switch { position: fixed; z-index: 20; top: 20px; right: 24px; display: grid; grid-template-columns: 1fr 1fr; width: 104px; height: 34px; border: 1px solid rgba(255, 255, 255, 0.72); border-radius: 4px; background: rgba(12, 12, 12, 0.88); }
+.language-switch a { display: grid; place-items: center; min-width: 0; color: rgba(255, 255, 255, 0.72); font-family: var(--mono); font-size: 10px; text-decoration: none; }
+.language-switch a + a { border-left: 1px solid rgba(255, 255, 255, 0.32); }
+.language-switch a[aria-current="page"] { color: #171917; background: #fff; }
+html[lang="zh-CN"] .article-title-block h1 { font-size: 45px; line-height: 1.2; }
+html[lang="zh-CN"] .paper-section p { line-height: 1.75; }
 
 .article-hero {
   position: relative;

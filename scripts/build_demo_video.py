@@ -16,11 +16,13 @@ ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "src/robohermes_libero/static"
 DEFAULT_OUTPUT = STATIC / "media/demo/roborsi-demo.mp4"
 DEFAULT_POSTER = STATIC / "media/demo/roborsi-demo-poster.jpg"
+DEFAULT_ZH_OUTPUT = STATIC / "media/demo/roborsi-demo-zh.mp4"
+DEFAULT_ZH_POSTER = STATIC / "media/demo/roborsi-demo-zh-poster.jpg"
 ADAPTIVE_CAPTION = (
     "Cross-release adaptive development coverage; not fixed-policy Pass@10."
 )
 MATCHED_CAPTION = (
-    "Matched Code-on/off panels. Video illustrates code-backed execution."
+    "Matched Code-on/off results. Video illustrates code-backed execution."
 )
 BEFORE_AFTER_CAPTION = (
     "Same task and seed; videos use normalized episode progress. "
@@ -36,84 +38,98 @@ SOURCE_SPECS = (
     {
         "id": "strict-moka-pot-stove",
         "label": "Moka pot to stove",
+        "label_zh": "将摩卡壶放到炉灶上",
         "platform": "LIBERO",
         "offset_s": 2.0,
     },
     {
         "id": "strict-ketchup-basket",
         "label": "Ketchup to basket",
+        "label_zh": "将番茄酱放入篮筐",
         "platform": "LIBERO",
         "offset_s": 1.0,
     },
     {
         "id": "strict-pudding-basket",
         "label": "Pudding to basket",
+        "label_zh": "将布丁放入篮筐",
         "platform": "LIBERO",
         "offset_s": 1.5,
     },
     {
         "id": "strict-bowl-tray",
         "label": "Black bowl to tray",
+        "label_zh": "将黑碗放入托盘",
         "platform": "LIBERO",
         "offset_s": 1.0,
     },
     {
         "id": "adaptive-black-bowl-plate",
         "label": "Black bowl to plate",
+        "label_zh": "将黑碗放到盘子上",
         "platform": "LIBERO",
         "offset_s": 0.5,
     },
     {
         "id": "act-corrective-transport",
         "label": "ACT transport",
+        "label_zh": "ACT 搬运",
         "platform": "LIBERO",
         "offset_s": 0.3,
     },
     {
         "id": "robotwin-grab-roller-seed22",
         "label": "Grab roller",
+        "label_zh": "抓取滚筒",
         "platform": "RoboTwin",
         "offset_s": 18.0,
     },
     {
         "id": "robotwin-place-container-plate-seed21",
         "label": "Container to plate",
+        "label_zh": "将容器放到盘子上",
         "platform": "RoboTwin",
         "offset_s": 18.0,
     },
     {
         "id": "robotwin-turn-switch-seed23",
         "label": "Turn switch",
+        "label_zh": "拨动开关",
         "platform": "RoboTwin",
         "offset_s": 12.0,
     },
     {
         "id": "plus-camera-black-bowl-plate",
         "label": "Camera shift",
+        "label_zh": "相机视角变化",
         "platform": "LIBERO",
         "offset_s": 0.0,
     },
     {
         "id": "plus-light-ketchup-basket",
         "label": "Low-light ketchup",
+        "label_zh": "低照度番茄酱任务",
         "platform": "LIBERO",
         "offset_s": 0.0,
     },
     {
         "id": "plus-layout-black-bowl-plate",
         "label": "Layout shift",
+        "label_zh": "物体布局变化",
         "platform": "LIBERO",
         "offset_s": 0.0,
     },
     {
         "id": "plus-init-black-bowl-plate",
         "label": "Initial-state shift",
+        "label_zh": "机器人初始状态变化",
         "platform": "LIBERO",
         "offset_s": 0.0,
     },
     {
         "id": "act-before-corrective",
         "label": "ACT before repair",
+        "label_zh": "ACT 修复前",
         "platform": "ACT",
         "offset_s": 0.0,
     },
@@ -151,7 +167,7 @@ def _load_evidence() -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
     return publication, robotwin, libero_plus
 
 
-def build_manifest() -> dict[str, Any]:
+def build_manifest(language: str = "en") -> dict[str, Any]:
     publication, robotwin, libero_plus = _load_evidence()
     publication_media = publication["media"]["videos"]
     robotwin_media = robotwin["media"]["videos"]
@@ -174,6 +190,7 @@ def build_manifest() -> dict[str, Any]:
             {
                 "id": spec["id"],
                 "label": spec["label"],
+                "label_zh": spec["label_zh"],
                 "platform": spec["platform"],
                 "task": record["task"],
                 "seed": record["seed"],
@@ -187,6 +204,12 @@ def build_manifest() -> dict[str, Any]:
     matched = publication["experiments"]["matched_code"]
     return {
         "schema": "roborsi.evidence_demo.v1",
+        "language": language,
+        "fonts": {
+            "latin_serif": "src/robohermes_libero/static/fonts/source-serif-4-latin.woff2",
+            "latin_mono": "src/robohermes_libero/static/fonts/jetbrains-mono-latin.woff2",
+            "cjk": "src/robohermes_libero/static/fonts/wqy-microhei.ttc",
+        },
         "duration_s": sum(scene["duration_s"] for scene in SCENES),
         "master": {"width": 1920, "height": 1080, "fps": 30, "audio": False},
         "scenes": [dict(scene) for scene in SCENES],
@@ -199,7 +222,11 @@ def build_manifest() -> dict[str, Any]:
         "adaptive": {
             "coverage": adaptive["pass_curve"],
             "total_tasks": adaptive["total_tasks"],
-            "caption": ADAPTIVE_CAPTION,
+            "caption": (
+                "跨版本自适应开发覆盖率；并非固定策略 Pass@10。"
+                if language == "zh"
+                else ADAPTIVE_CAPTION
+            ),
         },
         "before_after": {
             "task": "libero_spatial_swap/0",
@@ -215,7 +242,12 @@ def build_manifest() -> dict[str, Any]:
                 "transport_steps": 304,
                 "verdict": "native_simulator_success",
             },
-            "caption": BEFORE_AFTER_CAPTION,
+            "caption": (
+                "同一任务与随机种子；视频按归一化回合进度对齐。"
+                "覆盖率曲线为独立的跨版本统计。"
+                if language == "zh"
+                else BEFORE_AFTER_CAPTION
+            ),
         },
         "matched_code": {
             "episode_success_delta_pp": matched["success"]["paired_delta_pp"],
@@ -228,7 +260,11 @@ def build_manifest() -> dict[str, Any]:
             "median_wall_reduction_pct": round(
                 100 * matched["efficiency"]["median_wall_s"]["reduction"], 1
             ),
-            "caption": MATCHED_CAPTION,
+            "caption": (
+                "Code-on/off 为配对实验；视频仅展示代码技能的执行过程。"
+                if language == "zh"
+                else MATCHED_CAPTION
+            ),
         },
     }
 
@@ -308,16 +344,20 @@ class VideoSampler:
 
 
 class FontBook:
-    def __init__(self, image_font: Any, scale: float) -> None:
+    def __init__(self, image_font: Any, scale: float, language: str) -> None:
         self.image_font = image_font
         self.scale = scale
+        self.language = language
         self.paths = {
             "serif": STATIC / "fonts/source-serif-4-latin.woff2",
             "mono": STATIC / "fonts/jetbrains-mono-latin.woff2",
+            "cjk": STATIC / "fonts/wqy-microhei.ttc",
         }
         self.cache: dict[tuple[str, int], Any] = {}
 
     def get(self, family: str, design_size: float) -> Any:
+        if self.language == "zh":
+            family = "cjk"
         size = max(6, round(design_size * self.scale))
         key = (family, size)
         if key not in self.cache:
@@ -352,6 +392,7 @@ class DemoRenderer:
         image: Any,
         image_draw: Any,
         image_font: Any,
+        language: str,
     ) -> None:
         self.width = width
         self.height = height
@@ -364,7 +405,8 @@ class DemoRenderer:
         self.np = np
         self.image = image
         self.image_draw = image_draw
-        self.fonts = FontBook(image_font, self.scale)
+        self.language = language
+        self.fonts = FontBook(image_font, self.scale, language)
         self.samplers = {
             source["id"]: VideoSampler(
                 cv2, ROOT / source["path"], float(source["offset_s"])
@@ -372,6 +414,12 @@ class DemoRenderer:
             for source in manifest["sources"]
         }
         self.sources = manifest["sources"]
+
+    def tr(self, english: str, chinese: str) -> str:
+        return chinese if self.language == "zh" else english
+
+    def source_label(self, source: dict[str, Any]) -> str:
+        return source["label_zh"] if self.language == "zh" else source["label"]
 
     def x(self, value: float) -> int:
         return round(value * self.x_scale)
@@ -480,7 +528,7 @@ class DemoRenderer:
             )
             draw.text(
                 (left + self.s(28), top + tile - self.s(29)),
-                source["label"],
+                self.source_label(source),
                 font=mono_12,
                 fill=(*self.WHITE, 240),
             )
@@ -494,13 +542,13 @@ class DemoRenderer:
 
         draw.text(
             (self.x(64), self.y(61)),
-            "01 / QUALITATIVE EVIDENCE",
+            self.tr("01 / QUALITATIVE EVIDENCE", "01 / 定性执行证据"),
             font=mono_12,
             fill=(*self.GREEN, 255),
         )
         draw.multiline_text(
             (self.x(64), self.y(104)),
-            "13 recorded\nrobot rollouts",
+            self.tr("13 recorded\nrobot rollouts", "13 段机器人\n任务执行"),
             font=serif_62,
             fill=(*self.WHITE, 245),
             spacing=self.s(4),
@@ -536,7 +584,10 @@ class DemoRenderer:
         )
         draw.text(
             (self.x(1475), self.y(82)),
-            f"ROTATING 3 x 3 / PAGE {page_index + 1} OF {len(pages)}",
+            self.tr(
+                f"ROTATING 3 x 3 / PAGE {page_index + 1} OF {len(pages)}",
+                f"轮播九宫格 / 第 {page_index + 1}/{len(pages)} 页",
+            ),
             font=mono_12,
             fill=(*self.GREEN, 255),
         )
@@ -548,7 +599,10 @@ class DemoRenderer:
         )
         draw.multiline_text(
             (self.x(1475), self.y(217)),
-            "All success recordings\nNative simulator or\npredicate authority",
+            self.tr(
+                "All success recordings\nNative simulator or\npredicate authority",
+                "全部录像均判定成功\n结果来自仿真器\n或任务成功谓词",
+            ),
             font=mono_14,
             fill=(*self.WHITE, 170),
             spacing=self.s(12),
@@ -560,20 +614,26 @@ class DemoRenderer:
         )
         draw.text(
             (self.x(1475), self.y(902)),
-            "QUALITATIVE EPISODES",
+            self.tr("QUALITATIVE EPISODES", "定性执行案例"),
             font=mono_10,
             fill=(*self.RUST, 255),
         )
         draw.multiline_text(
             (self.x(1475), self.y(930)),
-            "Examples are evidence\nfor named tasks, not a\nleaderboard denominator.",
+            self.tr(
+                "Examples are evidence\nfor named tasks, not a\nleaderboard denominator.",
+                "仅证明对应任务的\n执行结果，不作为\n排行榜统计分母。",
+            ),
             font=mono_12,
             fill=(*self.WHITE, 165),
             spacing=self.s(8),
         )
         draw.text(
             (self.x(64), self.y(1015)),
-            "roborsi / native-success media archive",
+            self.tr(
+                "roborsi / simulator-confirmed media archive",
+                "roborsi / 仿真判定视频集",
+            ),
             font=mono_10,
             fill=(*self.WHITE, 120),
         )
@@ -619,19 +679,25 @@ class DemoRenderer:
 
         draw.text(
             (self.x(76), self.y(58)),
-            "02 / SELF-EVOLUTION",
+            self.tr("02 / SELF-EVOLUTION", "02 / 自进化案例"),
             font=mono_13,
             fill=(*self.GREEN, 255),
         )
         draw.text(
             (self.x(76), self.y(98)),
-            "One task, before and after corrective experience",
+            self.tr(
+                "One task, before and after corrective experience",
+                "纠错经验改善同一任务的执行结果",
+            ),
             font=serif_46,
             fill=(*self.INK, 255),
         )
         draw.text(
             (self.x(78), self.y(166)),
-            "libero_spatial_swap/0 / seed 3 / normalized episode progress",
+            self.tr(
+                "libero_spatial_swap/0 / seed 3 / normalized episode progress",
+                "libero_spatial_swap/0 / seed 3 / 归一化回合进度",
+            ),
             font=mono_13,
             fill=(*self.MUTED, 255),
         )
@@ -639,14 +705,17 @@ class DemoRenderer:
         panels = (
             (
                 before_left,
-                "BEFORE / FINAL FALSE",
-                "120 ACT steps / placement failed",
+                self.tr("BEFORE / FINAL FALSE", "修复前 / 最终失败"),
+                self.tr("120 ACT steps / placement failed", "120 步 ACT / 放置失败"),
                 self.RUST,
             ),
             (
                 after_left,
-                "AFTER / FINAL TRUE",
-                "304 ACT steps / wrist-verified placement",
+                self.tr("AFTER / FINAL TRUE", "修复后 / 最终成功"),
+                self.tr(
+                    "304 ACT steps / wrist-verified placement",
+                    "304 步 ACT / 视觉校验放置",
+                ),
                 self.GREEN,
             ),
         )
@@ -759,7 +828,7 @@ class DemoRenderer:
         )
         draw.text(
             (self.x(1200), self.y(263)),
-            "SEPARATE AGGREGATE CURVE",
+            self.tr("SEPARATE AGGREGATE CURVE", "独立的汇总覆盖率曲线"),
             font=mono_11,
             fill=(*self.MUTED, 255),
         )
@@ -772,15 +841,36 @@ class DemoRenderer:
         )
         draw.text(
             (self.x(1200), self.y(305)),
-            f"ADAPTIVE ROUND {max(1, math.ceil(current_round))} / 10",
+            self.tr(
+                f"ADAPTIVE ROUND {max(1, math.ceil(current_round))} / 10",
+                f"自适应轮次 {max(1, math.ceil(current_round))} / 10",
+            ),
             font=mono_11,
             fill=(*self.GREEN, 255),
         )
 
         stages = (
-            ("01", "Failure", "120-step under-transport and hold loss"),
-            ("02", "Corrective data", "304-step visual expert trajectory"),
-            ("03", "Replay", "fine-tuned ACT plus wrist placement succeeds"),
+            (
+                "01",
+                self.tr("Failure diagnosis", "失败诊断"),
+                self.tr(
+                    "120-step under-transport and hold loss",
+                    "120 步搬运不足，放置阶段失去夹持",
+                ),
+            ),
+            (
+                "02",
+                self.tr("Corrective data", "纠错数据"),
+                self.tr("304-step visual expert trajectory", "304 步视觉专家纠错轨迹"),
+            ),
+            (
+                "03",
+                self.tr("Fine-tune and replay", "微调与复测"),
+                self.tr(
+                    "fine-tuned ACT plus wrist placement succeeds",
+                    "微调 ACT 与腕部校验放置获得成功",
+                ),
+            ),
         )
         stage_left = self.x(1180)
         stage_right = self.x(1842)
@@ -822,13 +912,13 @@ class DemoRenderer:
         )
         draw.text(
             (self.x(76), self.y(965)),
-            BEFORE_AFTER_CAPTION,
+            self.manifest["before_after"]["caption"],
             font=mono_11,
             fill=(*self.INK_SOFT, 255),
         )
         draw.text(
             (self.x(76), self.y(995)),
-            ADAPTIVE_CAPTION,
+            self.manifest["adaptive"]["caption"],
             font=mono_11,
             fill=(*self.INK_SOFT, 255),
         )
@@ -836,7 +926,10 @@ class DemoRenderer:
             alpha = round(255 * _smoothstep((progress - 0.68) / 0.18))
             draw.text(
                 (self.x(1842), self.y(1030)),
-                "Later locked releases extend cross-release coverage to 95/120.",
+                self.tr(
+                    "Later locked releases extend cross-release coverage to 95/120.",
+                    "后续版本将跨版本累计覆盖扩展至 95/120。",
+                ),
                 font=mono_11,
                 fill=(*self.BLUE, alpha),
                 anchor="ra",
@@ -865,13 +958,16 @@ class DemoRenderer:
         serif_46 = self.fonts.get("serif", 46)
         draw.text(
             (self.x(76), self.y(58)),
-            "03 / MATCHED CODE-ON/OFF",
+            self.tr("03 / MATCHED CODE-ON/OFF", "03 / CODE-ON/OFF 配对评测"),
             font=mono_12,
             fill=(*self.GREEN, 255),
         )
         draw.text(
             (self.x(76), self.y(98)),
-            "Solidified code improves outcomes and cost",
+            self.tr(
+                "Retained code improves success and efficiency",
+                "保留代码技能改善成功率与执行效率",
+            ),
             font=serif_46,
             fill=(*self.WHITE, 245),
         )
@@ -897,13 +993,16 @@ class DemoRenderer:
         )
         draw.text(
             (video_left + self.s(22), video_top + video_size - self.s(58)),
-            "ILLUSTRATIVE CODE-BACKED SUCCESS",
+            self.tr("ILLUSTRATIVE CODE-BACKED SUCCESS", "代码技能执行示例"),
             font=mono_10,
             fill=(*self.GREEN, 255),
         )
         draw.text(
             (video_left + self.s(22), video_top + video_size - self.s(34)),
-            "libero_spatial_swap/1 / seed 14 / native simulator success",
+            self.tr(
+                "libero_spatial_swap/1 / seed 14 / native simulator success",
+                "libero_spatial_swap/1 / seed 14 / 原生仿真器成功判定",
+            ),
             font=mono_12,
             fill=(*self.WHITE, 210),
         )
@@ -914,14 +1013,14 @@ class DemoRenderer:
         off_success = matched["success"]["code_off"]["success"] / 600
         rows = (
             {
-                "label": "EPISODE SUCCESS",
+                "label": self.tr("EPISODE SUCCESS", "单回合成功率"),
                 "value": "29.0% vs 21.5%",
                 "delta": "+7.5 pp",
                 "on": on_success / 0.35,
                 "off": off_success / 0.35,
             },
             {
-                "label": "MEDIAN TOKENS",
+                "label": self.tr("MEDIAN TOKENS", "总 Token 中位数"),
                 "value": "2.58M vs 3.65M",
                 "delta": "-29.4%",
                 "on": (
@@ -931,7 +1030,7 @@ class DemoRenderer:
                 "off": 1.0,
             },
             {
-                "label": "MEDIAN VLM CALLS",
+                "label": self.tr("MEDIAN VLM CALLS", "VLM 调用中位数"),
                 "value": "29.5 vs 40.5",
                 "delta": "-27.2%",
                 "on": (
@@ -941,7 +1040,7 @@ class DemoRenderer:
                 "off": 1.0,
             },
             {
-                "label": "MEDIAN WALL TIME",
+                "label": self.tr("MEDIAN WALL TIME", "实际耗时中位数"),
                 "value": "701s vs 845s",
                 "delta": "-17.0%",
                 "on": (
@@ -955,8 +1054,12 @@ class DemoRenderer:
         right_right = self.x(1842)
         draw.multiline_text(
             (right_left, self.y(184)),
-            "Code-on exposes the solidified visual_pick_place compound.\n"
-            "Code-off keeps model, release, tasks, seeds, base tools, and budget matched.",
+            self.tr(
+                "Code-on exposes the solidified visual_pick_place compound.\n"
+                "Code-off keeps model, release, tasks, seeds, base tools, and budget matched.",
+                "Code-on 启用经验证并保留的 visual_pick_place 复合技能。\n"
+                "Code-off 保持模型、版本、任务、随机种子、基础工具与预算一致。",
+            ),
             font=mono_12,
             fill=(*self.WHITE, 165),
             spacing=self.s(7),
@@ -1003,13 +1106,13 @@ class DemoRenderer:
             )
             draw.text(
                 (bar_right + self.s(20), top + self.s(75)),
-                "OFF",
+                self.tr("OFF", "关闭"),
                 font=mono_10,
                 fill=(*self.WHITE, 110),
             )
             draw.text(
                 (bar_right + self.s(20), top + self.s(95)),
-                "ON",
+                self.tr("ON", "启用"),
                 font=mono_10,
                 fill=(*self.GREEN, 255),
             )
@@ -1021,7 +1124,7 @@ class DemoRenderer:
         )
         draw.text(
             (self.x(76), self.y(1039)),
-            MATCHED_CAPTION,
+            self.manifest["matched_code"]["caption"],
             font=mono_12,
             fill=(*self.WHITE, 150),
         )
@@ -1056,7 +1159,10 @@ class DemoRenderer:
         )
         draw.text(
             (self.x(960), self.y(387)),
-            "SIMULATOR-VERIFIED ROBOT SELF-IMPROVEMENT",
+            self.tr(
+                "SIMULATOR-VERIFIED ROBOT SELF-IMPROVEMENT",
+                "经仿真验证的机器人自进化",
+            ),
             font=mono_13,
             fill=(*self.GREEN, 255),
             anchor="ma",
@@ -1075,7 +1181,10 @@ class DemoRenderer:
         )
         draw.text(
             (self.x(960), self.y(664)),
-            "verified experience to inspectable code",
+            self.tr(
+                "verified experience to inspectable code",
+                "将验证经验转化为可检查代码",
+            ),
             font=mono_18,
             fill=(*self.WHITE, 185),
             anchor="ma",
@@ -1133,6 +1242,7 @@ def render_demo(args: argparse.Namespace, manifest: dict[str, Any]) -> None:
         image=Image,
         image_draw=ImageDraw,
         image_font=ImageFont,
+        language=args.language,
     )
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
@@ -1242,8 +1352,9 @@ def render_demo(args: argparse.Namespace, manifest: dict[str, Any]) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
-    parser.add_argument("--poster", type=Path, default=DEFAULT_POSTER)
+    parser.add_argument("--language", choices=("en", "zh"), default="en")
+    parser.add_argument("--output", type=Path)
+    parser.add_argument("--poster", type=Path)
     parser.add_argument("--width", type=int, default=1920)
     parser.add_argument("--height", type=int, default=1080)
     parser.add_argument("--fps", type=int, default=30)
@@ -1251,12 +1362,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--crf", type=int, default=19)
     parser.add_argument("--preset", default="medium")
     parser.add_argument("--print-manifest", action="store_true")
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.output is None:
+        args.output = DEFAULT_ZH_OUTPUT if args.language == "zh" else DEFAULT_OUTPUT
+    if args.poster is None:
+        args.poster = DEFAULT_ZH_POSTER if args.language == "zh" else DEFAULT_POSTER
+    return args
 
 
 def main() -> int:
     args = parse_args()
-    manifest = build_manifest()
+    manifest = build_manifest(args.language)
     if args.print_manifest:
         print(json.dumps(manifest, indent=2, sort_keys=True))
         return 0

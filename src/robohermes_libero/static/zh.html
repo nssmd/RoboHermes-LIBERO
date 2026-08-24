@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <meta name="description" content="roborsi 是一个面向 LIBERO 的机器人自进化框架，将经过仿真器验证的交互经验转化为可检查、可复用的代码技能。">
+    <title>roborsi | 经仿真验证的机器人自进化系统</title>
+    <link rel="icon" href="data:,">
+    <link rel="canonical" href="https://robo-rsi.com/zh.html">
+    <link rel="alternate" hreflang="en" href="https://robo-rsi.com/">
+    <link rel="alternate" hreflang="zh-CN" href="https://robo-rsi.com/zh.html">
+    <link rel="alternate" hreflang="x-default" href="https://robo-rsi.com/">
+    <link rel="stylesheet" href="styles.css?v=20260824g">
+  </head>
+  <body>
+    <nav class="language-switch" aria-label="语言">
+      <a href="index.html" lang="en">EN</a>
+      <a href="zh.html" aria-current="page">中文</a>
+    </nav>
+    <section id="overview" class="article-hero" aria-label="roborsi 机器人执行视频">
+      <div class="article-hero__sticky">
+        <video class="article-hero__video" autoplay loop muted playsinline preload="auto" src="media/hero-libero-short.mp4"></video>
+        <a class="scroll-cue" href="#article-content">查看项目</a>
+      </div>
+    </section>
+
+    <main id="article-content" class="article-body">
+      <div class="article-layout">
+        <aside class="article-outline" aria-label="目录">
+          <strong>目录</strong>
+          <nav>
+            <a href="#article-title">项目概述</a>
+            <a href="#abstract">摘要</a>
+            <a href="#demo">演示</a>
+            <a href="#architecture">系统架构</a>
+            <a href="#simulations">仿真证据</a>
+            <a href="#libero-plus">LIBERO-Plus</a>
+            <a href="#experiments">实验评测</a>
+            <a href="#dynamics">进化分析</a>
+            <a href="#robotwin">RoboTwin</a>
+            <a href="#comparison">相关工作</a>
+          </nav>
+        </aside>
+
+        <article class="article-shell">
+          <header id="article-title" class="article-title-block">
+            <p class="article-kicker">公开仿真版本 / 2026 年 8 月 24 日</p>
+            <h1>roborsi：经仿真验证的机器人自进化系统</h1>
+            <p class="article-deck">一种具身智能体框架，将经过仿真器验证的交互经验转化为可检查、可复用的代码技能。</p>
+            <nav class="article-links" aria-label="项目资源">
+              <a href="https://github.com/nssmd/RoboHermes-LIBERO">GitHub</a>
+              <a href="#libero-plus">实验结果</a>
+              <a href="#demo">演示视频</a>
+            </nav>
+          </header>
+
+          <section id="abstract" class="paper-section abstract-section">
+            <h2>摘要</h2>
+            <div class="sidenote-row">
+              <p>roborsi 将智能体可见的推理过程与任务判定权限分离。Planner 制定策略，Engineer 组合基于相机观测的工具，Reviewer 分析执行轨迹。候选代码在隔离环境中评测，只有获得仿真器成功判定后才会保留。整个自适应过程因此可以通过代码检查和实验回放进行复核，并同时报告任务结果与推理成本。</p>
+              <aside class="article-sidenote">
+                <strong>判定权限</strong>
+                <p>任务谓词仅在可见工具循环结束后执行，且不会进入提示词、计划、技能或任何智能体角色上下文。</p>
+              </aside>
+            </div>
+            <div class="headline-facts" aria-label="核心结果">
+              <p><span>LIBERO-Plus adaptive Pass@2</span><strong id="hero-plus-score">398/840</strong></p>
+              <p><span>相对固定评测的提升</span><strong id="hero-plus-uplift">+16.3 pp</strong></p>
+              <p><span>自适应开发覆盖率</span><strong id="hero-adaptive">95/120</strong></p>
+              <p><span>Strict Standard-130 Pass@10</span><strong>67/130</strong></p>
+            </div>
+            <p id="data-status" class="data-status" aria-live="polite"></p>
+          </section>
+
+          <section id="demo" class="paper-section demo-section">
+            <p class="section-number">证据视频 / 39 秒</p>
+            <h2>仿真验证的任务执行与可量化的自进化</h2>
+            <div class="sidenote-row">
+              <p>视频以轮播九宫格展示 13 段经仿真器确认成功的任务录像。随后呈现 ACT 在同一任务、同一随机种子下的纠错微调前后对照，以及自适应覆盖率和 Code-on/off 配对效率结果。</p>
+              <aside class="article-sidenote">
+                <strong>证据范围</strong>
+                <p>九宫格属于定性执行证据；自适应曲线衡量跨版本覆盖率；效率结论仅由 Code-on/off 配对实验支持。</p>
+              </aside>
+            </div>
+            <figure class="demo-figure">
+              <video id="evidence-demo" controls muted playsinline preload="metadata" poster="media/demo/roborsi-demo-zh-poster.jpg" src="media/demo/roborsi-demo-zh.mp4" aria-label="roborsi 中文证据视频，包含仿真验证的任务执行、自适应覆盖率与配对效率结果"></video>
+              <figcaption>证据视频。每段机器人画面均对应明确的任务、随机种子和最终判定；图中数值直接读取公开实验结果。</figcaption>
+            </figure>
+            <div class="demo-claims" aria-label="演示证据范围">
+              <p><span>仿真器确认的执行录像</span><strong>13 段成功视频</strong><small>当前公开的成功录像分布在两页九宫格中。</small></p>
+              <p><span>自适应覆盖率</span><strong>32 至 83/120</strong><small>跨版本开发覆盖率，并非固定策略 Pass@10。</small></p>
+              <p><span>保留代码技能</span><strong>+7.5 pp / -29.4%</strong><small>分别为配对成功率差值与总 Token 中位数降幅。</small></p>
+            </div>
+            <h3>ACT 配对案例：纠错前后</h3>
+            <p>在 <code>libero_spatial_swap/0</code>、seed 3 上，修复前的 bounded ACT 虽完成 120 步搬运，但位移不足，并在放置阶段失去夹持。加入纠错数据并微调后，ACT 完成 304 步搬运，随后通过腕部视觉校验完成放置，最终获得原生仿真器成功判定。</p>
+            <div id="act-before-after-grid" class="case-study-list compact-cases before-after-grid" aria-label="ACT 同任务同随机种子的失败与成功视频"></div>
+            <p class="scope-note">两段视频来自同一任务和同一随机种子。由于归档视频时长分别为 6.8 秒和 16.2 秒，页面按归一化回合进度对齐。该结果仅代表一个配对案例；32 至 83 的曲线是独立的跨版本覆盖率统计。</p>
+            <h3>公开执行证据</h3>
+            <p>下方汇总当前公开的 14 段录像，其中包括保留的 ACT 失败案例。每个条目均支持直接播放，并展示归档证据所能支持的最完整调用链。</p>
+            <div id="demo-video-grid" class="case-study-list compact-cases demo-rollout-grid" aria-label="全部机器人执行录像及调用链"></div>
+            <p class="scope-note">三段历史 RoboTwin 视频仅保留最终任务谓词判定，原始逐调用日志未被归档；页面不会补写缺失调用。</p>
+          </section>
+
+          <section id="architecture" class="paper-section architecture-section">
+            <p class="section-number">01</p>
+            <h2>系统架构与信任边界</h2>
+            <div class="sidenote-row">
+              <p>智能体可见信息与仿真器侧的任务判定信息位于不同信任域。智能体能够读取 RGB-D 观测、已注册技能和自身执行轨迹，但无法访问任务谓词、奖励、隐藏物体位姿或成功锁存状态。</p>
+              <aside class="article-sidenote">
+                <strong>信任边界</strong>
+                <p>所有公开成功均来自原生仿真器的最终判定；基础设施中断不计入任务分母。</p>
+              </aside>
+            </div>
+            <figure class="system-figure">
+              <div class="figure-label">图 1 / 系统架构</div>
+              <div class="role-flow" aria-label="Planner Engineer Reviewer architecture">
+                <div><span>01</span><strong>Planner</strong><small>任务指令 + 可见记忆</small></div>
+                <b aria-hidden="true">&rarr;</b>
+                <div><span>02</span><strong>Engineer</strong><small>RGB-D + 已注册工具</small></div>
+                <b aria-hidden="true">&rarr;</b>
+                <div><span>03</span><strong>Reviewer</strong><small>执行轨迹 + 失败诊断</small></div>
+              </div>
+              <div class="execution-rail">
+                <span>感知<br><strong>头部与腕部 RGB-D</strong></span>
+                <span>组合<br><strong>基础技能与复合技能</strong></span>
+                <span>执行<br><strong>逆运动学与关节轨迹</strong></span>
+                <span>适应<br><strong>经审查的代码覆盖层</strong></span>
+              </div>
+              <div class="host-verdict">
+                <span>回合结束后的主机侧边界</span>
+                <strong>仅主机可访问的判定器</strong>
+                <small>仅在原生仿真器判定成功后晋升代码</small>
+              </div>
+              <figcaption>图 1. 自进化循环可以提出并测试代码，但只有主机侧仿真器判定能够授权代码晋升。</figcaption>
+            </figure>
+          </section>
+
+          <section id="simulations" class="paper-section simulation-section">
+            <p class="section-number">02</p>
+            <h2>基于执行轨迹的仿真证据</h2>
+            <div class="sidenote-row">
+              <p>下方每个案例均对应一个明确任务、一个确定随机种子、一条按顺序记录的已注册工具调用链，以及仿真器终局判定。点击“调用链”可查看公开的完整执行序列。</p>
+              <aside class="article-sidenote">
+                <strong>定性证据</strong>
+                <p>视频仅证明对应回合中的实际执行，不替代任务级统计，也不代表未经测量的泛化能力。</p>
+              </aside>
+            </div>
+            <div id="video-grid" class="case-study-list" aria-label="经验证的执行视频"></div>
+          </section>
+
+          <section id="libero-plus" class="paper-section plus-section">
+            <p class="section-number">03</p>
+            <h2>LIBERO-Plus 自适应评测</h2>
+            <div class="sidenote-row">
+              <p>评测覆盖 7 类扰动和 3 个短程任务套件，共 840 个分层扰动实例。固定评测对每个实例执行一次；自适应评测仅针对选定的失败实例，使用审核通过的代码技能更新再执行一次。成功只依据最终仿真器判定计数。</p>
+              <aside class="article-sidenote">
+                <strong>结论边界</strong>
+                <p>该结果是实例级 Adaptive Pass@2，不是固定策略分数，也不能与允许策略检查点或任务检查器的协议直接比较。</p>
+              </aside>
+            </div>
+
+            <div class="result-equation" aria-label="LIBERO-Plus 最终结果">
+              <div><span>固定评测</span><strong id="plus-fixed-score">261/840</strong><small id="plus-fixed-rate">31.1%</small></div>
+              <b aria-hidden="true">&rarr;</b>
+              <div><span>自适应 Pass@2</span><strong id="plus-adaptive-score">398/840</strong><small id="plus-adaptive-rate">47.4%</small></div>
+              <div class="result-gain"><span>实测提升</span><strong id="plus-uplift-score">+16.3 pp</strong><small id="plus-uplift-identities">新增 137 个成功实例</small></div>
+            </div>
+
+            <figure class="paper-figure plus-figure">
+              <img src="media/figures/libero-plus-final.svg" alt="LIBERO-Plus 固定与自适应成功率、扰动类别、任务套件和版本贡献" loading="eager">
+              <figcaption>图 2. LIBERO-Plus 的 840 实例最终结果。固定评测与自适应评测使用相同实例集合；自适应成功按审核后的版本阶段累计。</figcaption>
+            </figure>
+
+            <div class="measure-list" aria-label="LIBERO-Plus 自适应成本">
+              <p><span>可计量自适应 Token</span><strong id="plus-token-cost">1.474B</strong><small>全部有效自适应尝试</small></p>
+              <p><span>有效执行时间</span><strong id="plus-active-wall">16.35h</strong><small>活跃时间区间的并集</small></p>
+              <p><span>有效自适应尝试</span><strong id="plus-attempt-count">592</strong><small>不含基础设施中断</small></p>
+              <p><span>未计量 VLM 调用</span><strong id="plus-unmetered">0</strong><small>Planner + Engineer + Reviewer</small></p>
+            </div>
+
+            <h3>版本贡献</h3>
+            <p>每个阶段的新增成功实例均相对于 Fixed 和此前全部自适应阶段去重。</p>
+            <div id="plus-stage-grid" class="release-timeline" aria-label="自适应版本贡献"></div>
+
+            <h3>仿真器确认成功的扰动案例</h3>
+            <div id="plus-video-grid" class="case-study-list compact-cases" aria-label="LIBERO-Plus 成功视频"></div>
+          </section>
+
+          <section id="experiments" class="paper-section experiments-section">
+            <p class="section-number">04</p>
+            <h2>评测协议与实验结果</h2>
+            <p>各项协议分别回答不同的研究问题，结果严格按照各自的评测约束独立报告。</p>
+
+            <section id="dynamics" class="result-section dynamics-section" aria-labelledby="dynamics-title">
+              <header><div><span>结论归因</span><h3 id="dynamics-title">区分覆盖率、自适应与执行效率</h3></div><strong>按协议解读</strong></header>
+              <p><strong>Pass@k 不是进化曲线。</strong> Strict Standard-130 从 23 增长到 67 个任务，是因为每个任务依次获得更多随机种子；累计覆盖率按定义单调递增。各轮 Token 中位数和实际耗时并不单调，剩余任务集合与执行版本也会变化。</p>
+              <figure class="paper-figure dynamics-figure">
+                <img src="media/figures/evolution-dynamics.svg" alt="Strict 重试覆盖率、LIBERO 自适应开发、历史 RoboTwin 进度与 Code-on 配对效率" loading="eager">
+                <figcaption>图 3. 四条曲线对应四种不同的评测协议。Adaptive LIBERO 与历史 RoboTwin 展示任务解法的累计发现进度；Code-on/off 配对实验支持效率结论；Strict Pass@k 仅表示重试覆盖率。</figcaption>
+              </figure>
+              <div class="dynamics-claims" aria-label="进化结论摘要">
+                <p><span>Strict Standard-130</span><strong>覆盖率，不是进化</strong><small>随随机种子预算增加，由 23 增至 67</small></p>
+                <p><span>自适应版本</span><strong>任务覆盖率提高</strong><small>在持续演化的轮次中由 32/120 增至 83/120</small></p>
+                <p><span>Code-on/off 配对</span><strong>执行成本降低</strong><small>Token 中位数 -29.4%；实际耗时中位数 -17.0%</small></p>
+              </div>
+            </section>
+
+            <section id="robotwin" class="result-section robotwin-section" aria-labelledby="robotwin-title">
+              <header><div><span>历史跨平台证据</span><h3 id="robotwin-title">RoboTwin 历史开发结果</h3></div><strong id="robotwin-three-role">36/50</strong></header>
+              <div class="sidenote-row">
+                <p>历史 RoboTwin 报告同时记录了纯 Engineer 基线与 Planner-Engineer-Reviewer 三角色框架。两者的任务级 Pass@k 分别为 <strong id="robotwin-pure">9/50</strong> 和 36/50；严格单回合成功为 <strong id="robotwin-episode">104/422 (24.6%)</strong>。实验窗口为 <strong id="robotwin-window">87.26 h</strong>。</p>
+                <aside class="article-sidenote"><strong>历史证据边界</strong><p>每个任务最多尝试 10 至 20 次，相邻尝试的时间区间有 87% 重叠。由于完整回合账本未公开，9/50 与 36/50 不作为严格配对的角色消融。</p></aside>
+              </div>
+              <div class="robotwin-facts">
+                <p><span>纯 Engineer</span><strong>9/50</strong><small>任务覆盖率</small></p>
+                <p><span>三角色框架</span><strong>36/50</strong><small>任务级 Pass@k</small></p>
+                <p><span>严格回合</span><strong>104/422</strong><small>成功率 24.6%</small></p>
+                <p><span>并行重叠</span><strong>87%</strong><small>不代表顺序因果关系</small></p>
+              </div>
+              <h3>经任务谓词确认的回合</h3>
+              <div id="robotwin-video-grid" class="case-study-list compact-cases robotwin-cases" aria-label="历史 RoboTwin 成功视频"></div>
+              <p class="scope-note">三段归档视频及其最终任务谓词判定均为原始证据。由于逐回合工具日志未被保留，弹窗仅展示最终判定来源，不会补写调用链。</p>
+            </section>
+
+            <section class="result-section" aria-labelledby="adaptive-title">
+              <header><div><span>开发阶段结果</span><h3 id="adaptive-title">跨版本自适应覆盖率</h3></div><strong>95/120</strong></header>
+              <p>在版本随轮次更新的十轮序列中，已解决任务数由 32 增至 83。针对剩余失败任务的后续版本又解决了 12 个任务，最终得到 95/120 的跨版本累计覆盖率。</p>
+              <div class="figure-with-notes">
+                <figure><figcaption>图 3. 实测顺序开发过程。</figcaption><div id="adaptive-chart" class="chart" aria-label="各轮自适应任务覆盖率"></div></figure>
+                <dl><div><dt>顺序终点</dt><dd>83/120</dd></div><div><dt>可计量 Token</dt><dd>2.342B</dd></div><div><dt>有效执行时间</dt><dd>11.09h</dd></div></dl>
+              </div>
+              <p class="scope-note">95/120 是跨版本累计开发覆盖率，不是固定策略或单一版本的 Pass@10。</p>
+            </section>
+
+            <section class="result-section" aria-labelledby="strict-title">
+              <header><div><span>严格智能体评测</span><h3 id="strict-title">Strict Standard-130</h3></div><strong>67/130</strong></header>
+              <p>130 个任务均按顺序获得最多 10 个随机种子。智能体无法访问任务检查器、动作成功锁存、隐藏位姿或策略检查点。全部 846 个已调度任务与随机种子组合均具有最终仿真器判定。</p>
+              <div class="figure-with-notes">
+                <figure><figcaption>图 4. 任务级 Pass@k。</figcaption><div id="strict-chart" class="chart" aria-label="Strict Standard-130 Pass@k"></div></figure>
+                <dl><div><dt>任务失败</dt><dd>779</dd></div><div><dt>总 Token</dt><dd>2.882B</dd></div><div><dt>VLM 调用</dt><dd>43,076</dd></div></dl>
+              </div>
+              <p class="scope-note">趋势解释：后五轮相对前五轮的中位数显示 Token 减少 13.6%、VLM 调用减少 3.1%，但实际耗时增加 8.0%。由于版本和剩余任务集合均发生变化，这些描述性差异不能证明模型随轮次持续加速。</p>
+            </section>
+
+            <section class="result-section" aria-labelledby="code-title">
+              <header><div><span>五随机种子配对消融</span><h3 id="code-title">保留代码技能的作用</h3></div><strong>+7.5 pp</strong></header>
+              <p>Code-on 向智能体提供已经验证并保留的 <code>visual_pick_place</code> 复合技能。Code-off 保持模型、基础工具、版本、任务、随机种子和预算一致，仅移除该复合技能。</p>
+              <div class="code-result-grid">
+                <figure><figcaption>图 5. 单回合成功率，每个实验臂 600 个配对回合。</figcaption><div id="code-chart" class="bar-chart" aria-label="Code-on 与 Code-off 单回合成功率"></div></figure>
+                <dl><div><dt>McNemar 精确检验</dt><dd>p = 8.06e-5</dd></div><div><dt>任务聚类 95% CI</dt><dd>+3.7 至 +11.5 pp</dd></div><div><dt>任务级 Pass@5</dt><dd>71/120 vs 58/120</dd></div></dl>
+              </div>
+              <div id="efficiency-grid" class="efficiency-list" aria-label="配对效率指标"></div>
+              <p class="scope-note">效率结果来自独立的 118 任务、seed-21 配对面板，并非由 1,200 回合显著性实验推断。</p>
+            </section>
+
+            <section class="result-section" aria-labelledby="act-title">
+              <header><div><span>配对案例</span><h3 id="act-title">ACT 纠错学习案例</h3></div><strong>1 次成功</strong></header>
+              <div class="act-sequence" aria-label="ACT 混合执行流程">
+                <p><span>01</span><strong>代码技能抓取</strong><small>基于视觉定位源物体</small></p><b aria-hidden="true">&rarr;</b>
+                <p><span>02</span><strong>ACT 搬运</strong><small>304 步纠错动作</small></p><b aria-hidden="true">&rarr;</b>
+                <p><span>03</span><strong>代码技能放置</strong><small>原生仿真器最终判定</small></p>
+              </div>
+              <p class="scope-note">这是 <code>libero_spatial_swap/0</code> 上一个 seed-3 配对成功案例，不用于证明留出任务性能或泛化能力。</p>
+            </section>
+          </section>
+
+          <section id="comparison" class="paper-section comparison-section">
+            <p class="section-number">05</p>
+            <h2>相关评测背景</h2>
+            <div class="sidenote-row">
+              <p><strong>各系统协议不同，不能视为同一排行榜。</strong>策略检查点、观测视角、成功反馈、执行时域、任务目录和重试语义均可能不同。所有分数必须与其原始协议共同解读。</p>
+              <aside class="article-sidenote"><strong>表格说明</strong><p>下表比较执行约束和证据范围，不给出归一化排名。</p></aside>
+            </div>
+            <div class="comparison-frame">
+              <table class="comparison-table">
+                <thead><tr><th>系统</th><th>评测设置</th><th>公开结果</th><th>执行约束</th><th>可比性</th></tr></thead>
+                <tbody id="comparison-body"></tbody>
+              </table>
+            </div>
+            <div class="positioning-columns">
+              <section><h3>当前证据缺口</h3><ol id="gap-list"></ol></section>
+              <section><h3>现有证据支持的结论</h3><ol id="advantage-list"></ol></section>
+            </div>
+            <p class="source-line">来源说明：<a href="https://github.com/nssmd/RoboHermes-LIBERO/blob/main/docs/EXPERIMENTS_AND_COMPARISON.md">实验与对比报告</a></p>
+          </section>
+
+        </article>
+
+        <aside class="article-margin" aria-label="论文侧注">
+          <div class="article-sidenote article-sidenote--fixed">
+            <strong>证据协议</strong>
+            <p>Adaptive、Strict、Code-on/off 配对实验与 ACT 案例回答不同问题，全文分别报告，不合并为单一分数。</p>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <footer>
+      <span>roborsi | LIBERO 项目发布页</span>
+      <span>任务结果仅由回合结束后的原生仿真器判定确定</span>
+    </footer>
+
+    <dialog id="video-dialog" class="video-dialog">
+      <button id="video-close" class="dialog-close" type="button" aria-label="关闭视频证据" title="关闭">&times;</button>
+      <div class="dialog-media">
+        <video id="dialog-video" controls loop playsinline preload="metadata"></video>
+        <div class="dialog-caption"><span id="dialog-scope"></span><h2 id="dialog-title"></h2><p id="dialog-meta"></p></div>
+      </div>
+      <div class="dialog-trace">
+        <header><span>执行调用链</span><strong id="dialog-verdict"></strong></header>
+        <p id="dialog-trace-note" class="dialog-trace-note"></p>
+        <ol id="video-tool-chain"></ol>
+      </div>
+    </dialog>
+
+    <script src="app.js?v=20260824g" defer></script>
+  </body>
+</html>
