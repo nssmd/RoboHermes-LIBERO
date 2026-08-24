@@ -114,6 +114,16 @@ figure { min-width: 0; margin: 0; }
 .headline-facts strong { display: block; margin-top: 8px; font-family: var(--mono); font-size: 21px; font-weight: 500; font-variant-numeric: tabular-nums; }
 .data-status { min-height: 22px; margin-top: 12px !important; color: var(--rust) !important; font-family: var(--mono); font-size: 11px !important; line-height: 1.4 !important; }
 
+.demo-figure { margin-top: 38px; }
+.demo-figure video { width: 100%; aspect-ratio: 16 / 9; object-fit: contain; border: 1px solid var(--hairline-strong); background: #0f1210; }
+.demo-figure figcaption { margin-top: 13px; color: var(--muted); font-size: 13px; line-height: 1.45; }
+.demo-claims { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 34px; border-top: 1px solid var(--hairline-strong); border-bottom: 1px solid var(--hairline-strong); }
+.demo-claims p { min-height: 116px; margin: 0; padding: 19px 20px; border-right: 1px solid var(--hairline); }
+.demo-claims p:first-child { padding-left: 0; }
+.demo-claims p:last-child { border-right: 0; }
+.demo-claims span, .demo-claims small { display: block; color: var(--muted); font-size: 11px; line-height: 1.4; }
+.demo-claims strong { display: block; margin: 10px 0 8px; font-family: var(--mono); font-size: 18px; font-weight: 500; }
+
 .system-figure { margin-top: 42px; padding: 28px; border: 1px solid var(--hairline-strong); background: var(--figure); }
 .figure-label { margin-bottom: 16px; color: var(--muted); }
 .role-flow { display: grid; grid-template-columns: 1fr 44px 1fr 44px 1fr; align-items: center; }
@@ -353,7 +363,9 @@ footer { display: flex; align-items: center; justify-content: space-between; min
   .article-title-block h1 { font-size: 40px; }
   .article-deck, .paper-section p { font-size: 17px; line-height: 1.55; }
   .paper-section h2 { font-size: 31px; }
-  .headline-facts, .measure-list, .release-timeline, .efficiency-list, .dynamics-claims, .robotwin-facts, .compact-cases, .robotwin-cases, .positioning-columns { grid-template-columns: 1fr; }
+  .headline-facts, .demo-claims, .measure-list, .release-timeline, .efficiency-list, .dynamics-claims, .robotwin-facts, .compact-cases, .robotwin-cases, .positioning-columns { grid-template-columns: 1fr; }
+  .demo-claims p { padding-left: 0; border-right: 0; border-bottom: 1px solid var(--hairline); }
+  .demo-claims p:last-child { border-bottom: 0; }
   .headline-facts p, .measure-list p, .release-timeline article, .efficiency-item { padding-left: 0; border-right: 0; border-bottom: 1px solid var(--hairline); }
   .case-figure, .case-figure--reverse { display: block; }
   .case-figure--reverse .case-media, .case-figure--reverse figcaption { grid-column: auto; grid-row: auto; }
