@@ -1,0 +1,103 @@
+{
+  "preferred_provider": "elevenlabs",
+  "generated_provider": "edge",
+  "model_id": "eleven_v3",
+  "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+  "output_format": "mp3_44100_128",
+  "voice_settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.75,
+    "style": 0.15,
+    "use_speaker_boost": true
+  },
+  "fallback_voices": {
+    "en": "en-US-AndrewMultilingualNeural",
+    "zh": "zh-CN-YunyangNeural"
+  },
+  "languages": {
+    "en": [
+      {
+        "id": "intro",
+        "start_s": 0,
+        "duration_s": 7,
+        "text": "Roborsi converts simulator-verified robot experience into reusable code skills.",
+        "audio": "media/demo/voiceover/en/intro.mp3",
+        "captions": "media/demo/roborsi-demo-en.vtt"
+      },
+      {
+        "id": "verified_tasks",
+        "start_s": 7,
+        "duration_s": 15,
+        "text": "Across LIBERO and RoboTwin, every shown rollout is tied to a named task, an exact seed, and a final simulator or task-predicate outcome.",
+        "audio": "media/demo/voiceover/en/verified-tasks.mp3",
+        "captions": "media/demo/roborsi-demo-en.vtt"
+      },
+      {
+        "id": "adaptive_evolution",
+        "start_s": 22,
+        "duration_s": 16,
+        "text": "On one matched ACT task, corrective data changes the result from failed placement to success. Across evolving releases, adaptive coverage rises from thirty-two to eighty-three of one hundred twenty tasks.",
+        "audio": "media/demo/voiceover/en/adaptive-evolution.mp3",
+        "captions": "media/demo/roborsi-demo-en.vtt"
+      },
+      {
+        "id": "matched_code",
+        "start_s": 38,
+        "duration_s": 16,
+        "text": "When the verified visual pick-and-place skill is retained, episode success improves by seven point five percentage points, while median tokens fall twenty-nine point four percent and wall time falls seventeen percent.",
+        "audio": "media/demo/voiceover/en/matched-code.mp3",
+        "captions": "media/demo/roborsi-demo-en.vtt"
+      },
+      {
+        "id": "end_slate",
+        "start_s": 54,
+        "duration_s": 6,
+        "text": "Verified experience becomes reusable code. Roborsi.",
+        "audio": "media/demo/voiceover/en/end-slate.mp3",
+        "captions": "media/demo/roborsi-demo-en.vtt"
+      }
+    ],
+    "zh": [
+      {
+        "id": "intro",
+        "start_s": 0,
+        "duration_s": 7,
+        "text": "roborsi 将仿真验证的机器人经验，转化为可复用代码技能。",
+        "audio": "media/demo/voiceover/zh/intro.mp3",
+        "captions": "media/demo/roborsi-demo-zh.vtt"
+      },
+      {
+        "id": "verified_tasks",
+        "start_s": 7,
+        "duration_s": 15,
+        "text": "在 LIBERO 与 RoboTwin 中，每段视频都对应明确任务、随机种子，以及最终仿真器或任务谓词判定。",
+        "audio": "media/demo/voiceover/zh/verified-tasks.mp3",
+        "captions": "media/demo/roborsi-demo-zh.vtt"
+      },
+      {
+        "id": "adaptive_evolution",
+        "start_s": 22,
+        "duration_s": 16,
+        "text": "在同一 ACT 任务上，纠错数据让放置结果从失败变为成功。随着版本持续更新，自适应覆盖率从一百二十个任务中的三十二个，提高到八十三个。",
+        "audio": "media/demo/voiceover/zh/adaptive-evolution.mp3",
+        "captions": "media/demo/roborsi-demo-zh.vtt"
+      },
+      {
+        "id": "matched_code",
+        "start_s": 38,
+        "duration_s": 16,
+        "text": "保留已经验证的视觉抓取放置技能后，单回合成功率提高七点五个百分点；Token 中位数下降百分之二十九点四，实际耗时下降百分之十七。",
+        "audio": "media/demo/voiceover/zh/matched-code.mp3",
+        "captions": "media/demo/roborsi-demo-zh.vtt"
+      },
+      {
+        "id": "end_slate",
+        "start_s": 54,
+        "duration_s": 6,
+        "text": "让验证经验沉淀为可复用代码。roborsi。",
+        "audio": "media/demo/voiceover/zh/end-slate.mp3",
+        "captions": "media/demo/roborsi-demo-zh.vtt"
+      }
+    ]
+  }
+}

@@ -10,6 +10,8 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts/build_demo_video.py"
+REMOTION = ROOT / "remotion"
+STATIC = ROOT / "src/robohermes_libero/static"
 
 
 def _run(*arguments: str) -> subprocess.CompletedProcess[str]:
@@ -46,8 +48,30 @@ def test_demo_manifest_has_rotating_grid_and_matched_before_after() -> None:
     assert len(set().union(*map(set, task_grid["pages"]))) == 13
     assert "act-before-corrective" not in set().union(*map(set, task_grid["pages"]))
 
-    assert manifest["duration_s"] == 39.0
-    assert sum(scene["duration_s"] for scene in manifest["scenes"]) == 39.0
+    assert manifest["renderer"] == {
+        "engine": "remotion",
+        "version": "4.0.517",
+        "entry": "remotion/src/index.ts",
+        "composition": "RoborsiDemo",
+    }
+    assert manifest["duration_s"] == 60.0
+    assert sum(scene["duration_s"] for scene in manifest["scenes"]) == 60.0
+    assert manifest["master"]["audio"] is True
+    assert manifest["voiceover"] == {
+        "preferred_provider": "elevenlabs",
+        "generated_provider": manifest["voiceover"]["generated_provider"],
+        "model_id": "eleven_v3",
+        "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+        "output_format": "mp3_44100_128",
+        "segments": [
+            "intro",
+            "verified_tasks",
+            "adaptive_evolution",
+            "matched_code",
+            "end_slate",
+        ],
+    }
+    assert manifest["voiceover"]["generated_provider"] in {"elevenlabs", "edge"}
     assert manifest["adaptive"] == {
         "coverage": [32, 45, 52, 66, 71, 76, 81, 82, 82, 83],
         "total_tasks": 120,
@@ -135,12 +159,12 @@ def test_demo_smoke_render_is_complete_h264_with_distinct_scenes(tmp_path: Path)
     video_streams = [row for row in metadata["streams"] if row["codec_type"] == "video"]
     audio_streams = [row for row in metadata["streams"] if row["codec_type"] == "audio"]
     assert len(video_streams) == 1
-    assert audio_streams == []
+    assert len(audio_streams) == 1
     stream = video_streams[0]
     assert stream["codec_name"] == "h264"
     assert stream["pix_fmt"] == "yuv420p"
     assert (stream["width"], stream["height"]) == (480, 270)
-    assert 3.7 <= float(metadata["format"]["duration"]) <= 4.2
+    assert 5.7 <= float(metadata["format"]["duration"]) <= 6.2
 
     decode = subprocess.run(
         [ffmpeg, "-v", "error", "-i", str(output), "-f", "null", "-"],
@@ -152,7 +176,7 @@ def test_demo_smoke_render_is_complete_h264_with_distinct_scenes(tmp_path: Path)
 
     capture = cv2.VideoCapture(str(output))
     samples = []
-    for timestamp_s in (0.6, 1.8, 2.9, 3.65):
+    for timestamp_s in (0.4, 1.5, 3.0, 4.8, 5.7):
         capture.set(cv2.CAP_PROP_POS_MSEC, timestamp_s * 1000)
         ok, frame = capture.read()
         assert ok, timestamp_s
@@ -163,7 +187,7 @@ def test_demo_smoke_render_is_complete_h264_with_distinct_scenes(tmp_path: Path)
         assert float(np.mean(np.abs(left - right))) > 8.0
 
     grid_pages = []
-    for timestamp_s in (0.3, 0.9):
+    for timestamp_s in (0.8, 1.6):
         capture = cv2.VideoCapture(str(output))
         capture.set(cv2.CAP_PROP_POS_MSEC, timestamp_s * 1000)
         ok, frame = capture.read()
@@ -178,7 +202,7 @@ def test_demo_smoke_render_is_complete_h264_with_distinct_scenes(tmp_path: Path)
     assert float(np.mean(np.abs(grid_pages[0] - grid_pages[1]))) > 12.0
 
     capture = cv2.VideoCapture(str(output))
-    capture.set(cv2.CAP_PROP_POS_MSEC, 2.25 * 1000)
+    capture.set(cv2.CAP_PROP_POS_MSEC, 3.0 * 1000)
     ok, frame = capture.read()
     capture.release()
     assert ok
@@ -202,6 +226,40 @@ def test_demo_smoke_render_is_complete_h264_with_distinct_scenes(tmp_path: Path)
     assert poster_frame is not None
     assert poster_frame.shape[:2] == (270, 480)
     assert float(poster_frame.std()) > 12.0
+
+
+def test_remotion_project_and_voiceover_contract_are_source_controlled() -> None:
+    package = json.loads((REMOTION / "package.json").read_text(encoding="utf-8"))
+    assert package["scripts"]["render"] == "remotion render src/index.ts RoborsiDemo"
+    assert package["dependencies"]["remotion"] == "4.0.517"
+    assert package["dependencies"]["@remotion/cli"] == "4.0.517"
+    assert package["dependencies"]["@remotion/media"] == "4.0.517"
+    assert package["dependencies"]["react"] == "19.2.8"
+
+    source = (REMOTION / "src/RoborsiDemo.tsx").read_text(encoding="utf-8")
+    assert "OffthreadVideo" in source
+    assert "<Audio" in source
+    assert "NarrationCaption" in source
+    assert "Cross-release coverage" in source
+    assert "Code-on" in source
+
+    voiceover = json.loads((REMOTION / "voiceover.json").read_text(encoding="utf-8"))
+    assert voiceover["preferred_provider"] == "elevenlabs"
+    assert voiceover["generated_provider"] in {"elevenlabs", "edge"}
+    assert voiceover["model_id"] == "eleven_v3"
+    assert voiceover["voice_id"] == "JBFqnCBsd6RMkjVDRZzb"
+    for language in ("en", "zh"):
+        segments = voiceover["languages"][language]
+        assert [row["id"] for row in segments] == [
+            "intro",
+            "verified_tasks",
+            "adaptive_evolution",
+            "matched_code",
+            "end_slate",
+        ]
+        assert all(row["text"].strip() for row in segments)
+        assert all((STATIC / row["audio"]).stat().st_size > 10_000 for row in segments)
+        assert all((STATIC / row["captions"]).stat().st_size > 20 for row in segments)
 
 
 def test_chinese_demo_manifest_and_smoke_render(tmp_path: Path) -> None:

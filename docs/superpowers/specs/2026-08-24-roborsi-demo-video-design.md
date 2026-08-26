@@ -1,5 +1,29 @@
 # roborsi Evidence Demo Video Design
 
+## 2026-08-26 Remotion Narrated Revision
+
+The current production film supersedes the original silent OpenCV compositor.
+It is a 60-second Remotion 4.0.517 composition with five scenes:
+introduction, verified rollout wall, matched ACT corrective case with the
+separate adaptive curve, matched Code-on/off results, and end slate.
+
+English and Simplified Chinese are first-class renders. Each has synchronized
+burned-in narration captions, a separate optional WebVTT track, and a committed
+voiceover set. The browser player is no longer muted by default.
+
+ElevenLabs `eleven_v3` is the preferred speech provider. The voice ID, model,
+scripts, timing, output format, and voice settings are pinned in
+`remotion/voiceover.json`. Generated MP3 files are committed so rendering does
+not require an API key. If no ElevenLabs key is available, the documented
+Microsoft Neural fallback may generate audition tracks; the actual provider is
+recorded in `generated_provider`.
+
+`scripts/build_demo_video.py` remains the stable public entrypoint. It loads the
+canonical evidence bundle, builds Remotion props, invokes the
+`RoborsiDemo` composition, and normalizes the output to H.264 `yuv420p`,
+BT.709, AAC stereo, and fast-start MP4. The TypeScript composition owns all
+layout, animation, media looping, captions, and audio sequencing.
+
 ## Status
 
 Approved for direct implementation. The user requested one published demo that
@@ -32,7 +56,8 @@ the demo.
 
 ## Storyboard
 
-The master is 39 seconds, 1920 x 1080, 30 fps, H.264, `yuv420p`, silent.
+Historical note: the first master was 39 seconds and silent. The current master
+is 60 seconds, 1920 x 1080, 30 fps, H.264 `yuv420p`, with AAC narration.
 
 ### 0.0-12.0 s: Rotating 3 x 3 Task Wall
 
@@ -95,10 +120,9 @@ render dimensions.
 
 ## Implementation
 
-`scripts/build_demo_video.py` owns the storyboard. OpenCV samples existing MP4
-sources, Pillow renders local fonts and vector-like overlays, and FFmpeg
-receives raw BGR frames and encodes H.264. Rendering is streaming and does not
-create an intermediate frame directory.
+Historical note: the original implementation used OpenCV and Pillow. The
+current implementation is source-controlled under `remotion/`; Python now
+serves only as the evidence-aware render wrapper and final media normalizer.
 
 Command-line controls support output path, poster path, dimensions, frame rate,
 and a duration scale. The scale exists for fast deterministic tests; scene

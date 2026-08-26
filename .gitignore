@@ -11,3 +11,6 @@ dist/
 runs/
 site-preview/
 robohermes.yaml
+remotion/node_modules/
+remotion/out/
+.remotion/

@@ -268,12 +268,16 @@ def test_static_preview_packages_evidence_demo(tmp_path: Path) -> None:
     assert 'id="demo-video-grid"' in demo_markup
     assert 'id="act-before-after-grid"' in demo_markup
     assert "Simulator-confirmed rollouts and measured self-improvement" in demo_markup
+    assert "Remotion" in demo_markup
+    assert "Narrated" in demo_markup
     assert "All fourteen published recordings" in demo_markup
     assert "Each robot sequence is linked to a named task" in demo_markup
     assert "Cross-release development coverage; not fixed-policy Pass@10." in html
     assert "Matched success delta and median-token reduction." in html
-    assert "styles.css?v=20260824g" in html
-    assert "app.js?v=20260824g" in html
+    assert "styles.css?v=20260826a" in html
+    assert "app.js?v=20260826a" in html
+    assert '<video id="evidence-demo" controls playsinline' in html
+    assert '<video id="evidence-demo" controls muted' not in html
 
 
 def test_demo_library_unifies_all_recordings_and_available_traces() -> None:
@@ -497,6 +501,9 @@ def test_static_preview_packages_official_english_and_chinese_pages(tmp_path: Pa
     assert "roborsi：经仿真验证的机器人自进化系统" in chinese
     assert "Simulator-confirmed rollouts and measured self-improvement" in english
     assert "仿真验证的任务执行与可量化的自进化" in chinese
+    assert "Remotion" in english
+    assert "Remotion" in chinese
+    assert "配音" in chinese
     assert 'rel="canonical" href="https://robo-rsi.com/"' in english
     assert 'rel="canonical" href="https://robo-rsi.com/zh.html"' in chinese
     assert "one evolving skill system" not in english
@@ -555,10 +562,25 @@ def test_static_preview_packages_official_english_and_chinese_pages(tmp_path: Pa
         "media/demo/roborsi-demo-poster.jpg",
         "media/demo/roborsi-demo-zh.mp4",
         "media/demo/roborsi-demo-zh-poster.jpg",
+        "media/demo/roborsi-demo-en.vtt",
+        "media/demo/roborsi-demo-zh.vtt",
     ):
         path = output / name
         assert path.is_file(), path
-        assert path.stat().st_size > 50_000
+        minimum = 20 if path.suffix == ".vtt" else 50_000
+        assert path.stat().st_size > minimum
+
+    for language in ("en", "zh"):
+        for name in (
+            "intro.mp3",
+            "verified-tasks.mp3",
+            "adaptive-evolution.mp3",
+            "matched-code.mp3",
+            "end-slate.mp3",
+        ):
+            path = output / f"media/demo/voiceover/{language}/{name}"
+            assert path.is_file(), path
+            assert path.stat().st_size > 10_000
 
 
 def test_static_preview_preserves_custom_domain(tmp_path: Path) -> None:

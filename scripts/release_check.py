@@ -18,9 +18,12 @@ IGNORED_DIRS = {
     ".runtime",
     ".venv",
     ".venv-pyroki",
+    ".remotion",
     "__pycache__",
     "build",
     "dist",
+    "node_modules",
+    "out",
     "runs",
     "site-preview",
 }
@@ -36,19 +39,38 @@ TEXT_SUFFIXES = {
     ".py",
     ".sh",
     ".toml",
+    ".ts",
+    ".tsx",
+    ".vtt",
     ".yaml",
     ".yml",
 }
 
 
 def _files(root: Path):
-    for path in root.rglob("*"):
-        if any(part in IGNORED_DIRS or part.endswith(".egg-info") for part in path.parts):
-            continue
-        if path.is_file():
-            if path.name == "robohermes.yaml":
+    for directory, child_dirs, filenames in os.walk(root, topdown=True):
+        child_dirs[:] = [
+            name
+            for name in child_dirs
+            if name not in IGNORED_DIRS and not name.endswith(".egg-info")
+        ]
+        base = Path(directory)
+        for filename in filenames:
+            if filename == "robohermes.yaml":
                 continue
-            yield path
+            yield base / filename
+
+
+def _directories(root: Path):
+    for directory, child_dirs, _filenames in os.walk(root, topdown=True):
+        child_dirs[:] = [
+            name
+            for name in child_dirs
+            if name not in IGNORED_DIRS and not name.endswith(".egg-info")
+        ]
+        base = Path(directory)
+        for name in child_dirs:
+            yield base / name
 
 
 def _local_markdown_links(text: str) -> list[str]:
@@ -81,6 +103,22 @@ def collect_findings(root: Path) -> list[str]:
         "src/robohermes_libero/static/fonts/wqy-microhei.ttc",
         "src/robohermes_libero/static/media/demo/roborsi-demo-zh.mp4",
         "src/robohermes_libero/static/media/demo/roborsi-demo-zh-poster.jpg",
+        "src/robohermes_libero/static/media/demo/roborsi-demo-en.vtt",
+        "src/robohermes_libero/static/media/demo/roborsi-demo-zh.vtt",
+        "src/robohermes_libero/static/media/demo/voiceover/en/intro.mp3",
+        "src/robohermes_libero/static/media/demo/voiceover/en/verified-tasks.mp3",
+        "src/robohermes_libero/static/media/demo/voiceover/en/adaptive-evolution.mp3",
+        "src/robohermes_libero/static/media/demo/voiceover/en/matched-code.mp3",
+        "src/robohermes_libero/static/media/demo/voiceover/en/end-slate.mp3",
+        "src/robohermes_libero/static/media/demo/voiceover/zh/intro.mp3",
+        "src/robohermes_libero/static/media/demo/voiceover/zh/verified-tasks.mp3",
+        "src/robohermes_libero/static/media/demo/voiceover/zh/adaptive-evolution.mp3",
+        "src/robohermes_libero/static/media/demo/voiceover/zh/matched-code.mp3",
+        "src/robohermes_libero/static/media/demo/voiceover/zh/end-slate.mp3",
+        "remotion/package.json",
+        "remotion/package-lock.json",
+        "remotion/voiceover.json",
+        "remotion/src/RoborsiDemo.tsx",
     )
     for relative in required:
         if not (root / relative).is_file():
@@ -123,8 +161,8 @@ def collect_findings(root: Path) -> list[str]:
                     findings.append(f"broken local link {target!r}: {relative}")
 
     excluded_names = {"pro_long", "opd"}
-    for path in root.rglob("*"):
-        if path.is_dir() and path.name.lower() in excluded_names:
+    for path in _directories(root):
+        if path.name.lower() in excluded_names:
             findings.append(f"excluded scope directory included: {path.relative_to(root)}")
 
     pyproject_path = root / "pyproject.toml"

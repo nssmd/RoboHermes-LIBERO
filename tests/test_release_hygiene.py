@@ -9,7 +9,10 @@ IGNORED = {
     ".ruff_cache",
     ".venv",
     ".venv-pyroki",
+    ".remotion",
     "__pycache__",
+    "node_modules",
+    "out",
     "site-preview",
 }
 

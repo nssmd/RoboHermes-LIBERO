@@ -2,11 +2,17 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Generate and publish a deterministic 39-second demo that shows nine verified tasks, adaptive solution discovery, and matched Code-on efficiency.
+**Goal:** Generate and publish a deterministic evidence film that shows
+verified tasks, adaptive solution discovery, and matched Code-on efficiency.
+
+**Current revision:** The 2026-08-26 release uses Remotion 4.0.517, runs for
+60 seconds, and includes bilingual narration and captions. The earlier
+39-second silent OpenCV implementation is historical.
 
 **Architecture:** A standalone Python compositor reads the canonical evidence values and nine existing MP4 assets, streams rendered BGR frames to FFmpeg, and emits one H.264 master plus poster. The existing static preview pipeline packages those outputs, while a manuscript section embeds the demo without changing evidence schemas.
 
-**Tech Stack:** Python 3.10+, OpenCV, Pillow, NumPy, FFmpeg/libx264, pytest, static HTML/CSS, Chromium.
+**Tech Stack:** Remotion, React, TypeScript, Python 3.10+, FFmpeg/libx264,
+pytest, static HTML/CSS, Chromium, and pre-generated narration MP3 files.
 
 ---
 
@@ -245,3 +251,28 @@ video playback, typography, overflow, requests, and console output.
 
 Fast-forward the tested source commit to `main`, rebuild `gh-pages`, preserve
 `CNAME`, and verify both public URLs and language-specific demo assets.
+
+### Task 8: Replace The Compositor With Narrated Remotion
+
+**Files:**
+- Create: `remotion/package.json`
+- Create: `remotion/package-lock.json`
+- Create: `remotion/src/*`
+- Create: `remotion/voiceover.json`
+- Create: `remotion/README.md`
+- Create: `scripts/generate_voiceover.py`
+- Modify: `scripts/build_demo_video.py`
+- Modify: bilingual project pages and release tests
+
+- [x] Pin Remotion 4.0.517 and implement one bilingual `RoborsiDemo`
+  composition.
+- [x] Expand the film to five scenes and 60 seconds without changing evidence
+  values or claim boundaries.
+- [x] Add committed bilingual MP3 narration, burned-in captions, and optional
+  WebVTT tracks.
+- [x] Configure ElevenLabs `eleven_v3` as the preferred generator without
+  storing credentials; record the provider that generated committed tracks.
+- [x] Preserve `scripts/build_demo_video.py --language en|zh` as the one-command
+  render interface.
+- [x] Normalize release output to H.264 `yuv420p`, BT.709, AAC stereo, and
+  fast-start MP4.

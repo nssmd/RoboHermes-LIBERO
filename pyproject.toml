@@ -84,6 +84,7 @@ include = [
   "/SECURITY.md",
   "/LICENSE",
   "/docs",
+  "/remotion",
   "/robohermes",
   "/setup.sh",
 ]
