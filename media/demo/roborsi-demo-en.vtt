@@ -1,0 +1,21 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:07.000
+Roborsi converts simulator-verified robot experience into reusable code skills.
+
+2
+00:00:07.000 --> 00:00:22.000
+Across LIBERO and RoboTwin, every shown rollout is tied to a named task, an exact seed, and a final simulator or task-predicate outcome.
+
+3
+00:00:22.000 --> 00:00:38.000
+On one matched ACT task, corrective data changes the result from failed placement to success. Across evolving releases, adaptive coverage rises from thirty-two to eighty-three of one hundred twenty tasks.
+
+4
+00:00:38.000 --> 00:00:54.000
+When the verified visual pick-and-place skill is retained, episode success improves by seven point five percentage points, while median tokens fall twenty-nine point four percent and wall time falls seventeen percent.
+
+5
+00:00:54.000 --> 00:01:00.000
+Verified experience becomes reusable code. Roborsi.

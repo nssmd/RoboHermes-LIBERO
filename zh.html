@@ -11,7 +11,7 @@
     <link rel="alternate" hreflang="en" href="https://robo-rsi.com/">
     <link rel="alternate" hreflang="zh-CN" href="https://robo-rsi.com/zh.html">
     <link rel="alternate" hreflang="x-default" href="https://robo-rsi.com/">
-    <link rel="stylesheet" href="styles.css?v=20260824g">
+    <link rel="stylesheet" href="styles.css?v=20260826a">
   </head>
   <body>
     <nav class="language-switch" aria-label="语言">
@@ -45,7 +45,7 @@
 
         <article class="article-shell">
           <header id="article-title" class="article-title-block">
-            <p class="article-kicker">公开仿真版本 / 2026 年 8 月 24 日</p>
+            <p class="article-kicker">公开仿真版本 / 2026 年 8 月 26 日</p>
             <h1>roborsi：经仿真验证的机器人自进化系统</h1>
             <p class="article-deck">一种具身智能体框架，将经过仿真器验证的交互经验转化为可检查、可复用的代码技能。</p>
             <nav class="article-links" aria-label="项目资源">
@@ -74,18 +74,20 @@
           </section>
 
           <section id="demo" class="paper-section demo-section">
-            <p class="section-number">证据视频 / 39 秒</p>
+            <p class="section-number">REMOTION 视频 / 60 秒 / 中文配音</p>
             <h2>仿真验证的任务执行与可量化的自进化</h2>
             <div class="sidenote-row">
-              <p>视频以轮播九宫格展示 13 段经仿真器确认成功的任务录像。随后呈现 ACT 在同一任务、同一随机种子下的纠错微调前后对照，以及自适应覆盖率和 Code-on/off 配对效率结果。</p>
+              <p>这段带中文配音的 Remotion 视频，以轮播九宫格展示 13 段经仿真器确认成功的任务录像。随后呈现 ACT 在同一任务、同一随机种子下的纠错微调前后对照，以及自适应覆盖率和 Code-on/off 配对效率结果。</p>
               <aside class="article-sidenote">
                 <strong>证据范围</strong>
                 <p>九宫格属于定性执行证据；自适应曲线衡量跨版本覆盖率；效率结论仅由 Code-on/off 配对实验支持。</p>
               </aside>
             </div>
             <figure class="demo-figure">
-              <video id="evidence-demo" controls muted playsinline preload="metadata" poster="media/demo/roborsi-demo-zh-poster.jpg" src="media/demo/roborsi-demo-zh.mp4" aria-label="roborsi 中文证据视频，包含仿真验证的任务执行、自适应覆盖率与配对效率结果"></video>
-              <figcaption>证据视频。每段机器人画面均对应明确的任务、随机种子和最终判定；图中数值直接读取公开实验结果。</figcaption>
+              <video id="evidence-demo" controls playsinline preload="metadata" poster="media/demo/roborsi-demo-zh-poster.jpg" src="media/demo/roborsi-demo-zh.mp4" aria-label="带中文配音的 roborsi Remotion 视频，包含仿真验证的任务执行、自适应覆盖率与配对效率结果">
+                <track kind="captions" srclang="zh-CN" label="中文" src="media/demo/roborsi-demo-zh.vtt">
+              </video>
+              <figcaption>带配音的 Remotion 视频。每段机器人画面均对应明确的任务、随机种子和最终判定；图中数值直接读取公开实验结果。</figcaption>
             </figure>
             <div class="demo-claims" aria-label="演示证据范围">
               <p><span>仿真器确认的执行录像</span><strong>13 段成功视频</strong><small>当前公开的成功录像分布在两页九宫格中。</small></p>
@@ -314,6 +316,6 @@
       </div>
     </dialog>
 
-    <script src="app.js?v=20260824g" defer></script>
+    <script src="app.js?v=20260826a" defer></script>
   </body>
 </html>
